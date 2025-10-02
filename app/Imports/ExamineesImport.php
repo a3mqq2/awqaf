@@ -25,7 +25,7 @@ class ExamineesImport implements ToModel, WithHeadingRow, WithChunkReading
             : null;
 
         return Examinee::firstOrCreate(
-            ['national_id' => $row['alrkm_alotny'] ?? '-'],
+            ['national_id' => $this->normalizeNationalId($row['alrkm_alotny'] ?? '-')],
             [
                 'first_name'        => $row['alasm_alaol'] ?? '-',
                 'father_name'       => $row['asm_alab'] ?? '-',
@@ -70,5 +70,17 @@ class ExamineesImport implements ToModel, WithHeadingRow, WithChunkReading
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    protected function normalizeNationalId($value)
+    {
+        if (empty($value)) {
+            return '-';
+        }
+
+        // Remove any spaces or non-numeric characters
+        $clean = preg_replace('/[^0-9]/', '', (string) $value);
+
+        return $clean ?: '-';
     }
 }
