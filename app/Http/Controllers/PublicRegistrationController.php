@@ -25,10 +25,7 @@ class PublicRegistrationController extends Controller
      */
     public function checkForm()
     {
-        $narrations = Narration::where('is_active', true)->get();
-        $drawings = Drawing::where('is_active', true)->get();
-        
-        return view('public.registration.check', compact('narrations', 'drawings'));
+        return view('public.registration.check');
     }
 
     /**
@@ -39,17 +36,9 @@ class PublicRegistrationController extends Controller
         $request->validate([
             'identity_type' => 'required|in:national_id,passport',
             'identity_number' => 'required|string',
-            'phone' => 'required|string',
-            'birth_date' => 'required|date',
-            'narration_id' => 'required|exists:narrations,id',
-            'drawing_id' => 'required|exists:drawings,id',
         ]);
 
-        
-        $query = Examinee::where('phone', '218'.$request->phone)
-            ->whereDate('birth_date', $request->birth_date)
-            ->where('narration_id', $request->narration_id)
-            ->where('drawing_id', $request->drawing_id);
+        $query = Examinee::query();
 
         if ($request->identity_type === 'national_id') {
             $query->where('national_id', $request->identity_number);
@@ -111,7 +100,8 @@ class PublicRegistrationController extends Controller
         }
 
         $data = $request->validate($rules);
-
+        $data['phone'] = '218' . $data['phone'];
+        
         // Generate full_name
         $data['full_name'] = trim(
             ($data['first_name'] ?? '') . ' ' . 
@@ -120,8 +110,8 @@ class PublicRegistrationController extends Controller
             ($data['last_name'] ?? '')
         );
 
-        // Set status as pending
-        $data['status'] = 'confirmed';
+        // Set status as confirmed
+        $data['status'] = 'under_review';
 
         // Remove identity_type from data
         unset($data['identity_type']);

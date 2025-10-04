@@ -204,7 +204,7 @@
                     <div class="mb-3">
                         <label for="passport_no" class="form-label">
                             <i class="ti ti-passport me-1"></i>
-                            رقم جواز السفر
+                            رقم الهوية
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">
@@ -214,7 +214,7 @@
                                    class="form-control @error('passport_no') is-invalid @enderror" 
                                    id="passport_no" 
                                    name="passport_no" 
-                                   placeholder="أدخل رقم جواز السفر"
+                                   placeholder="أدخل رقم الهوية"
                                    value="{{ old('passport_no') }}"
                                    required>
                         </div>

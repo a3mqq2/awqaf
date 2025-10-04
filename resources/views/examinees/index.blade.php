@@ -18,7 +18,6 @@
                     <span class="badge bg-primary ms-2">{{ $examinees->total() }}</span>
                 </h5>
                 <div class="d-flex gap-2">
-                    <!-- Print Selected Cards Button - Added Here -->
                     <button type="button" class="btn btn-warning" id="printSelectedCards" style="display: none;">
                         <i class="ti ti-id-badge me-1"></i>
                         طباعة البطاقات المحددة (<span id="selectedCount">0</span>)
@@ -44,7 +43,7 @@
             </div>
 
             <!-- Advanced Filters Card -->
-            <div class="collapse {{ request()->hasAny(['name', 'national_id', 'phone', 'whatsapp', 'gender', 'status', 'nationality', 'office_id', 'cluster_id', 'narration_id', 'drawing_id', 'current_residence', 'birth_date_from', 'birth_date_to']) ? 'show' : '' }}" id="filtersCollapse">
+            <div class="collapse {{ request()->hasAny(['name', 'national_id', 'phone', 'whatsapp', 'gender', 'status', 'nationality', 'office_id', 'cluster_id', 'narration_id', 'drawing_id', 'current_residence', 'birth_date_from', 'birth_date_to']) && request('status') != 'under_review' ? 'show' : '' }}" id="filtersCollapse">
                 <div class="card-body bg-light border-bottom">
                     <form method="GET" action="{{ route('examinees.index') }}" id="filterForm">
                         <div class="row g-3">
@@ -126,6 +125,7 @@
                                 <select name="status" class="form-select">
                                     <option value="">كل الحالات</option>
                                     <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>مؤكد</option>
+                                    <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>قيد المراجعة</option>
                                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>قيد التأكيد</option>
                                     <option value="withdrawn" {{ request('status') == 'withdrawn' ? 'selected' : '' }}>منسحب</option>
                                 </select>
@@ -328,6 +328,7 @@
                                                     @if(request('status'))
                                                         <span class="badge bg-primary">الحالة: 
                                                             @if(request('status') == 'confirmed') مؤكد
+                                                            @elseif(request('status') == 'under_review') قيد المراجعة
                                                             @elseif(request('status') == 'pending') قيد التأكيد
                                                             @else منسحب
                                                             @endif
@@ -385,7 +386,7 @@
                                 <th>الرواية</th>
                                 <th>الرسم</th>
                                 <th>الحالة</th>
-                                <th width="150">الإجراءات</th>
+                                <th width="200">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -498,6 +499,11 @@
                                                 <i class="ti ti-circle-check me-1"></i>
                                                 مؤكد
                                             </span>
+                                        @elseif($examinee->status == 'under_review')
+                                            <span class="badge bg-light-info text-info">
+                                                <i class="ti ti-hourglass me-1"></i>
+                                                قيد المراجعة
+                                            </span>
                                         @elseif($examinee->status == 'pending')
                                             <span class="badge bg-light-warning text-warning">
                                                 <i class="ti ti-clock me-1"></i>
@@ -525,6 +531,28 @@
                                             <i class="ti ti-edit"></i>
                                         </a>
                                         
+                                        @if($examinee->status == 'under_review')
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#approveModal"
+                                                    data-examinee-id="{{ $examinee->id }}"
+                                                    data-examinee-name="{{ $examinee->full_name }}"
+                                                    title="قبول">
+                                                <i class="ti ti-check"></i>
+                                            </button>
+                                            
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#rejectModal"
+                                                    data-examinee-id="{{ $examinee->id }}"
+                                                    data-examinee-name="{{ $examinee->full_name }}"
+                                                    title="رفض">
+                                                <i class="ti ti-x"></i>
+                                            </button>
+                                        @endif
+                                        
                                         <button type="button" 
                                                 class="btn btn-sm btn-outline-danger" 
                                                 data-bs-toggle="modal" 
@@ -538,7 +566,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center py-5">
+                                    <td colspan="11" class="text-center py-5">
                                         <div class="d-flex flex-column align-items-center">
                                             <i class="ti ti-users-off display-1 text-muted mb-3"></i>
                                             <h5 class="text-muted">لا توجد بيانات</h5>
@@ -579,24 +607,127 @@
     </div>
 </div>
 
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0 bg-success">
+                <h5 class="modal-title text-white" id="approveModalLabel">
+                    <i class="ti ti-circle-check me-2"></i>
+                    قبول الممتحن
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="approveForm" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="ti ti-circle-check display-1 text-success mb-3"></i>
+                        <h6>هل أنت متأكد من قبول الممتحن؟</h6>
+                        <p class="text-muted mb-0">
+                            سيتم قبول الممتحن <strong id="approveExamineeName"></strong> وتأكيد تسجيله
+                        </p>
+                    </div>
+                    
+                    <div class="alert alert-success d-flex align-items-center" role="alert">
+                        <i class="ti ti-info-circle me-2"></i>
+                        <div>
+                            سيتم تغيير حالة الممتحن إلى "مؤكد" ويمكنه المشاركة في الاختبار
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ti ti-check me-1"></i>
+                        قبول الممتحن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0 bg-warning">
+                <h5 class="modal-title text-white" id="rejectModalLabel">
+                    <i class="ti ti-alert-triangle me-2"></i>
+                    رفض الممتحن
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rejectForm" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="ti ti-user-x display-1 text-warning mb-3"></i>
+                        <h6>هل أنت متأكد من رفض الممتحن؟</h6>
+                        <p class="text-muted mb-0">
+                            سيتم رفض الممتحن <strong id="rejectExamineeName"></strong>
+                        </p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="rejection_reason" class="form-label">
+                            سبب الرفض <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="rejection_reason" 
+                                  id="rejection_reason" 
+                                  class="form-control" 
+                                  rows="4" 
+                                  required
+                                  placeholder="اكتب سبب رفض الممتحن..."></textarea>
+                        <small class="text-muted">سيتم إرسال سبب الرفض للممتحن</small>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="ti ti-x me-1"></i>
+                        رفض الممتحن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title text-danger" id="deleteModalLabel">
+            <div class="modal-header border-0 bg-danger">
+                <h5 class="modal-title text-white" id="deleteModalLabel">
                     <i class="ti ti-alert-triangle me-2"></i>
                     تأكيد الحذف
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="text-center">
+                <div class="text-center mb-4">
                     <i class="ti ti-trash display-1 text-danger mb-3"></i>
                     <h6>هل أنت متأكد من حذف الممتحن؟</h6>
                     <p class="text-muted mb-0">
                         سيتم حذف الممتحن <strong id="deleteExamineeName"></strong> نهائياً ولا يمكن التراجع عن هذا الإجراء.
                     </p>
+                </div>
+                
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="ti ti-alert-circle me-2"></i>
+                    <div>
+                        <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه!
+                    </div>
                 </div>
             </div>
             <div class="modal-footer border-0 justify-content-center">
@@ -656,6 +787,33 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFiltersBtn.classList.remove('btn-outline-secondary');
             toggleFiltersBtn.classList.add('btn-secondary');
         }
+    }
+
+    // Approve modal
+    const approveModal = document.getElementById('approveModal');
+    if (approveModal) {
+        approveModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const examineeId = button.getAttribute('data-examinee-id');
+            const examineeName = button.getAttribute('data-examinee-name');
+            
+            document.getElementById('approveExamineeName').textContent = examineeName;
+            document.getElementById('approveForm').action = '/examinees/' + examineeId + '/approve';
+        });
+    }
+
+    // Reject modal
+    const rejectModal = document.getElementById('rejectModal');
+    if (rejectModal) {
+        rejectModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const examineeId = button.getAttribute('data-examinee-id');
+            const examineeName = button.getAttribute('data-examinee-name');
+            
+            document.getElementById('rejectExamineeName').textContent = examineeName;
+            document.getElementById('rejectForm').action = '/examinees/' + examineeId + '/reject';
+            document.getElementById('rejection_reason').value = '';
+        });
     }
 
     // Delete modal
@@ -728,7 +886,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Collect data
             const examineesData = [];
             checkedCheckboxes.forEach(checkbox => {
                 examineesData.push({
@@ -741,18 +898,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            // Create print window
             printCards(examineesData);
         });
     }
 
     function printCards(examineesData) {
-    // Collect IDs
-    const ids = examineesData.map(e => e.id).join(',');
-    
-    // Open print page
-    window.open('/examinees/print-cards?ids=' + ids, '_blank');
-}
+        const ids = examineesData.map(e => e.id).join(',');
+        window.open('/examinees/print-cards?ids=' + ids, '_blank');
+    }
 
     // Initialize
     updateSelectedCount();

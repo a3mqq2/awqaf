@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->foreignId('office_id')->constrained('offices')->cascadeOnDelete();
             $table->foreignId('cluster_id')->constrained('clusters')->cascadeOnDelete();
-            $table->enum('status', ['confirmed','pending','withdrawn'])->default('pending');
+            $table->enum('status', ['confirmed','pending','withdrawn','under_review'])->default('pending');
             $table->boolean('has_previous_exam')->default(false);
             $table->text('notes')->nullable();
 

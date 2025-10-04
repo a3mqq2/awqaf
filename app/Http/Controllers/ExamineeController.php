@@ -496,4 +496,36 @@ class ExamineeController extends Controller
         
         return view('examinees.card-print', compact('examinees'));
     }
+
+
+/**
+     * Approve examinee (change status to confirmed)
+     */
+    public function approve(Examinee $examinee)
+    {
+        $examinee->update([
+            'status' => 'confirmed'
+        ]);
+
+        return redirect()->route('examinees.index')
+            ->with('success', 'تم قبول الممتحن بنجاح');
+    }
+
+    /**
+     * Reject examinee with reason
+     */
+    public function reject(Request $request, Examinee $examinee)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        $examinee->update([
+            'status' => 'withdrawn',
+            'rejection_reason' => $request->rejection_reason
+        ]);
+
+        return redirect()->route('examinees.index')
+            ->with('success', 'تم رفض الممتحن بنجاح');
+    }
 }

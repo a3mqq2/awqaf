@@ -8,6 +8,16 @@
 </li>
 
 @can('examinees')
+
+<li class="pc-item">
+  <a href="{{ route('examinees.index', ['status' => 'under_review']) }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-users"></i>
+    </span>
+    <span class="pc-mtext">طلبات الموقع الالكتروني</span>
+  </a>
+</li>
+
 <li class="pc-item">
   <a href="{{ route('examinees.index') }}" class="pc-link">
     <span class="pc-micon">

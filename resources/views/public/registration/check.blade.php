@@ -25,7 +25,7 @@
         }
         
         .check-container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 40px auto;
         }
         
@@ -50,32 +50,6 @@
             border-radius: 16px;
             padding: 40px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-        }
-        
-        .step-header {
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .step-number {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 40px;
-            font-weight: 700;
-            margin-left: 10px;
-        }
-        
-        .step-title {
-            display: inline-block;
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary-color);
         }
         
         .identity-cards {
@@ -126,14 +100,14 @@
             margin-bottom: 8px;
         }
         
-        .form-control, .form-select {
+        .form-control {
             border: 2px solid #e9ecef;
             border-radius: 8px;
             padding: 12px 16px;
             font-size: 16px;
         }
         
-        .form-control:focus, .form-select:focus {
+        .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(60, 94, 127, 0.15);
         }
@@ -146,6 +120,7 @@
             font-weight: 600;
             border-radius: 10px;
             transition: all 0.3s ease;
+            width: 100%;
         }
         
         .btn-primary:hover {
@@ -174,7 +149,7 @@
             font-size: 16px;
         }
         
-        #formFields {
+        #identityNumberField {
             display: none;
         }
         
@@ -212,113 +187,38 @@
             <form action="{{ route('public.registration.check') }}" method="POST" id="checkForm">
                 @csrf
 
-                <!-- Step 1: Identity Type -->
-                <div class="step-header">
-                    <span class="step-number">1</span>
-                    <h2 class="step-title">نوع الهوية</h2>
-                </div>
-
-                <div class="identity-cards">
-                    <label class="identity-card" id="libyanCard">
-                        <input type="radio" name="identity_type" value="national_id" required>
-                        <div class="identity-icon">🇱🇾</div>
-                        <div class="identity-label">ليبي الجنسية</div>
-                    </label>
-                    
-                    <label class="identity-card" id="foreignCard">
-                        <input type="radio" name="identity_type" value="passport" required>
-                        <div class="identity-icon">🌍</div>
-                        <div class="identity-label">جنسية أخرى</div>
-                    </label>
-                </div>
-
-                <!-- Step 2: Form Fields -->
-                <div id="formFields">
-                    <div class="step-header">
-                        <span class="step-number">2</span>
-                        <h2 class="step-title">البيانات الشخصية</h2>
+                <!-- Identity Type Selection -->
+                <div class="mb-4">
+                    <div class="identity-cards">
+                        <label class="identity-card" id="libyanCard">
+                            <input type="radio" name="identity_type" value="national_id" required>
+                            <div class="identity-icon">🇱🇾</div>
+                            <div class="identity-label">ليبي الجنسية</div>
+                        </label>
+                        
+                        <label class="identity-card" id="foreignCard">
+                            <input type="radio" name="identity_type" value="passport" required>
+                            <div class="identity-icon">🌍</div>
+                            <div class="identity-label">جنسية أخرى</div>
+                        </label>
                     </div>
+                </div>
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-12">
-                            <label class="form-label" id="identityLabel">
-                                <span id="identityLabelText"></span>
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" 
-                                   name="identity_number" 
-                                   class="form-control @error('identity_number') is-invalid @enderror" 
-                                   required
-                                   id="identityInput"
-                                   placeholder="">
-                            @error('identity_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                رقم الهاتف (بدون صفر)
-                                <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text">+218</span>
-                                <input type="text" 
-                                       name="phone" 
-                                       class="form-control @error('phone') is-invalid @enderror" 
-                                       placeholder="912345678"
-                                       required>
-                            </div>
-                            @error('phone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                تاريخ الميلاد
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" 
-                                   name="birth_date" 
-                                   class="form-control @error('birth_date') is-invalid @enderror" 
-                                   required>
-                            @error('birth_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                الرواية
-                                <span class="text-danger">*</span>
-                            </label>
-                            <select name="narration_id" class="form-select @error('narration_id') is-invalid @enderror" required>
-                                <option value="">اختر الرواية...</option>
-                                @foreach($narrations as $narration)
-                                    <option value="{{ $narration->id }}">{{ $narration->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('narration_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">
-                                الرسم
-                                <span class="text-danger">*</span>
-                            </label>
-                            <select name="drawing_id" class="form-select @error('drawing_id') is-invalid @enderror" required>
-                                <option value="">اختر الرسم...</option>
-                                @foreach($drawings as $drawing)
-                                    <option value="{{ $drawing->id }}">{{ $drawing->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('drawing_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                <!-- Identity Number Field -->
+                <div id="identityNumberField">
+                    <div class="mb-4">
+                        <label class="form-label" id="identityLabel">
+                            <span id="identityLabelText"></span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               name="identity_number" 
+                               class="form-control @error('identity_number') is-invalid @enderror" 
+                               id="identityInput"
+                               placeholder="">
+                        @error('identity_number')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="d-flex gap-3">
@@ -338,7 +238,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const libyanCard = document.getElementById('libyanCard');
             const foreignCard = document.getElementById('foreignCard');
-            const formFields = document.getElementById('formFields');
+            const identityNumberField = document.getElementById('identityNumberField');
             const identityLabelText = document.getElementById('identityLabelText');
             const identityInput = document.getElementById('identityInput');
             
@@ -347,15 +247,15 @@
                 libyanCard.classList.add('active');
                 identityLabelText.textContent = 'الرقم الوطني';
                 identityInput.placeholder = 'أدخل الرقم الوطني (12 رقم)';
-                formFields.style.display = 'block';
+                identityNumberField.style.display = 'block';
             });
             
             foreignCard.addEventListener('click', function() {
                 libyanCard.classList.remove('active');
                 foreignCard.classList.add('active');
-                identityLabelText.textContent = 'رقم جواز السفر';
-                identityInput.placeholder = 'أدخل رقم جواز السفر';
-                formFields.style.display = 'block';
+                identityLabelText.textContent = 'رقم تحقق الهوية';
+                identityInput.placeholder = 'أدخل رقم تحقق الهوية';
+                identityNumberField.style.display = 'block';
             });
         });
     </script>

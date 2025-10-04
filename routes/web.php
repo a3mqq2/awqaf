@@ -42,6 +42,8 @@ Route::prefix('registration')->name('public.registration.')->group(function () {
     Route::get('/success/{id}', [PublicRegistrationController::class, 'success'])->name('success');
     Route::post('/confirm/{examinee}', [PublicRegistrationController::class, 'confirm'])->name('confirm');
     Route::post('/withdraw/{examinee}', [PublicRegistrationController::class, 'withdraw'])->name('withdraw');
+    Route::get('/print-card', [ExamineeController::class, 'printCards'])->name('print-card');
+
 });
 
 
@@ -71,6 +73,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('examinees/import-form', [ExamineeController::class, 'importForm'])->name('examinees.import.form');
     Route::get('examinees/print-cards', [ExamineeController::class, 'printCards'])->name('examinees.print.cards');
     Route::post('examinees/import', [ExamineeController::class, 'import'])->name('examinees.import');
+    Route::patch('examinees/{examinee}/approve', [ExamineeController::class, 'approve'])->name('examinees.approve');
+    Route::patch('examinees/{examinee}/reject', [ExamineeController::class, 'reject'])->name('examinees.reject');
     Route::resource('examinees', ExamineeController::class);
 
 

@@ -143,7 +143,7 @@
             
             @if($examinee->status == 'confirmed')
                 <div class="status-badge status-confirmed">✓ التسجيل مؤكد</div>
-            @elseif($examinee->status == 'pending')
+            @elseif($examinee->status == 'pending' || $examinee->status == 'under_review')
                 <div class="status-badge status-pending">⏳ بانتظار التأكيد</div>
             @else
                 <div class="status-badge status-withdrawn">✗ منسحب</div>
@@ -167,12 +167,11 @@
                       @endif
                       
       
-                      <a href="{{ route('examinees.print.cards') }}?ids={{ $examinee->id }}" 
-                        target="_blank" 
-                        class="btn btn-primary flex-fill">
-                         <i class="ti ti-id-badge me-2"></i>
-                         طباعة البطاقة
-                     </a>
+                      @if ($examinee->status == 'confirmed')
+                          <a href="{{ route('public.registration.print', $examinee) }}" class="btn btn-success flex-grow-1" target="_blank">
+                              🖨️ طباعة بطاقة الدخول للامتحان
+                          </a>
+                      @endif
       
                       <a href="{{ route('public.registration.index') }}" class="btn btn-secondary">
                           العودة للرئيسية

@@ -299,7 +299,7 @@
                         <input type="radio" name="identity_type" value="passport" required>
                         <div class="identity-icon">🌍</div>
                         <div class="identity-label">جنسية أخرى</div>
-                        <small class="text-muted">رقم جواز السفر</small>
+                        <small class="text-muted">رقم الهوية</small>
                     </label>
                 </div>
 
@@ -372,7 +372,7 @@
 
                     <div class="col-md-6" id="passportField" style="display: none;">
                         <label class="form-label">
-                            رقم جواز السفر
+                            رقم الهوية
                             <span class="text-danger">*</span>
                         </label>
                         <input type="text" name="passport_no" class="form-control @error('passport_no') is-invalid @enderror" value="{{ old('passport_no') }}">

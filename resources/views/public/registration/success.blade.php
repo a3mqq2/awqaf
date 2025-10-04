@@ -123,8 +123,10 @@
             background: #d4edda;
             color: #155724;
         }
+
         
-        .status-pending {
+        
+        .status-under_review {
             background: #fff3cd;
             color: #856404;
         }
@@ -332,8 +334,13 @@
                     <span>
                         @if($examinee->status == 'confirmed')
                             <span class="status-badge status-confirmed">✓ مؤكد</span>
-                        @elseif($examinee->status == 'pending')
+                            @elseif($examinee->status == 'pending')
                             <span class="status-badge status-pending">⏳ قيد المراجعة</span>
+
+                            @elseif($examinee->status == 'under_review')
+                            <span class="status-badge status-review">⏳ قيد المراجعة</span>
+
+
                         @else
                             <span class="status-badge status-withdrawn">✗ منسحب</span>
                         @endif
@@ -350,7 +357,9 @@
                 <h4>ملاحظات هامة:</h4>
                 <ul>
                     <li>احتفظ برقم التسجيل الخاص بك للاستعلام لاحقاً</li>
+                    @if ($examinee->status == "confirmed")
                     <li>يمكنك طباعة بطاقتك الشخصية من خلال الزر أدناه</li>
+                    @endif
                     <li>يمكنك العودة لتأكيد أو تعديل تسجيلك من خلال صفحة الاستعلام</li>
                     <li>تأكد من صحة رقم الهاتف المسجل لاستقبال الإشعارات</li>
                     <li>سيتم إبلاغك بموعد ومكان الامتحان قريباً</li>
@@ -358,14 +367,16 @@
             </div>
 
             <div class="buttons-container">
+                @if ($examinee->status == "confirmed")
                 <a href="{{ route('examinees.print.cards') }}?ids={{ $examinee->id }}" 
-                   target="_blank" 
-                   class="btn-print-card">
-                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline-block; vertical-align: middle; margin-left: 8px;">
-                        <path d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"/>
-                    </svg>
-                    طباعة البطاقة
-                </a>
+                    target="_blank" 
+                    class="btn-print-card">
+                     <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline-block; vertical-align: middle; margin-left: 8px;">
+                         <path d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"/>
+                     </svg>
+                     طباعة البطاقة
+                 </a>
+                @endif
                 <a href="{{ route('public.registration.index') }}" class="btn-home">
                     العودة للصفحة الرئيسية
                 </a>
