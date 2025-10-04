@@ -168,7 +168,7 @@
                       
       
                       @if ($examinee->status == 'confirmed')
-                          <a href="{{ route('public.registration.print-card', $examinee) }}" class="btn btn-success flex-grow-1" target="_blank">
+                          <a href="{{ route('public.registration.print-card', ['ids' => [$examinee->id]]) }}" class="btn btn-success flex-grow-1" target="_blank">
                               🖨️ طباعة بطاقة الدخول للامتحان
                           </a>
                       @endif
