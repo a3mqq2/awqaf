@@ -55,8 +55,11 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
                 'narration_id'      => $narrationId,
                 'drawing_id'        => $drawingId,
                 'status'            => 'pending',
-                'phone'             => $this->cleanCell($row[16] ?? null),
-                'whatsapp'          => $this->cleanCell($row[17] ?? null),
+
+                // 🔥 إصلاح الهاتف والواتساب
+                'phone'             => $this->normalizePhone($row[16] ?? null),
+                'whatsapp'          => $this->normalizePhone($row[17] ?? null),
+
                 'created_at'        => $this->transformDateTime($row[3] ?? null),
             ]
         );
@@ -113,6 +116,25 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
         if (is_string($value) && str_starts_with($value, '=')) {
             return null;
         }
-        return $value;
+        return trim((string) $value);
+    }
+
+    /**
+     * 🔥 تنظيف الهاتف/الواتساب (منع السالب وحفظه كنص)
+     */
+    protected function normalizePhone($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        // حول القيمة لنص
+        $phone = (string) $this->cleanCell($value);
+
+        // امسح أي رمز سالب أو مسافات
+        $phone = ltrim($phone, '-');
+        $phone = preg_replace('/\s+/', '', $phone);
+
+        return $phone;
     }
 }
