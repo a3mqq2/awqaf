@@ -9,7 +9,7 @@ class DrawingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Drawing::query();
+        $query = Drawing::withCount('examinees');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
@@ -31,6 +31,12 @@ class DrawingController extends Controller
                 case 'name':
                     $query->orderBy('name');
                     break;
+                case 'examinees_desc':
+                    $query->orderBy('examinees_count', 'desc');
+                    break;
+                case 'examinees_asc':
+                    $query->orderBy('examinees_count', 'asc');
+                    break;
                 default:
                     $query->latest();
                     break;
@@ -39,7 +45,8 @@ class DrawingController extends Controller
             $query->latest();
         }
 
-        $drawings = $query->paginate(10);
+        $perPage = $request->get('per_page', 10);
+        $drawings = $query->paginate($perPage)->appends($request->query());
 
         return view('drawings.index', compact('drawings'));
     }

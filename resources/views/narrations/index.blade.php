@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-<div class="row">
+<div class="row mt-3">
     <div class="col-md-12">
         <div class="card">
             
@@ -25,7 +25,7 @@
 
             <div class="card-body border-bottom">
                 <form method="GET" action="{{ route('narrations.index') }}" class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">البحث</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="ti ti-search"></i></span>
@@ -48,18 +48,23 @@
                             <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>الأحدث</option>
                             <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>الأقدم</option>
                             <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>الاسم أ-ي</option>
+                            <option value="examinees_desc" {{ request('sort') == 'examinees_desc' ? 'selected' : '' }}>الأكثر ممتحنين</option>
+                            <option value="examinees_asc" {{ request('sort') == 'examinees_asc' ? 'selected' : '' }}>الأقل ممتحنين</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">&nbsp;</label>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-outline-primary flex-fill">
-                                <i class="ti ti-filter me-1"></i>تصفية
-                            </button>
-                            <a href="{{ route('narrations.index') }}" class="btn btn-outline-secondary">
-                                <i class="ti ti-refresh"></i>
-                            </a>
-                        </div>
+                        <label class="form-label">عدد الصفوف</label>
+                        <select name="per_page" class="form-select" onchange="this.form.submit()">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="ti ti-filter me-1"></i>تصفية
+                        </button>
                     </div>
                 </form>
             </div>
@@ -71,9 +76,10 @@
                             <tr>
                                 <th>#</th>
                                 <th>اسم الرواية</th>
+                                <th>عدد الممتحنين</th>
                                 <th>الحالة</th>
                                 <th>تاريخ الإنشاء</th>
-                                <th width="150">الإجراءات</th>
+                                <th width="220">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,6 +87,11 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $narration->name }}</td>
+                                    <td>
+                                        <a href="{{ route('examinees.index', ['narration_id' => $narration->id]) }}" class="badge bg-primary text-white">
+                                            {{ $narration->examinees_count }}
+                                        </a>
+                                    </td>
                                     <td>
                                         <span class="badge {{ $narration->is_active ? 'bg-light-success text-success' : 'bg-light-danger text-danger' }}">
                                             <i class="ti {{ $narration->is_active ? 'ti-circle-check' : 'ti-circle-x' }} me-1"></i>
@@ -92,9 +103,17 @@
                                         {{ $narration->created_at->format('Y-m-d') }}
                                     </td>
                                     <td>
+                                        <a href="{{ route('examinees.index', ['narration_id' => $narration->id]) }}" 
+                                           class="btn btn-sm btn-outline-info" 
+                                           data-bs-toggle="tooltip" 
+                                           title="عرض الممتحنين">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
+
                                         <a href="{{ route('narrations.edit', $narration) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="تعديل">
                                             <i class="ti ti-edit"></i>
                                         </a>
+
                                         <form action="{{ route('narrations.toggle', $narration) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('PATCH')
@@ -103,6 +122,7 @@
                                                 <i class="ti {{ $narration->is_active ? 'ti-toggle-left' : 'ti-toggle-right' }}"></i>
                                             </button>
                                         </form>
+
                                         <form action="{{ route('narrations.destroy', $narration) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
                                             @csrf
                                             @method('DELETE')
@@ -114,7 +134,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-5">
+                                    <td colspan="6" class="text-center py-5">
                                         <i class="ti ti-book-off display-4 text-muted mb-3"></i>
                                         <h5 class="text-muted">لا توجد روايات</h5>
                                         <a href="{{ route('narrations.create') }}" class="btn btn-primary mt-2">

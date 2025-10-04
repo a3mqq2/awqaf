@@ -7,27 +7,55 @@ use Illuminate\Http\Request;
 
 class ClusterController extends Controller
 {
-    /**
-     * Display a listing of clusters.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $clusters = Cluster::latest()->paginate(10);
+        $query = Cluster::withCount('examinees');
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'oldest':
+                    $query->oldest();
+                    break;
+                case 'name':
+                    $query->orderBy('name');
+                    break;
+                case 'examinees_desc':
+                    $query->orderBy('examinees_count', 'desc');
+                    break;
+                case 'examinees_asc':
+                    $query->orderBy('examinees_count', 'asc');
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
+        }
+
+        $perPage = $request->get('per_page', 10);
+        $clusters = $query->paginate($perPage)->appends($request->query());
 
         return view('clusters.index', compact('clusters'));
     }
 
-    /**
-     * Show the form for creating a new cluster.
-     */
     public function create()
     {
         return view('clusters.create');
     }
 
-    /**
-     * Store a newly created cluster in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -36,23 +64,17 @@ class ClusterController extends Controller
 
         Cluster::create([
             'name' => $request->name,
-            'is_active' => $request->boolean('is_active', true), // افتراضي true
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         return redirect()->route('clusters.index')->with('success', 'تمت إضافة التجمع بنجاح');
     }
 
-    /**
-     * Show the form for editing the specified cluster.
-     */
     public function edit(Cluster $cluster)
     {
         return view('clusters.edit', compact('cluster'));
     }
 
-    /**
-     * Update the specified cluster in storage.
-     */
     public function update(Request $request, Cluster $cluster)
     {
         $request->validate([
@@ -67,9 +89,6 @@ class ClusterController extends Controller
         return redirect()->route('clusters.index')->with('success', 'تم تحديث التجمع بنجاح');
     }
 
-    /**
-     * Remove the specified cluster from storage.
-     */
     public function destroy(Cluster $cluster)
     {
         $cluster->delete();
@@ -77,9 +96,6 @@ class ClusterController extends Controller
         return redirect()->route('clusters.index')->with('success', 'تم حذف التجمع بنجاح');
     }
 
-    /**
-     * Toggle activation status of a cluster.
-     */
     public function toggle(Cluster $cluster)
     {
         $cluster->update(['is_active' => !$cluster->is_active]);

@@ -24,16 +24,26 @@ use App\Http\Controllers\DeliveryPriceController;
 use App\Http\Controllers\ExamineeCheckController;
 use App\Http\Controllers\InvoiceExpenseController;
 use App\Http\Controllers\InvoicePaymentController;
+use App\Http\Controllers\PublicRegistrationController;
 
-Route::redirect('/', '/dashboard');
+Route::redirect('/', '/registration');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'submit'])->name('login.submit');
 
-Route::get('/examinee/check', [ExamineeCheckController::class, 'showForm'])->name('examinee.check.form');
-Route::post('/examinee/check', [ExamineeCheckController::class, 'check'])->name('examinee.check');
-Route::post('/examinee/confirm/{examinee}', [ExamineeCheckController::class, 'confirm'])->name('examinee.confirm');
-Route::post('/examinee/withdraw/{examinee}', [ExamineeCheckController::class, 'withdraw'])->name('examinee.withdraw');
+
+
+Route::prefix('registration')->name('public.registration.')->group(function () {
+    Route::get('/', [PublicRegistrationController::class, 'index'])->name('index');
+    Route::get('/check', [PublicRegistrationController::class, 'checkForm'])->name('check.form');
+    Route::post('/check', [PublicRegistrationController::class, 'checkRegistration'])->name('check');
+    Route::get('/register', [PublicRegistrationController::class, 'registerForm'])->name('register.form');
+    Route::post('/register', [PublicRegistrationController::class, 'store'])->name('register');
+    Route::get('/success/{id}', [PublicRegistrationController::class, 'success'])->name('success');
+    Route::post('/confirm/{examinee}', [PublicRegistrationController::class, 'confirm'])->name('confirm');
+    Route::post('/withdraw/{examinee}', [PublicRegistrationController::class, 'withdraw'])->name('withdraw');
+});
+
 
 
 Route::middleware(['auth'])->group(function () {
@@ -59,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('examinees/print', [ExamineeController::class, 'print'])->name('examinees.print');
     Route::get('examinees/import-form', [ExamineeController::class, 'importForm'])->name('examinees.import.form');
+    Route::get('examinees/print-cards', [ExamineeController::class, 'printCards'])->name('examinees.print.cards');
     Route::post('examinees/import', [ExamineeController::class, 'import'])->name('examinees.import');
     Route::resource('examinees', ExamineeController::class);
 

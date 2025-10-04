@@ -9,12 +9,12 @@ class NarrationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Narration::query();
-
+        $query = Narration::withCount('examinees');
+    
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-
+    
         if ($request->filled('status')) {
             if ($request->status === 'active') {
                 $query->where('is_active', true);
@@ -22,7 +22,7 @@ class NarrationController extends Controller
                 $query->where('is_active', false);
             }
         }
-
+    
         if ($request->filled('sort')) {
             switch ($request->sort) {
                 case 'oldest':
@@ -31,6 +31,12 @@ class NarrationController extends Controller
                 case 'name':
                     $query->orderBy('name');
                     break;
+                case 'examinees_asc':
+                    $query->orderBy('examinees_count', 'asc');
+                    break;
+                case 'examinees_desc':
+                    $query->orderBy('examinees_count', 'desc');
+                    break;
                 default:
                     $query->latest();
                     break;
@@ -38,12 +44,14 @@ class NarrationController extends Controller
         } else {
             $query->latest();
         }
-
-        $narrations = $query->paginate(10);
-
+    
+        $perPage = $request->get('per_page', 10);
+    
+        $narrations = $query->paginate($perPage)->appends($request->query());
+    
         return view('narrations.index', compact('narrations'));
     }
-
+    
     public function create()
     {
         return view('narrations.create');

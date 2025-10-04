@@ -8,44 +8,56 @@ use App\Models\Cluster;
 use App\Models\Narration;
 use App\Models\Drawing;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class ExamineesImport implements ToModel, WithHeadingRow, WithChunkReading
+class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormulas
 {
     public function model(array $row)
     {
-        $narrationId = !empty($row['alroay_almshark_bha'])
-            ? Narration::firstOrCreate(['name' => $row['alroay_almshark_bha']])->id
+        if (isset($row[0]) && is_numeric($row[0])) {
+            unset($row[0]);
+        }
+
+        $narrationId = !empty($this->cleanCell($row[18] ?? null))
+            ? Narration::firstOrCreate(['name' => $this->cleanCell($row[18])])->id
             : null;
 
-        $drawingId = !empty($row['akhtyar_alrsm'])
-            ? Drawing::firstOrCreate(['name' => $row['akhtyar_alrsm']])->id
+        $drawingId = !empty($this->cleanCell($row[20] ?? null))
+            ? Drawing::firstOrCreate(['name' => $this->cleanCell($row[20])])->id
             : null;
+
+        $firstName  = $this->cleanCell($row[4] ?? '-');
+        $fatherName = $this->cleanCell($row[5] ?? '-');
+        $grandName  = $this->cleanCell($row[6] ?? '-');
+        $lastName   = $this->cleanCell($row[7] ?? '-');
 
         return Examinee::firstOrCreate(
-            ['national_id' => $this->normalizeNationalId($row['alrkm_alotny'] ?? '-')],
+            ['national_id' => $this->normalizeNationalId($row[10] ?? '-')],
             [
-                'first_name'        => $row['alasm_alaol'] ?? '-',
-                'father_name'       => $row['asm_alab'] ?? '-',
-                'grandfather_name'  => $row['asm_algd'] ?? '-',
-                'last_name'         => $row['allkb'] ?? '-',
-                'full_name'         => $row['alasm_alrbaaay'] ?? '-',
-                'nationality'       => $row['algnsy'] ?? '-',
-                'passport_no'       => $row['rkm_goaz_alsfr'] ?? '-',
-                'current_residence' => $row['mkan_alakam_alhaly'] ?? '-',
-                'gender'            => ($row['algns'] ?? '') === 'ذكر' ? 'male' : 'female',
-                'birth_date'        => $this->transformDate($row['tarykh_almylad'] ?? null),
-                'office_id'         => !empty($row['asm_mktb_alaokaf_altabaa_lh'])
-                    ? Office::firstOrCreate(['name' => $row['asm_mktb_alaokaf_altabaa_lh']])->id
+                'first_name'        => $firstName,
+                'father_name'       => $fatherName,
+                'grandfather_name'  => $grandName,
+                'last_name'         => $lastName,
+                'full_name'         => trim("$firstName $fatherName $grandName $lastName"),
+                'nationality'       => $this->cleanCell($row[9] ?? '-'),
+                'passport_no'       => $this->cleanCell($row[11] ?? '-'),
+                'current_residence' => $this->cleanCell($row[12] ?? '-'),
+                'gender'            => ($this->cleanCell($row[13] ?? '') === 'ذكر') ? 'male' : 'female',
+                'birth_date'        => $this->transformDate($row[14] ?? null),
+                'office_id'         => !empty($this->cleanCell($row[15]))
+                    ? Office::firstOrCreate(['name' => $this->cleanCell($row[15])])->id
                     : null,
-                'cluster_id'        => !empty($row['mkan_alamthan'])
-                    ? Cluster::firstOrCreate(['name' => $row['mkan_alamthan']])->id
+                'cluster_id'        => !empty($this->cleanCell($row[19]))
+                    ? Cluster::firstOrCreate(['name' => $this->cleanCell($row[19])])->id
                     : null,
                 'narration_id'      => $narrationId,
                 'drawing_id'        => $drawingId,
                 'status'            => 'pending',
+                'phone'             => $this->cleanCell($row[16] ?? null),
+                'whatsapp'          => $this->cleanCell($row[17] ?? null),
+                'created_at'        => $this->transformDateTime($row[3] ?? null),
             ]
         );
     }
@@ -61,14 +73,29 @@ class ExamineesImport implements ToModel, WithHeadingRow, WithChunkReading
             if (empty($value)) {
                 return null;
             }
-
             if (is_numeric($value)) {
                 return ExcelDate::excelToDateTimeObject($value)->format('Y-m-d');
             }
-
-            return date('Y-m-d', strtotime($value));
+            $timestamp = strtotime($value);
+            return $timestamp ? date('Y-m-d', $timestamp) : null;
         } catch (\Exception $e) {
             return null;
+        }
+    }
+
+    protected function transformDateTime($value)
+    {
+        try {
+            if (empty($value)) {
+                return now();
+            }
+            if (is_numeric($value)) {
+                return ExcelDate::excelToDateTimeObject($value)->format('Y-m-d H:i:s');
+            }
+            $timestamp = strtotime($value);
+            return $timestamp ? date('Y-m-d H:i:s', $timestamp) : now();
+        } catch (\Exception $e) {
+            return now();
         }
     }
 
@@ -77,10 +104,15 @@ class ExamineesImport implements ToModel, WithHeadingRow, WithChunkReading
         if (empty($value)) {
             return '-';
         }
-
-        // Remove any spaces or non-numeric characters
         $clean = preg_replace('/[^0-9]/', '', (string) $value);
-
         return $clean ?: '-';
+    }
+
+    protected function cleanCell($value)
+    {
+        if (is_string($value) && str_starts_with($value, '=')) {
+            return null;
+        }
+        return $value;
     }
 }

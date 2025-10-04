@@ -4,31 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasClusterFiltering;
 
 class Examinee extends Model
 {
-    use HasFactory;
+    use HasFactory, HasClusterFiltering;
 
     protected $fillable = [
         'first_name',
         'father_name',
         'grandfather_name',
         'last_name',
-        'full_name',
-        'nationality',
         'national_id',
         'passport_no',
-        'current_residence',
-        'gender',
         'birth_date',
+        'gender',
+        'phone',
+        'email',
+        'address',
         'office_id',
         'cluster_id',
-        'has_previous_exam',
-        'notes',
-        'phone',
         'narration_id',
         'drawing_id',
         'status',
+        'notes',
+    ];
+
+    protected $casts = [
+        'birth_date' => 'date',
     ];
 
     public function office()
@@ -50,12 +53,12 @@ class Examinee extends Model
     {
         return $this->belongsTo(Narration::class);
     }
-    
+
     public function drawing()
     {
         return $this->belongsTo(Drawing::class);
     }
-    
+
     public function getFullNameAttribute()
     {
         return trim("{$this->first_name} {$this->father_name} {$this->grandfather_name} {$this->last_name}");

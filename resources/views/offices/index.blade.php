@@ -21,12 +21,12 @@
 
             <div class="card-body border-bottom">
                 <form method="GET" action="{{ route('offices.index') }}" class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">البحث</label>
                         <input type="text" name="search" class="form-control"
                                placeholder="ابحث باسم المكتب..." value="{{ request('search') }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label">الحالة</label>
                         <select name="status" class="form-select">
                             <option value="">جميع الحالات</option>
@@ -40,6 +40,17 @@
                             <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>الأحدث</option>
                             <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>الأقدم</option>
                             <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>الاسم</option>
+                            <option value="examinees_desc" {{ request('sort') == 'examinees_desc' ? 'selected' : '' }}>الأكثر ممتحنين</option>
+                            <option value="examinees_asc" {{ request('sort') == 'examinees_asc' ? 'selected' : '' }}>الأقل ممتحنين</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">عدد الصفوف</label>
+                        <select name="per_page" class="form-select" onchange="this.form.submit()">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                         </select>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
@@ -61,8 +72,8 @@
                                 <th>#</th>
                                 <th>اسم المكتب</th>
                                 <th>الحالة</th>
-                                <th>تاريخ الإنشاء</th>
-                                <th width="150">الإجراءات</th>
+                                <th>عدد الممتحنين</th>
+                                <th width="200">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,8 +86,16 @@
                                             {{ $office->is_active ? 'مفعل' : 'غير مفعل' }}
                                         </span>
                                     </td>
-                                    <td>{{ $office->created_at->format('Y-m-d') }}</td>
                                     <td>
+                                        <a href="{{ route('examinees.index', ['office_id' => $office->id]) }}" class="badge bg-primary text-white">
+                                            {{ $office->examinees_count }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('examinees.index', ['office_id' => $office->id]) }}" 
+                                           class="btn btn-sm btn-outline-info" title="عرض الممتحنين">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
                                         <a href="{{ route('offices.edit', $office) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="ti ti-edit"></i>
                                         </a>
@@ -106,6 +125,7 @@
                                 </tr>
                             @endforelse
                         </tbody>
+                        
                     </table>
                 </div>
             </div>

@@ -11,7 +11,12 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         $permissions = [
+            ['name' => 'examinees',             'name_ar' => 'ادارة الممتحنين '],
             ['name' => 'users',             'name_ar' => 'المستخدمين'],
+            ['name' => 'clusters',             'name_ar' => 'ادارة التجمعات'],
+            ['name' => 'offices',             'name_ar' => 'ادارة المكاتب'],
+            ['name' => 'narrations',             'name_ar' => 'ادارة الروايات'],
+            ['name' => 'drawings',             'name_ar' => 'ادارة رسوم المصاحف'],
         ];
 
         foreach ($permissions as $item) {

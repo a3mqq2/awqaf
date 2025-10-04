@@ -25,7 +25,7 @@
 
             <div class="card-body border-bottom">
                 <form method="GET" action="{{ route('clusters.index') }}" class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">البحث</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="ti ti-search"></i></span>
@@ -34,7 +34,7 @@
                                    value="{{ request('search') }}">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label">الحالة</label>
                         <select name="status" class="form-select">
                             <option value="">جميع الحالات</option>
@@ -48,18 +48,26 @@
                             <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>الأحدث</option>
                             <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>الأقدم</option>
                             <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>الاسم أ-ي</option>
+                            <option value="examinees_desc" {{ request('sort') == 'examinees_desc' ? 'selected' : '' }}>الأكثر ممتحنين</option>
+                            <option value="examinees_asc" {{ request('sort') == 'examinees_asc' ? 'selected' : '' }}>الأقل ممتحنين</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">&nbsp;</label>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-outline-primary flex-fill">
-                                <i class="ti ti-filter me-1"></i>تصفية
-                            </button>
-                            <a href="{{ route('clusters.index') }}" class="btn btn-outline-secondary">
-                                <i class="ti ti-refresh"></i>
-                            </a>
-                        </div>
+                        <label class="form-label">عدد الصفوف</label>
+                        <select name="per_page" class="form-select" onchange="this.form.submit()">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary flex-fill">
+                            <i class="ti ti-filter me-1"></i>تصفية
+                        </button>
+                        <a href="{{ route('clusters.index') }}" class="btn btn-outline-secondary ms-2">
+                            <i class="ti ti-refresh"></i>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -72,8 +80,8 @@
                                 <th>#</th>
                                 <th>اسم التجمع</th>
                                 <th>الحالة</th>
-                                <th>تاريخ الإنشاء</th>
-                                <th width="150">الإجراءات</th>
+                                <th>عدد الممتحنين</th>
+                                <th width="200">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,10 +96,14 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <i class="ti ti-calendar me-1 text-muted"></i>
-                                        {{ $cluster->created_at->format('Y-m-d') }}
+                                        <a href="{{ route('examinees.index', ['cluster_id' => $cluster->id]) }}" class="badge bg-primary text-white">
+                                            {{ $cluster->examinees_count }}
+                                        </a>
                                     </td>
                                     <td>
+                                        <a href="{{ route('examinees.index', ['cluster_id' => $cluster->id]) }}" class="btn btn-sm btn-outline-info" title="عرض الممتحنين">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
                                         <a href="{{ route('clusters.edit', $cluster) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="تعديل">
                                             <i class="ti ti-edit"></i>
                                         </a>

@@ -7,6 +7,7 @@
   </a>
 </li>
 
+@can('examinees')
 <li class="pc-item">
   <a href="{{ route('examinees.index') }}" class="pc-link">
     <span class="pc-micon">
@@ -15,9 +16,9 @@
     <span class="pc-mtext">الممتحنين</span>
   </a>
 </li>
+@endcan
 
-
-
+@can('clusters')
 <li class="pc-item">
   <a href="{{ route('clusters.index') }}" class="pc-link">
     <span class="pc-micon">
@@ -26,7 +27,9 @@
     <span class="pc-mtext">التجمعات</span>
   </a>
 </li>
+@endcan
 
+@can('offices')
 <li class="pc-item">
   <a href="{{ route('offices.index') }}" class="pc-link">
     <span class="pc-micon">
@@ -35,7 +38,9 @@
     <span class="pc-mtext">المكاتب</span>
   </a>
 </li>
+@endcan
 
+@can('narrations')
 <li class="pc-item">
   <a href="{{ route('narrations.index') }}" class="pc-link">
     <span class="pc-micon">
@@ -44,8 +49,9 @@
     <span class="pc-mtext">الروايات</span>
   </a>
 </li>
+@endcan
 
-
+@can('drawings')
 <li class="pc-item">
   <a href="{{ route('drawings.index') }}" class="pc-link">
     <span class="pc-micon">
@@ -54,8 +60,18 @@
     <span class="pc-mtext">رسوم المصاحف</span>
   </a>
 </li>
+@endcan
 
-
+@can('users')
+<li class="pc-item">
+  <a href="{{ route('users.index') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-user"></i>
+    </span>
+    <span class="pc-mtext">المستخدمين</span>
+  </a>
+</li>
+@endcan
 
 <li class="pc-item">
   <a href="{{ route('logout') }}" class="pc-link">

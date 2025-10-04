@@ -1,7 +1,12 @@
 @extends('layouts.app')
 @section('title', 'اضافة مستخدم جديد')
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @section('content')
-<div class="row">
+<div class="row mt-3">
    <div class="col-md-12">
       <div class="card">
          <div class="card-body">
@@ -10,37 +15,42 @@
                   @method('POST')
                   <div class="row">
                      <div class="col-md-6 mt-2">
-                        <label for="">اسم المستخدم</label>
+                        <label>اسم المستخدم</label>
                         <input type="text" name="name" required class="form-control" value="{{ old('name') }}">
-                        @error('name')
-                           <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        @error('name') <div class="text-danger">{{ $message }}</div> @enderror
                      </div>
                      
                      <div class="col-md-6 mt-2">
-                        <label for=""> البريد الالكتروني </label>
+                        <label>البريد الالكتروني</label>
                         <input type="email" name="email" required class="form-control" value="{{ old('email') }}">
-                        @error('email')
-                           <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        @error('email') <div class="text-danger">{{ $message }}</div> @enderror
                      </div>
                      
                      <div class="col-md-6 mt-2">
-                        <label for="">كلمة المرور</label>
+                        <label>كلمة المرور</label>
                         <input type="password" name="password" required class="form-control">
-                        @error('password')
-                           <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                        @error('password') <div class="text-danger">{{ $message }}</div> @enderror
                      </div>
                      
                      <div class="col-md-6 mt-2">
-                        <label for="">تأكيد كلمة المرور</label>
+                        <label>تأكيد كلمة المرور</label>
                         <input type="password" name="password_confirmation" required class="form-control">
                      </div>
 
-                     <!-- قسم الصلاحيات -->
                      <div class="col-md-12 mt-4">
-                        <label for="">صلاحيات الوصول</label>
+                        <label>التجمعات</label>
+                        <select name="clusters[]" id="clusters" class="form-select select2" multiple>
+                           @foreach($clusters as $cluster)
+                              <option value="{{ $cluster->id }}" {{ in_array($cluster->id, old('clusters', [])) ? 'selected' : '' }}>
+                                 {{ $cluster->name }}
+                              </option>
+                           @endforeach
+                        </select>
+                        @error('clusters') <div class="text-danger">{{ $message }}</div> @enderror
+                     </div>
+
+                     <div class="col-md-12 mt-4">
+                        <label>صلاحيات الوصول</label>
                         <div class="card">
                            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
                               @if($permissions->count() > 0)
@@ -66,9 +76,6 @@
                               @endif
                            </div>
                         </div>
-                        @error('permissions')
-                           <div class="text-danger">{{ $message }}</div>
-                        @enderror
                      </div>
 
                      <div class="col-md-12 mt-4">
@@ -86,3 +93,16 @@
    </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#clusters').select2({
+        placeholder: "اختر التجمعات",
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
+@endpush

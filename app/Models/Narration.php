@@ -14,5 +14,8 @@ class Narration extends Model
         'is_active',
     ];
 
-
+    public function examinees()
+    {
+        return $this->hasMany(Examinee::class);
+    }
 }

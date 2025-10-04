@@ -13,4 +13,15 @@ class Cluster extends Model
         'name',
         'is_active',
     ];
+
+    public function examinees()
+    {
+        return $this->hasMany(Examinee::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'cluster_user');
+    }
+
 }

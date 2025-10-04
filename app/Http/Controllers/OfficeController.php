@@ -9,30 +9,44 @@ class OfficeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Office::query();
+        $query = Office::withCount('examinees');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
         if ($request->filled('status')) {
-            $status = $request->status === 'active' ? 1 : 0;
-            $query->where('is_active', $status);
+            if ($request->status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status === 'inactive') {
+                $query->where('is_active', false);
+            }
         }
 
         if ($request->filled('sort')) {
-            if ($request->sort === 'name') {
-                $query->orderBy('name');
-            } elseif ($request->sort === 'oldest') {
-                $query->oldest();
-            } else {
-                $query->latest();
+            switch ($request->sort) {
+                case 'oldest':
+                    $query->oldest();
+                    break;
+                case 'name':
+                    $query->orderBy('name');
+                    break;
+                case 'examinees_desc':
+                    $query->orderBy('examinees_count', 'desc');
+                    break;
+                case 'examinees_asc':
+                    $query->orderBy('examinees_count', 'asc');
+                    break;
+                default:
+                    $query->latest();
+                    break;
             }
         } else {
             $query->latest();
         }
 
-        $offices = $query->paginate(10);
+        $perPage = $request->get('per_page', 10);
+        $offices = $query->paginate($perPage)->appends($request->query());
 
         return view('offices.index', compact('offices'));
     }
@@ -46,12 +60,11 @@ class OfficeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:offices,name',
-            'is_active' => 'nullable|boolean',
         ]);
 
         Office::create([
             'name' => $request->name,
-            'is_active' => $request->has('is_active') ? $request->is_active : true,
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         return redirect()->route('offices.index')->with('success', 'تمت إضافة المكتب بنجاح');
@@ -66,12 +79,11 @@ class OfficeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:offices,name,' . $office->id,
-            'is_active' => 'nullable|boolean',
         ]);
 
         $office->update([
             'name' => $request->name,
-            'is_active' => $request->has('is_active') ? $request->is_active : true,
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         return redirect()->route('offices.index')->with('success', 'تم تحديث المكتب بنجاح');
@@ -85,8 +97,7 @@ class OfficeController extends Controller
 
     public function toggle(Office $office)
     {
-        $office->is_active = ! $office->is_active;
-        $office->save();
+        $office->update(['is_active' => !$office->is_active]);
         return redirect()->route('offices.index')->with('success', 'تم تغيير حالة المكتب بنجاح');
     }
 }

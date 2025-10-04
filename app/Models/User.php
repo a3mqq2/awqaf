@@ -107,4 +107,36 @@ class User extends Authenticatable
     }
 
 
+    public function clusters()
+    {
+        return $this->belongsToMany(Cluster::class, 'cluster_user');
+    }
+
+/**
+ * Get user's cluster IDs
+ */
+public function getClusterIdsAttribute(): array
+{
+    return $this->clusters()->pluck('clusters.id')->toArray();
+}
+
+    /**
+     * Check if user has access to all clusters (admin)
+     */
+    public function hasAccessToAllClusters(): bool
+    {
+        return $this->clusters()->count() === 0;
+    }
+
+    /**
+     * Check if user has access to specific cluster
+     */
+    public function hasAccessToCluster(int $clusterId): bool
+    {
+        if ($this->hasAccessToAllClusters()) {
+            return true;
+        }
+        
+        return in_array($clusterId, $this->cluster_ids);
+    }
 }

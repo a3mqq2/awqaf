@@ -152,14 +152,31 @@
                                 <p class="fw-semibold mb-0">{{ $examinee->passport_no ?? '-' }}</p>
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label text-muted small">
+                                <label class="form-label text-muted small mb-1">
                                     <i class="ti ti-phone me-1"></i>
                                     رقم الهاتف
                                 </label>
                                 <p class="fw-semibold mb-0">
                                     @if($examinee->phone)
                                         <a href="tel:{{ $examinee->phone }}" class="text-decoration-none">
+                                            <i class="ti ti-phone-call me-1"></i>
                                             {{ $examinee->phone }}
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label text-muted small mb-1">
+                                    <i class="ti ti-brand-whatsapp me-1"></i>
+                                    رقم الواتساب
+                                </label>
+                                <p class="fw-semibold mb-0">
+                                    @if($examinee->whatsapp)
+                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $examinee->whatsapp) }}" target="_blank" class="text-decoration-none text-success">
+                                            <i class="ti ti-brand-whatsapp me-1"></i>
+                                            {{ $examinee->whatsapp }}
                                         </a>
                                     @else
                                         -

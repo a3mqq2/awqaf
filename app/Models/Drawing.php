@@ -9,9 +9,10 @@ class Drawing extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'is_active',
-    ];
+    protected $fillable = ['name', 'is_active'];
 
+    public function examinees()
+    {
+        return $this->hasMany(Examinee::class, 'drawing_id');
+    }
 }

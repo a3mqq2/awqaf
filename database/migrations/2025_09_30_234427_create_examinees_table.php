@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('full_name')->nullable();
             $table->string('phone')->nullable();
+            $table->string('whatsapp')->nullable();
             $table->string('nationality')->nullable();
             $table->string('national_id')->nullable();
             $table->string('passport_no')->nullable();
