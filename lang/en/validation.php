@@ -191,6 +191,7 @@ return [
         'file' => 'الملف',
         'title' => 'العنوان',
         'content' => 'المحتوى',
+        "identity_number" => "رقم الهوية",
     ],
 
 ];
