@@ -11,9 +11,10 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormulas, WithHeadingRow
+class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormulas, WithHeadingRow, WithMultipleSheets
 {
     public function model(array $row)
     {
@@ -66,9 +67,6 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
         );
     }
 
-    /**
-     * تحديد رقم الصف الذي يبدأ منه القراءة (تخطي الصف الأول)
-     */
     public function headingRow(): int
     {
         return 1;
@@ -77,6 +75,14 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
     public function chunkSize(): int
     {
         return 200;
+    }
+
+    public function sheets(): array
+    {
+        return [
+            // رقم الورقة يبدأ من 0
+            1 => $this, // معناها استخدم الورقة الثانية
+        ];
     }
 
     protected function transformDate($value)
@@ -128,19 +134,12 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
         return trim((string) $value);
     }
 
-    /**
-     * تنظيف الهاتف/الواتساب (منع السالب وحفظه كنص)
-     */
     protected function normalizePhone($value)
     {
         if (empty($value)) {
             return null;
         }
-
-        // حول القيمة لنص
         $phone = (string) $this->cleanCell($value);
-
-        // امسح أي رمز سالب أو مسافات
         $phone = ltrim($phone, '-');
         $phone = preg_replace('/\s+/', '', $phone);
 
