@@ -10,12 +10,16 @@ use App\Models\Drawing;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormulas
+class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormulas, WithHeadingRow
 {
     public function model(array $row)
     {
+        if (empty(array_filter($row))) {
+            return null;
+        }
         if (isset($row[0]) && is_numeric($row[0])) {
             unset($row[0]);
         }
@@ -55,14 +59,19 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
                 'narration_id'      => $narrationId,
                 'drawing_id'        => $drawingId,
                 'status'            => 'pending',
-
-                // 🔥 إصلاح الهاتف والواتساب
                 'phone'             => $this->normalizePhone($row[16] ?? null),
                 'whatsapp'          => $this->normalizePhone($row[17] ?? null),
-
                 'created_at'        => $this->transformDateTime($row[3] ?? null),
             ]
         );
+    }
+
+    /**
+     * تحديد رقم الصف الذي يبدأ منه القراءة (تخطي الصف الأول)
+     */
+    public function headingRow(): int
+    {
+        return 1;
     }
 
     public function chunkSize(): int
@@ -120,7 +129,7 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
     }
 
     /**
-     * 🔥 تنظيف الهاتف/الواتساب (منع السالب وحفظه كنص)
+     * تنظيف الهاتف/الواتساب (منع السالب وحفظه كنص)
      */
     protected function normalizePhone($value)
     {
@@ -135,6 +144,6 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
         $phone = ltrim($phone, '-');
         $phone = preg_replace('/\s+/', '', $phone);
 
-        return $phone;
+        return $phone ?: null;
     }
 }
