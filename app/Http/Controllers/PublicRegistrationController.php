@@ -86,7 +86,7 @@ class PublicRegistrationController extends Controller
             'whatsapp' => 'nullable|string|max:20',
             'current_residence' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'birth_date' => 'required|date|before_or_equal:2008-12-31',
+            'birth_date' => 'required|date|before_or_equal:2009-12-31',
             'cluster_id' => 'required|exists:clusters,id',
             'office_name' => 'required|string|max:255',
             'narration_name' => 'required|string|max:255',

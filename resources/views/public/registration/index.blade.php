@@ -218,39 +218,39 @@
     
     <script>
         // Show elegant alert on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: '<strong style="color: #3c5e7f;">تنبيه هام</strong>',
-                icon: 'info',
-                html: `
-                    <div style="text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; line-height: 2;">
-                        <p style="font-size: 18px; color: #2c3e50; margin-bottom: 15px;">
-                            <strong>عزيزي الممتحن،</strong>
-                        </p>
-                        <p style="font-size: 16px; color: #34495e; margin-bottom: 20px;">
-                            يرجى مراجعة <span style="color: #3c5e7f; font-weight: bold;">رابط الاستعلام</span> 
-                            لمعرفة تأكيد قبول تسجيلك في امتحان الإجازة
-                        </p>
-                        <div style="background: #f0f4f8; padding: 15px; border-radius: 10px; border-right: 4px solid #3c5e7f;">
-                            <p style="font-size: 15px; color: #555; margin: 0;">
-                                 يمكنك التحقق من حالة تسجيلك من خلال الضغط على زر 
-                                <strong>"الاستعلام عن تسجيل سابق"</strong>
-                            </p>
-                        </div>
-                    </div>
-                `,
-                showCloseButton: true,
-                confirmButtonText: '<span style="font-family: Cairo;">فهمت، شكراً</span>',
-                confirmButtonColor: '#3c5e7f',
-                width: '600px',
-                padding: '2em',
-                backdrop: 'rgba(60, 94, 127, 0.4)',
-                customClass: {
-                    popup: 'custom-alert-popup',
-                    confirmButton: 'custom-confirm-button'
-                }
-            });
-        });
+        // window.addEventListener('DOMContentLoaded', function() {
+        //     Swal.fire({
+        //         title: '<strong style="color: #3c5e7f;">تنبيه هام</strong>',
+        //         icon: 'info',
+        //         html: `
+        //             <div style="text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; line-height: 2;">
+        //                 <p style="font-size: 18px; color: #2c3e50; margin-bottom: 15px;">
+        //                     <strong>عزيزي الممتحن،</strong>
+        //                 </p>
+        //                 <p style="font-size: 16px; color: #34495e; margin-bottom: 20px;">
+        //                     يرجى مراجعة <span style="color: #3c5e7f; font-weight: bold;">رابط الاستعلام</span> 
+        //                     لمعرفة تأكيد قبول تسجيلك في امتحان الإجازة
+        //                 </p>
+        //                 <div style="background: #f0f4f8; padding: 15px; border-radius: 10px; border-right: 4px solid #3c5e7f;">
+        //                     <p style="font-size: 15px; color: #555; margin: 0;">
+        //                          يمكنك التحقق من حالة تسجيلك من خلال الضغط على زر 
+        //                         <strong>"الاستعلام عن تسجيل سابق"</strong>
+        //                     </p>
+        //                 </div>
+        //             </div>
+        //         `,
+        //         showCloseButton: true,
+        //         confirmButtonText: '<span style="font-family: Cairo;">فهمت، شكراً</span>',
+        //         confirmButtonColor: '#3c5e7f',
+        //         width: '600px',
+        //         padding: '2em',
+        //         backdrop: 'rgba(60, 94, 127, 0.4)',
+        //         customClass: {
+        //             popup: 'custom-alert-popup',
+        //             confirmButton: 'custom-confirm-button'
+        //         }
+        //     });
+        // });
     </script>
     
     <style>

@@ -436,8 +436,7 @@
                             تاريخ الميلاد
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="date" name="birth_date" id="birth_date" class="form-control" max="2008-12-31" required>
-                        <small class="text-muted">الحد الأقصى: 2008</small>
+                        <input type="date" name="birth_date" id="birth_date" class="form-control" max="2009-12-31" required>
                     </div>
 
                     <div class="col-md-6">
@@ -768,12 +767,12 @@
                 // Validate birth date
                 if (input.id === 'birth_date') {
                     const birthDate = new Date(input.value);
-                    const maxDate = new Date('2008-12-31');
+                    const maxDate = new Date('2009-12-31');
                     if (birthDate > maxDate) {
                         Swal.fire({
                             icon: 'warning',
                             title: '<span style="font-family: Cairo; color: #998965;">تاريخ غير صحيح</span>',
-                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">تاريخ الميلاد يجب أن يكون <strong>2008 أو أقل</strong></p>',
+                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">تاريخ الميلاد يجب أن يكون <strong>2009 أو أقل</strong></p>',
                             confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
                             confirmButtonColor: '#998965',
                             backdrop: 'rgba(153, 137, 101, 0.4)',
