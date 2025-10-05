@@ -38,11 +38,12 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
         return Examinee::firstOrCreate(
             ['national_id' => $this->normalizeNationalId($row['الرقم الوطني'] ?? '-')],
             [
-                'first_name'        => $firstName,
-                'father_name'       => $fatherName,
-                'grandfather_name'  => $grandName,
-                'last_name'         => $lastName,
-                'full_name'         => trim("$firstName $fatherName $grandName $lastName"),
+                'first_name'        => $this->cleanCell($row['الاسم الأول'] ?? '-'),
+                'father_name'       => $this->cleanCell($row['اسم الأب'] ?? '-'),
+                'grandfather_name'  => $this->cleanCell($row['اسم الجد'] ?? '-'),
+                'last_name'         => $this->cleanCell($row['اللقب'] ?? '-'),
+                'full_name'         => trim(($row['الاسم الرباعي'] ?? '') ?: 
+                                            "{$row['الاسم الأول']} {$row['اسم الأب']} {$row['اسم الجد']} {$row['اللقب']}"),
                 'nationality'       => $this->cleanCell($row['الجنسية'] ?? '-'),
                 'passport_no'       => $this->cleanCell($row['رقم جواز السفر'] ?? '-'),
                 'current_residence' => $this->cleanCell($row['مكان الإقامة الحالي'] ?? '-'),
@@ -51,15 +52,22 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
                 'office_id'         => !empty($this->cleanCell($row['اسم مكتب الأوقاف التابع له'] ?? null))
                     ? Office::firstOrCreate(['name' => $this->cleanCell($row['اسم مكتب الأوقاف التابع له'])])->id
                     : null,
-                'cluster_id'        => null, // مش موجود في هذا الشيت
-                'narration_id'      => $narrationId,
-                'drawing_id'        => $drawingId,
+                'cluster_id'        => !empty($this->cleanCell($row['مكان الامتحان'] ?? null))
+                    ? Cluster::firstOrCreate(['name' => $this->cleanCell($row['مكان الامتحان'])])->id
+                    : null,
+                'narration_id'      => !empty($this->cleanCell($row['الرواية'] ?? $row['الرواية المشارك بها'] ?? null))
+                    ? Narration::firstOrCreate(['name' => $this->cleanCell($row['الرواية'] ?? $row['الرواية المشارك بها'])])->id
+                    : null,
+                'drawing_id'        => !empty($this->cleanCell($row['اختيار الرسم'] ?? $row['الرسم'] ?? null))
+                    ? Drawing::firstOrCreate(['name' => $this->cleanCell($row['اختيار الرسم'] ?? $row['الرسم'])])->id
+                    : null,
                 'status'            => 'pending',
-                'phone'             => $this->normalizePhone($row['رقم الهاتف للتواصل'] ?? null),
-                'whatsapp'          => $this->normalizePhone($row['رقم الوتس أب '] ?? null),
+                'phone'             => $this->normalizePhone($row['عمود1'] ?? null),
+                'whatsapp'          => $this->normalizePhone($row['عمود2'] ?? null),
                 'created_at'        => $this->transformDateTime($row['Submitted at'] ?? null),
             ]
         );
+        
     }
 
     public function headingRow(): int
