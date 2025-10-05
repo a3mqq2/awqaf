@@ -261,10 +261,10 @@
 
                     <!-- Grid المعلومات - 2 أعمدة -->
                     <div class="info-grid">
-                        <!-- الرقم الوطني/الجواز -->
+                        <!-- الرقم الوطني / او الاداري/الجواز -->
                         <div class="field-section">
                             <div class="field-label">
-                                {{ $examinee->national_id ? 'الرقم الوطني' : 'رقم الجواز' }}
+                                {{ $examinee->national_id ? 'الرقم الوطني / او الاداري' : 'رقم الجواز' }}
                             </div>
                             <div class="field-value">
                                 {{ $examinee->national_id ?? $examinee->passport_no ?? '-' }}

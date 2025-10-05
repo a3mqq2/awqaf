@@ -140,7 +140,7 @@
                             <div class="col-md-12">
                                 <label class="form-label text-muted small">
                                     <i class="ti ti-id-badge me-1"></i>
-                                    الرقم الوطني
+                                    الرقم الوطني / او الاداري
                                 </label>
                                 <p class="fw-semibold mb-0">{{ $examinee->national_id ?? '-' }}</p>
                             </div>

@@ -7,6 +7,11 @@
     <li class="breadcrumb-item active">الممتحنين</li>
 @endsection
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+@endpush
+
 @section('content')
 <div class="row mt-3">
     <div class="col-md-12">
@@ -18,32 +23,50 @@
                     <span class="badge bg-primary ms-2">{{ $examinees->total() }}</span>
                 </h5>
                 <div class="d-flex gap-2">
+                    @can('examinees.print-cards')
                     <button type="button" class="btn btn-warning" id="printSelectedCards" style="display: none;">
                         <i class="ti ti-id-badge me-1"></i>
                         طباعة البطاقات المحددة (<span id="selectedCount">0</span>)
                     </button>
+                    @endcan
                     
                     <button type="button" class="btn btn-outline-secondary" id="toggleFilters">
                         <i class="ti ti-adjustments me-1"></i>
                         <span id="filterToggleText">إظهار الفلتر</span>
                     </button>
+                    
+                    @can('examinees.print')
                     <a href="{{ route('examinees.print') }}?{{ http_build_query(request()->except('page')) }}" target="_blank" class="btn btn-outline-primary">
                         <i class="ti ti-printer me-1"></i>
                         طباعة
                     </a>
+                    @endcan
+                    
+                    @can('examinees.export')
+                    <a href="{{ route('examinees.export') }}?{{ http_build_query(request()->except('page')) }}" class="btn btn-outline-success">
+                        <i class="ti ti-file-export me-1"></i>
+                        تصدير Excel
+                    </a>
+                    @endcan
+                    
+                    @can('examinees.import')
                     <a href="{{ route('examinees.import.form') }}" class="btn btn-success">
                         <i class="ti ti-file-import me-1"></i>
                         استيراد من Excel
                     </a>
+                    @endcan
+                    
+                    @can('examinees.create')
                     <a href="{{ route('examinees.create') }}" class="btn btn-primary">
                         <i class="ti ti-plus me-1"></i>
                         إضافة ممتحن جديد
                     </a>
+                    @endcan
                 </div>
             </div>
 
             <!-- Advanced Filters Card -->
-            <div class="collapse {{ request()->hasAny(['name', 'national_id', 'phone', 'whatsapp', 'gender', 'status', 'nationality', 'office_id', 'cluster_id', 'narration_id', 'drawing_id', 'current_residence', 'birth_date_from', 'birth_date_to']) && request('status') != 'under_review' ? 'show' : '' }}" id="filtersCollapse">
+            <div class="collapse {{ request()->hasAny(['name', 'national_id', 'phone', 'whatsapp', 'passport_no', 'gender', 'status', 'nationality', 'office_id', 'cluster_id', 'narration_id', 'drawing_id', 'current_residence', 'birth_date_from', 'birth_date_to']) ? 'show' : '' }}" id="filtersCollapse">
                 <div class="card-body bg-light border-bottom">
                     <form method="GET" action="{{ route('examinees.index') }}" id="filterForm">
                         <div class="row g-3">
@@ -54,8 +77,8 @@
                                     الاسم الرباعي
                                 </label>
                                 <input type="text" name="name" class="form-control" 
-                                       placeholder="ابحث في جميع الأسماء..." 
-                                       value="{{ request('name') }}">
+                                    placeholder="ابحث في جميع الأسماء..." 
+                                    value="{{ request('name') }}">
                                 <small class="text-muted">الأول، الأب، الجد، أو اللقب</small>
                             </div>
 
@@ -63,33 +86,11 @@
                             <div class="col-md-3">
                                 <label class="form-label">
                                     <i class="ti ti-id-badge me-1"></i>
-                                    الرقم الوطني
+                                    الرقم الوطني/ او الاداري
                                 </label>
                                 <input type="text" name="national_id" class="form-control" 
-                                       placeholder="الرقم الوطني" 
-                                       value="{{ request('national_id') }}">
-                            </div>
-
-                            <!-- Phone -->
-                            <div class="col-md-3">
-                                <label class="form-label">
-                                    <i class="ti ti-phone me-1"></i>
-                                    رقم الهاتف
-                                </label>
-                                <input type="text" name="phone" class="form-control" 
-                                       placeholder="رقم الهاتف" 
-                                       value="{{ request('phone') }}">
-                            </div>
-
-                            <!-- WhatsApp -->
-                            <div class="col-md-3">
-                                <label class="form-label">
-                                    <i class="ti ti-brand-whatsapp me-1"></i>
-                                    رقم الواتساب
-                                </label>
-                                <input type="text" name="whatsapp" class="form-control" 
-                                       placeholder="رقم الواتساب" 
-                                       value="{{ request('whatsapp') }}">
+                                    placeholder="الرقم الوطني/ او الاداري" 
+                                    value="{{ request('national_id') }}">
                             </div>
 
                             <!-- Passport Number -->
@@ -99,8 +100,30 @@
                                     رقم الجواز
                                 </label>
                                 <input type="text" name="passport_no" class="form-control" 
-                                       placeholder="رقم الجواز" 
-                                       value="{{ request('passport_no') }}">
+                                    placeholder="رقم الجواز" 
+                                    value="{{ request('passport_no') }}">
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-3">
+                                <label class="form-label">
+                                    <i class="ti ti-phone me-1"></i>
+                                    رقم الهاتف
+                                </label>
+                                <input type="text" name="phone" class="form-control" 
+                                    placeholder="رقم الهاتف" 
+                                    value="{{ request('phone') }}">
+                            </div>
+
+                            <!-- WhatsApp -->
+                            <div class="col-md-3">
+                                <label class="form-label">
+                                    <i class="ti ti-brand-whatsapp me-1"></i>
+                                    رقم الواتساب
+                                </label>
+                                <input type="text" name="whatsapp" class="form-control" 
+                                    placeholder="رقم الواتساب" 
+                                    value="{{ request('whatsapp') }}">
                             </div>
 
                             <!-- Gender -->
@@ -138,68 +161,68 @@
                                     الجنسية
                                 </label>
                                 <input type="text" name="nationality" class="form-control" 
-                                       placeholder="الجنسية" 
-                                       value="{{ request('nationality') }}">
+                                    placeholder="الجنسية" 
+                                    value="{{ request('nationality') }}">
                             </div>
 
-                            <!-- Office -->
-                            <div class="col-md-3">
+                            <!-- Office - Multiple Selection with Select2 -->
+                            <div class="col-md-4">
                                 <label class="form-label">
                                     <i class="ti ti-building-store me-1"></i>
-                                    المكتب
+                                    المكاتب
                                 </label>
-                                <select name="office_id" class="form-select">
-                                    <option value="">كل المكاتب</option>
+                                <select name="office_id[]" class="form-select select2-multiple" multiple="multiple">
                                     @foreach($offices as $office)
-                                        <option value="{{ $office->id }}" {{ request('office_id') == $office->id ? 'selected' : '' }}>
+                                        <option value="{{ $office->id }}" 
+                                            {{ in_array($office->id, (array)request('office_id', [])) ? 'selected' : '' }}>
                                             {{ $office->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <!-- Cluster -->
-                            <div class="col-md-3">
+                            <!-- Cluster - Multiple Selection with Select2 -->
+                            <div class="col-md-4">
                                 <label class="form-label">
                                     <i class="ti ti-users-group me-1"></i>
-                                    التجمع
+                                    التجمعات
                                 </label>
-                                <select name="cluster_id" class="form-select">
-                                    <option value="">كل التجمعات</option>
+                                <select name="cluster_id[]" class="form-select select2-multiple" multiple="multiple">
                                     @foreach($clusters as $cluster)
-                                        <option value="{{ $cluster->id }}" {{ request('cluster_id') == $cluster->id ? 'selected' : '' }}>
+                                        <option value="{{ $cluster->id }}" 
+                                            {{ in_array($cluster->id, (array)request('cluster_id', [])) ? 'selected' : '' }}>
                                             {{ $cluster->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <!-- Narration -->
-                            <div class="col-md-3">
+                            <!-- Narration - Multiple Selection with Select2 -->
+                            <div class="col-md-4">
                                 <label class="form-label">
                                     <i class="ti ti-book me-1"></i>
-                                    الرواية
+                                    الروايات
                                 </label>
-                                <select name="narration_id" class="form-select">
-                                    <option value="">كل الروايات</option>
+                                <select name="narration_id[]" class="form-select select2-multiple" multiple="multiple">
                                     @foreach($narrations as $narration)
-                                        <option value="{{ $narration->id }}" {{ request('narration_id') == $narration->id ? 'selected' : '' }}>
+                                        <option value="{{ $narration->id }}" 
+                                            {{ in_array($narration->id, (array)request('narration_id', [])) ? 'selected' : '' }}>
                                             {{ $narration->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <!-- Drawing -->
-                            <div class="col-md-3">
+                            <!-- Drawing - Multiple Selection with Select2 -->
+                            <div class="col-md-4">
                                 <label class="form-label">
                                     <i class="ti ti-pencil me-1"></i>
-                                    الرسم
+                                    الرسوم
                                 </label>
-                                <select name="drawing_id" class="form-select">
-                                    <option value="">كل الرسوم</option>
+                                <select name="drawing_id[]" class="form-select select2-multiple" multiple="multiple">
                                     @foreach($drawings as $drawing)
-                                        <option value="{{ $drawing->id }}" {{ request('drawing_id') == $drawing->id ? 'selected' : '' }}>
+                                        <option value="{{ $drawing->id }}" 
+                                            {{ in_array($drawing->id, (array)request('drawing_id', [])) ? 'selected' : '' }}>
                                             {{ $drawing->name }}
                                         </option>
                                     @endforeach
@@ -207,34 +230,34 @@
                             </div>
 
                             <!-- Current Residence -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label">
                                     <i class="ti ti-map-pin me-1"></i>
                                     مكان الإقامة
                                 </label>
                                 <input type="text" name="current_residence" class="form-control" 
-                                       placeholder="أدخل مكان الإقامة" 
-                                       value="{{ request('current_residence') }}">
+                                    placeholder="أدخل مكان الإقامة" 
+                                    value="{{ request('current_residence') }}">
                             </div>
 
                             <!-- Birth Date From -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">
                                     <i class="ti ti-calendar me-1"></i>
                                     تاريخ الميلاد من
                                 </label>
                                 <input type="date" name="birth_date_from" class="form-control" 
-                                       value="{{ request('birth_date_from') }}">
+                                    value="{{ request('birth_date_from') }}">
                             </div>
 
                             <!-- Birth Date To -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">
                                     <i class="ti ti-calendar me-1"></i>
                                     تاريخ الميلاد إلى
                                 </label>
                                 <input type="date" name="birth_date_to" class="form-control" 
-                                       value="{{ request('birth_date_to') }}">
+                                    value="{{ request('birth_date_to') }}">
                             </div>
 
                             <!-- Sorting Options -->
@@ -247,9 +270,15 @@
                                     <option value="created_at" {{ request('sort_by', 'created_at') == 'created_at' ? 'selected' : '' }}>تاريخ الإضافة</option>
                                     <option value="first_name" {{ request('sort_by') == 'first_name' ? 'selected' : '' }}>الاسم الأول</option>
                                     <option value="last_name" {{ request('sort_by') == 'last_name' ? 'selected' : '' }}>اللقب</option>
-                                    <option value="national_id" {{ request('sort_by') == 'national_id' ? 'selected' : '' }}>الرقم الوطني</option>
+                                    <option value="full_name" {{ request('sort_by') == 'full_name' ? 'selected' : '' }}>الاسم الكامل</option>
+                                    <option value="national_id" {{ request('sort_by') == 'national_id' ? 'selected' : '' }}>الرقم الوطني/ او الاداري</option>
                                     <option value="birth_date" {{ request('sort_by') == 'birth_date' ? 'selected' : '' }}>تاريخ الميلاد</option>
+                                    <option value="gender" {{ request('sort_by') == 'gender' ? 'selected' : '' }}>الجنس</option>
                                     <option value="status" {{ request('sort_by') == 'status' ? 'selected' : '' }}>الحالة</option>
+                                    <option value="cluster_id" {{ request('sort_by') == 'cluster_id' ? 'selected' : '' }}>التجمع</option>
+                                    <option value="office_id" {{ request('sort_by') == 'office_id' ? 'selected' : '' }}>المكتب</option>
+                                    <option value="narration_id" {{ request('sort_by') == 'narration_id' ? 'selected' : '' }}>الرواية</option>
+                                    <option value="drawing_id" {{ request('sort_by') == 'drawing_id' ? 'selected' : '' }}>الرسم</option>
                                 </select>
                             </div>
 
@@ -302,25 +331,25 @@
                             <div class="row mt-3">
                                 <div class="col-12">
                                     <div class="alert alert-info mb-0">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="flex-grow-1">
                                                 <i class="ti ti-filter me-2"></i>
                                                 <strong>الفلاتر المفعلة:</strong>
-                                                <div class="d-inline-flex flex-wrap gap-2 mt-2">
+                                                <div class="d-flex flex-wrap gap-2 mt-2">
                                                     @if(request('name'))
                                                         <span class="badge bg-primary">الاسم: {{ request('name') }}</span>
                                                     @endif
                                                     @if(request('national_id'))
-                                                        <span class="badge bg-primary">الرقم الوطني: {{ request('national_id') }}</span>
+                                                        <span class="badge bg-primary">الرقم الوطني/ او الاداري: {{ request('national_id') }}</span>
+                                                    @endif
+                                                    @if(request('passport_no'))
+                                                        <span class="badge bg-primary">الجواز: {{ request('passport_no') }}</span>
                                                     @endif
                                                     @if(request('phone'))
                                                         <span class="badge bg-primary">الهاتف: {{ request('phone') }}</span>
                                                     @endif
                                                     @if(request('whatsapp'))
                                                         <span class="badge bg-primary">واتساب: {{ request('whatsapp') }}</span>
-                                                    @endif
-                                                    @if(request('passport_no'))
-                                                        <span class="badge bg-primary">الجواز: {{ request('passport_no') }}</span>
                                                     @endif
                                                     @if(request('gender'))
                                                         <span class="badge bg-primary">الجنس: {{ request('gender') == 'male' ? 'ذكر' : 'أنثى' }}</span>
@@ -338,16 +367,24 @@
                                                         <span class="badge bg-primary">الجنسية: {{ request('nationality') }}</span>
                                                     @endif
                                                     @if(request('office_id'))
-                                                        <span class="badge bg-primary">المكتب: {{ $offices->find(request('office_id'))->name ?? '' }}</span>
+                                                        @foreach((array)request('office_id') as $officeId)
+                                                            <span class="badge bg-info">المكتب: {{ $offices->find($officeId)->name ?? '' }}</span>
+                                                        @endforeach
                                                     @endif
                                                     @if(request('cluster_id'))
-                                                        <span class="badge bg-primary">التجمع: {{ $clusters->find(request('cluster_id'))->name ?? '' }}</span>
+                                                        @foreach((array)request('cluster_id') as $clusterId)
+                                                            <span class="badge bg-success">التجمع: {{ $clusters->find($clusterId)->name ?? '' }}</span>
+                                                        @endforeach
                                                     @endif
                                                     @if(request('narration_id'))
-                                                        <span class="badge bg-primary">الرواية: {{ $narrations->find(request('narration_id'))->name ?? '' }}</span>
+                                                        @foreach((array)request('narration_id') as $narrationId)
+                                                            <span class="badge bg-warning">الرواية: {{ $narrations->find($narrationId)->name ?? '' }}</span>
+                                                        @endforeach
                                                     @endif
                                                     @if(request('drawing_id'))
-                                                        <span class="badge bg-primary">الرسم: {{ $drawings->find(request('drawing_id'))->name ?? '' }}</span>
+                                                        @foreach((array)request('drawing_id') as $drawingId)
+                                                            <span class="badge bg-secondary">الرسم: {{ $drawings->find($drawingId)->name ?? '' }}</span>
+                                                        @endforeach
                                                     @endif
                                                     @if(request('current_residence'))
                                                         <span class="badge bg-primary">الإقامة: {{ request('current_residence') }}</span>
@@ -372,14 +409,16 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
+                                @can('examinees.print-cards')
                                 <th width="50">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="selectAll">
                                     </div>
                                 </th>
+                                @endcan
                                 <th width="50">#</th>
                                 <th>الاسم الرباعي</th>
-                                <th>الرقم الوطني</th>
+                                <th>الرقم الوطني/ او الاداري</th>
                                 <th>الهاتف / واتساب</th>
                                 <th>التجمع</th>
                                 <th>المكتب</th>
@@ -392,18 +431,15 @@
                         <tbody>
                             @forelse($examinees as $examinee)
                                 <tr>
+                                    @can('examinees.print-cards')
                                     <td>
                                         <div class="form-check">
                                             <input class="form-check-input examinee-checkbox" 
                                                    type="checkbox" 
-                                                   value="{{ $examinee->id }}"
-                                                   data-name="{{ $examinee->full_name }}"
-                                                   data-national-id="{{ $examinee->national_id ?? $examinee->passport_no }}"
-                                                   data-cluster="{{ $examinee->cluster->name ?? '-' }}"
-                                                   data-narration="{{ $examinee->narration->name ?? '-' }}"
-                                                   data-drawing="{{ $examinee->drawing->name ?? '-' }}">
+                                                   value="{{ $examinee->id }}">
                                         </div>
                                     </td>
+                                    @endcan
                                     <td>
                                         <span class="badge bg-light-secondary text-secondary">
                                             {{ $examinee->id }}
@@ -517,31 +553,39 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @can('examinees.view')
                                         <a href="{{ route('examinees.show', $examinee) }}" 
                                            class="btn btn-sm btn-outline-info" 
                                            data-bs-toggle="tooltip" 
                                            title="عرض التفاصيل">
                                             <i class="ti ti-eye"></i>
                                         </a>
+                                        @endcan
                                         
+                                        @can('examinees.edit')
                                         <a href="{{ route('examinees.edit', $examinee) }}" 
                                            class="btn btn-sm btn-outline-primary" 
                                            data-bs-toggle="tooltip" 
                                            title="تعديل">
                                             <i class="ti ti-edit"></i>
                                         </a>
+                                        @endcan
                                         
                                         @if($examinee->status == 'under_review')
+                                            @can('examinees.approve')
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-success" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#approveModal"
                                                     data-examinee-id="{{ $examinee->id }}"
+                                                    data-examinee-name
                                                     data-examinee-name="{{ $examinee->full_name }}"
                                                     title="قبول">
                                                 <i class="ti ti-check"></i>
                                             </button>
+                                            @endcan
                                             
+                                            @can('examinees.reject')
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-danger" 
                                                     data-bs-toggle="modal" 
@@ -551,8 +595,10 @@
                                                     title="رفض">
                                                 <i class="ti ti-x"></i>
                                             </button>
+                                            @endcan
                                         @endif
                                         
+                                        @can('examinees.delete')
                                         <button type="button" 
                                                 class="btn btn-sm btn-outline-danger" 
                                                 data-bs-toggle="modal" 
@@ -562,6 +608,7 @@
                                                 title="حذف">
                                             <i class="ti ti-trash"></i>
                                         </button>
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty
@@ -571,10 +618,12 @@
                                             <i class="ti ti-users-off display-1 text-muted mb-3"></i>
                                             <h5 class="text-muted">لا توجد بيانات</h5>
                                             <p class="text-muted">لم يتم العثور على ممتحنين</p>
+                                            @can('examinees.create')
                                             <a href="{{ route('examinees.create') }}" class="btn btn-primary">
                                                 <i class="ti ti-plus me-1"></i>
                                                 إضافة أول ممتحن
                                             </a>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
@@ -608,6 +657,7 @@
 </div>
 
 <!-- Approve Modal -->
+@can('examinees.approve')
 <div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -651,8 +701,10 @@
         </div>
     </div>
 </div>
+@endcan
 
 <!-- Reject Modal -->
+@can('examinees.reject')
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -677,15 +729,21 @@
                     
                     <div class="mb-3">
                         <label for="rejection_reason" class="form-label">
-                            سبب الرفض <span class="text-danger">*</span>
+                            سبب الرفض <span class="text-muted">(اختياري)</span>
                         </label>
                         <textarea name="rejection_reason" 
                                   id="rejection_reason" 
                                   class="form-control" 
                                   rows="4" 
-                                  required
-                                  placeholder="اكتب سبب رفض الممتحن..."></textarea>
-                        <small class="text-muted">سيتم إرسال سبب الرفض للممتحن</small>
+                                  placeholder="اكتب سبب رفض الممتحن (اختياري)..."></textarea>
+                        <small class="text-muted">يمكن إرسال سبب الرفض للممتحن إذا تم تعبئته</small>
+                    </div>
+                    
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="ti ti-info-circle me-2"></i>
+                        <div>
+                            سيتم تغيير حالة الممتحن إلى "مرفوض"
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 justify-content-center">
@@ -702,8 +760,10 @@
         </div>
     </div>
 </div>
+@endcan
 
 <!-- Delete Modal -->
+@can('examinees.delete')
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -747,11 +807,29 @@
         </div>
     </div>
 </div>
+@endcan
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2
+    $('.select2-multiple').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'اختر عنصر أو أكثر',
+        allowClear: true,
+        dir: 'rtl',
+        language: {
+            noResults: function() {
+                return "لا توجد نتائج";
+            },
+            searching: function() {
+                return "جاري البحث...";
+            }
+        }
+    });
+
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -886,29 +964,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const examineesData = [];
-            checkedCheckboxes.forEach(checkbox => {
-                examineesData.push({
-                    id: checkbox.value,
-                    name: checkbox.dataset.name,
-                    nationalId: checkbox.dataset.nationalId,
-                    cluster: checkbox.dataset.cluster,
-                    narration: checkbox.dataset.narration,
-                    drawing: checkbox.dataset.drawing
-                });
-            });
-
-            printCards(examineesData);
+            const ids = Array.from(checkedCheckboxes).map(cb => cb.value).join(',');
+            window.open('/examinees/print-cards?ids=' + ids, '_blank');
         });
-    }
-
-    function printCards(examineesData) {
-        const ids = examineesData.map(e => e.id).join(',');
-        window.open('/examinees/print-cards?ids=' + ids, '_blank');
     }
 
     // Initialize
     updateSelectedCount();
 });
 </script>
-@endpush
+@endpush    

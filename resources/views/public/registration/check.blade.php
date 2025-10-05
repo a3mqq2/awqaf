@@ -245,8 +245,8 @@
             libyanCard.addEventListener('click', function() {
                 foreignCard.classList.remove('active');
                 libyanCard.classList.add('active');
-                identityLabelText.textContent = 'الرقم الوطني';
-                identityInput.placeholder = 'أدخل الرقم الوطني (12 رقم)';
+                identityLabelText.textContent = 'الرقم الوطني / او الاداري';
+                identityInput.placeholder = ' أدخل الرقم الوطني / او الاداري';
                 identityNumberField.style.display = 'block';
             });
             

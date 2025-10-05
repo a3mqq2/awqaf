@@ -115,7 +115,7 @@
                                 <div class="col-md-4">
                                     <label class="form-label">
                                         <i class="ti ti-id-badge me-1"></i>
-                                        الرقم الوطني
+                                        الرقم الوطني / او الاداري
                                     </label>
                                     <input type="text" name="national_id" class="form-control @error('national_id') is-invalid @enderror" value="{{ old('national_id', $examinee->national_id) }}">
                                     @error('national_id')

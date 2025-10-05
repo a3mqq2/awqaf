@@ -7,25 +7,70 @@
   </a>
 </li>
 
-@can('examinees')
+@can('examinees.view')
 
-<li class="pc-item">
-  <a href="{{ route('examinees.index', ['status' => 'under_review']) }}" class="pc-link">
-    <span class="pc-micon">
-      <i class="ti ti-users"></i>
-    </span>
-    <span class="pc-mtext">طلبات الموقع الالكتروني</span>
-  </a>
-</li>
-
-<li class="pc-item">
-  <a href="{{ route('examinees.index') }}" class="pc-link">
+@can('examinees.view')
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link">
     <span class="pc-micon">
       <i class="ti ti-users"></i>
     </span>
     <span class="pc-mtext">الممتحنين</span>
+    <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
   </a>
+  <ul class="pc-submenu">
+
+    
+    <li class="pc-item">
+      <a class="pc-link" href="{{ route('examinees.index', ['status' => 'under_review']) }}">
+        <i class="ti ti-hourglass me-2"></i>
+        طلبات الموقع 
+        @php
+          $underReviewCount = \App\Models\Examinee::where('status', 'under_review')->count();
+        @endphp
+        @if($underReviewCount > 0)
+          <span class="badge bg-info ms-2">{{ $underReviewCount }}</span>
+        @endif
+      </a>
+    </li>
+    
+    <li class="pc-item">
+      <a class="pc-link" href="{{ route('examinees.index', ['status' => 'confirmed']) }}">
+        <i class="ti ti-circle-check me-2"></i>
+        مؤكد
+      </a>
+    </li>
+    
+    <li class="pc-item">
+      <a class="pc-link" href="{{ route('examinees.index', ['status' => 'pending']) }}">
+        <i class="ti ti-clock me-2"></i>
+        قيد التأكيد
+      </a>
+    </li>
+    
+    <li class="pc-item">
+      <a class="pc-link" href="{{ route('examinees.index', ['status' => 'withdrawn']) }}">
+        <i class="ti ti-circle-x me-2"></i>
+        منسحب
+      </a>
+    </li>
+    
+    <li class="pc-item">
+      <a class="pc-link" href="{{ route('examinees.index', ['status' => 'rejected']) }}">
+        <i class="ti ti-ban me-2"></i>
+        مرفوض
+      </a>
+    </li>
+    <li class="pc-item">
+      <a class="pc-link" href="{{ route('examinees.index') }}">
+        <i class="ti ti-list me-2"></i>
+        جميع الممتحنين
+      </a>
+    </li>
+  </ul>
 </li>
+@endcan
+
 @endcan
 
 @can('clusters')

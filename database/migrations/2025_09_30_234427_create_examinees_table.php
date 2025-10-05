@@ -21,13 +21,14 @@ return new class extends Migration
             $table->string('nationality')->nullable();
             $table->string('national_id')->nullable();
             $table->string('passport_no')->nullable();
+            $table->string('rejection_reason')->nullable();
             $table->string('current_residence')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->date('birth_date')->nullable();
 
             $table->foreignId('office_id')->constrained('offices')->cascadeOnDelete();
             $table->foreignId('cluster_id')->constrained('clusters')->cascadeOnDelete();
-            $table->enum('status', ['confirmed','pending','withdrawn','under_review'])->default('pending');
+            $table->enum('status', ['confirmed','pending','withdrawn','under_review','rejected'])->default('pending');
             $table->boolean('has_previous_exam')->default(false);
             $table->text('notes')->nullable();
 

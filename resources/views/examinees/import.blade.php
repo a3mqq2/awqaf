@@ -3,7 +3,7 @@
 @section('title','استيراد الممتحنين')
 
 @section('content')
-<div class="container">
+<div class="container mt-3">
     <div class="card shadow-sm">
         <div class="card-body">
             <form action="{{ route('examinees.import') }}" method="POST" enctype="multipart/form-data">

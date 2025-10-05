@@ -28,6 +28,7 @@ class Examinee extends Model
         'drawing_id',
         'status',
         'notes',
+        'rejection_reason',
     ];
 
     protected $casts = [

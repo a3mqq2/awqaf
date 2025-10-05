@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'اضافة مستخدم جديد')
+@section('title', 'إضافة مستخدم جديد')
 
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -52,25 +52,46 @@
                      <div class="col-md-12 mt-4">
                         <label>صلاحيات الوصول</label>
                         <div class="card">
-                           <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                           <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                               @if($permissions->count() > 0)
-                                 <div class="row">
-                                    @foreach ($permissions as $permission)
-                                       <div class="col-md-3 mt-2">
-                                          <div class="form-check form-switch">
-                                             <input class="form-check-input permission-checkbox" 
-                                                    type="checkbox" 
-                                                    name="permissions[]" 
-                                                    value="{{ $permission->name }}" 
-                                                    id="perm_{{ $permission->id }}"
-                                                    {{ in_array($permission->name, old('permissions', [])) ? 'checked' : '' }}>
-                                             <label class="form-check-label" for="perm_{{ $permission->id }}">
-                                                {{ $permission->name_ar ?? $permission->name }}
-                                             </label>
-                                          </div>
+                                 @php
+                                    $groupedPermissions = $permissions->groupBy(function($permission) {
+                                        $parts = explode('.', $permission->name);
+                                        return $parts[0] ?? 'other';
+                                    });
+
+                                    $moduleNames = [
+                                        'examinees' => 'شؤون الممتحنين',
+                                        'users' => 'المستخدمين',
+                                        'clusters' => 'التجمعات',
+                                        'offices' => 'المكاتب',
+                                        'narrations' => 'الروايات',
+                                        'drawings' => 'رسوم المصاحف',
+                                    ];
+                                 @endphp
+
+                                 @foreach($groupedPermissions as $module => $modulePermissions)
+                                    <div class="mb-3 pb-3 border-bottom">
+                                       <h6 class="text-primary mb-3">{{ $moduleNames[$module] ?? $module }}</h6>
+                                       <div class="row">
+                                          @foreach($modulePermissions as $permission)
+                                             <div class="col-md-3 mt-2">
+                                                <div class="form-check form-switch">
+                                                   <input class="form-check-input permission-checkbox" 
+                                                          type="checkbox" 
+                                                          name="permissions[]" 
+                                                          value="{{ $permission->name }}" 
+                                                          id="perm_{{ $permission->id }}"
+                                                          {{ in_array($permission->name, old('permissions', [])) ? 'checked' : '' }}>
+                                                   <label class="form-check-label" for="perm_{{ $permission->id }}">
+                                                      {{ $permission->name_ar ?? $permission->name }}
+                                                   </label>
+                                                </div>
+                                             </div>
+                                          @endforeach
                                        </div>
-                                    @endforeach
-                                 </div>
+                                    </div>
+                                 @endforeach
                               @else
                                  <p class="text-muted text-center">لا توجد صلاحيات متاحة</p>
                               @endif

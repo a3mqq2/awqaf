@@ -20,12 +20,12 @@ class ExamineeController extends Controller
         $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
         
         $query = Examinee::with(['office', 'cluster', 'narration', 'drawing']);
-
-        // Apply cluster filter based on user
+    
+        // Apply cluster filter based on user permissions
         if (!empty($userClusterIds)) {
             $query->whereIn('cluster_id', $userClusterIds);
         }
-
+    
         // Search by name (all name fields)
         if ($request->filled('name')) {
             $query->where(function($q) use ($request) {
@@ -37,99 +37,113 @@ class ExamineeController extends Controller
                   ->orWhere('full_name', 'like', '%'.$searchTerm.'%');
             });
         }
-
+    
         // Filter by national ID
         if ($request->filled('national_id')) {
             $query->where('national_id', 'like', '%'.$request->national_id.'%');
         }
-
+    
         // Filter by passport number
         if ($request->filled('passport_no')) {
             $query->where('passport_no', 'like', '%'.$request->passport_no.'%');
         }
-
+    
         // Filter by phone
         if ($request->filled('phone')) {
             $query->where('phone', 'like', '%'.$request->phone.'%');
         }
-
+    
         // Filter by WhatsApp
         if ($request->filled('whatsapp')) {
             $query->where('whatsapp', 'like', '%'.$request->whatsapp.'%');
         }
-
+    
         // Filter by gender
         if ($request->filled('gender')) {
             $query->where('gender', $request->gender);
         }
-
+    
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
+    
         // Filter by nationality
         if ($request->filled('nationality')) {
             $query->where('nationality', 'like', '%'.$request->nationality.'%');
         }
-
-        // Filter by office
+    
+        // Filter by office (multiple selection)
         if ($request->filled('office_id')) {
-            $query->where('office_id', $request->office_id);
+            $query->whereIn('office_id', (array)$request->office_id);
         }
-
-        // Filter by cluster
+    
+        // Filter by cluster (multiple selection with user permission check)
         if ($request->filled('cluster_id')) {
-            $query->where('cluster_id', $request->cluster_id);
+            $clusterIds = (array)$request->cluster_id;
+            
+            // If user has limited cluster access, intersect with their allowed clusters
+            if (!empty($userClusterIds)) {
+                $clusterIds = array_intersect($clusterIds, $userClusterIds);
+            }
+            
+            if (!empty($clusterIds)) {
+                $query->whereIn('cluster_id', $clusterIds);
+            }
         }
-
-        // Filter by narration
+    
+        // Filter by narration (multiple selection)
         if ($request->filled('narration_id')) {
-            $query->where('narration_id', $request->narration_id);
+            $query->whereIn('narration_id', (array)$request->narration_id);
         }
-
-        // Filter by drawing
+    
+        // Filter by drawing (multiple selection)
         if ($request->filled('drawing_id')) {
-            $query->where('drawing_id', $request->drawing_id);
+            $query->whereIn('drawing_id', (array)$request->drawing_id);
         }
-
+    
         // Filter by current residence
         if ($request->filled('current_residence')) {
             $query->where('current_residence', 'like', '%'.$request->current_residence.'%');
         }
-
+    
         // Filter by birth date range
         if ($request->filled('birth_date_from')) {
             $query->whereDate('birth_date', '>=', $request->birth_date_from);
         }
-
+    
         if ($request->filled('birth_date_to')) {
             $query->whereDate('birth_date', '<=', $request->birth_date_to);
         }
-
+    
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortDirection = $request->get('sort_direction', 'desc');
         
         // Validate sort fields
-        $allowedSortFields = ['created_at', 'first_name', 'last_name', 'national_id', 'birth_date', 'status'];
+        $allowedSortFields = [
+            'created_at', 'first_name', 'last_name', 'full_name', 'national_id', 
+            'birth_date', 'status', 'gender', 'cluster_id', 'office_id', 
+            'narration_id', 'drawing_id'
+        ];
+        
         if (!in_array($sortBy, $allowedSortFields)) {
             $sortBy = 'created_at';
         }
-
+    
         // Validate sort direction
         if (!in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'desc';
         }
-
+    
         $query->orderBy($sortBy, $sortDirection);
-
+    
         // Pagination
         $perPage = $request->get('per_page', 15);
         
         if ($perPage === 'all') {
             $examinees = $query->get();
-            // Create a custom pagination-like object for consistency in the view
+            // Create a custom pagination-like object for consistency
             $examinees = new \Illuminate\Pagination\LengthAwarePaginator(
                 $examinees,
                 $examinees->count(),
@@ -140,25 +154,25 @@ class ExamineeController extends Controller
         } else {
             // Validate per_page value
             $perPage = in_array($perPage, [15, 25, 50, 100]) ? $perPage : 15;
-            $examinees = $query->paginate($perPage);
+            $examinees = $query->paginate($perPage)->appends($request->query());
         }
         
-        // Load data for filters - فقط الـ clusters الخاصة بالمستخدم
+        // Load data for filters - only user's allowed clusters
         $offices = Office::where('is_active', true)->get();
         
-        // إظهار فقط الـ clusters المخصصة للمستخدم
+        // Show only clusters assigned to the user
         if (!empty($userClusterIds)) {
             $clusters = Cluster::where('is_active', true)
                 ->whereIn('id', $userClusterIds)
                 ->get();
         } else {
-            // إذا لم يكن لديه clusters محددة، أظهر الكل (Admin)
+            // If no specific clusters assigned, show all (Admin)
             $clusters = Cluster::where('is_active', true)->get();
         }
         
         $narrations = Narration::where('is_active', true)->get();
         $drawings = Drawing::where('is_active', true)->get();
-
+    
         return view('examinees.index', compact('examinees', 'offices', 'clusters', 'narrations', 'drawings'));
     }
 
@@ -289,7 +303,6 @@ class ExamineeController extends Controller
         $user = auth()->user();
         $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
         
-        // التحقق من صلاحية تعديل الممتحن
         if (!empty($userClusterIds) && !in_array($examinee->cluster_id, $userClusterIds)) {
             abort(403, 'ليس لديك صلاحية لتعديل هذا الممتحن');
         }
@@ -301,7 +314,7 @@ class ExamineeController extends Controller
             'last_name' => 'nullable|string|max:255',
             'nationality' => 'nullable|string|max:255',
             'national_id' => 'nullable|string|max:50|unique:examinees,national_id,'.$examinee->id,
-            'passport_no' => 'nullable|string|max:50|unique:examinees,passport_no,'.$examinee->id,
+            'passport_no' => 'nullable|string|max:50',
             'phone' => 'nullable|string|max:20',
             'whatsapp' => 'nullable|string|max:20',
             'current_residence' => 'nullable|string|max:255',
@@ -374,12 +387,12 @@ class ExamineeController extends Controller
         $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
         
         $query = Examinee::with(['office', 'cluster', 'narration', 'drawing']);
-
+    
         // Apply cluster filter based on user
         if (!empty($userClusterIds)) {
             $query->whereIn('cluster_id', $userClusterIds);
         }
-
+    
         // Apply same filters as index
         if ($request->filled('name')) {
             $query->where(function($q) use ($request) {
@@ -391,80 +404,92 @@ class ExamineeController extends Controller
                   ->orWhere('full_name', 'like', '%'.$searchTerm.'%');
             });
         }
-
+    
         if ($request->filled('national_id')) {
             $query->where('national_id', 'like', '%'.$request->national_id.'%');
         }
-
+    
         if ($request->filled('passport_no')) {
             $query->where('passport_no', 'like', '%'.$request->passport_no.'%');
         }
-
+    
         if ($request->filled('phone')) {
             $query->where('phone', 'like', '%'.$request->phone.'%');
         }
-
+    
         if ($request->filled('whatsapp')) {
             $query->where('whatsapp', 'like', '%'.$request->whatsapp.'%');
         }
-
+    
         if ($request->filled('gender')) {
             $query->where('gender', $request->gender);
         }
-
+    
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
+    
         if ($request->filled('nationality')) {
             $query->where('nationality', 'like', '%'.$request->nationality.'%');
         }
-
+    
+        // Multiple filters
         if ($request->filled('office_id')) {
-            $query->where('office_id', $request->office_id);
+            $query->whereIn('office_id', (array)$request->office_id);
         }
-
+    
         if ($request->filled('cluster_id')) {
-            $query->where('cluster_id', $request->cluster_id);
+            $clusterIds = (array)$request->cluster_id;
+            if (!empty($userClusterIds)) {
+                $clusterIds = array_intersect($clusterIds, $userClusterIds);
+            }
+            if (!empty($clusterIds)) {
+                $query->whereIn('cluster_id', $clusterIds);
+            }
         }
-
+    
         if ($request->filled('narration_id')) {
-            $query->where('narration_id', $request->narration_id);
+            $query->whereIn('narration_id', (array)$request->narration_id);
         }
-
+    
         if ($request->filled('drawing_id')) {
-            $query->where('drawing_id', $request->drawing_id);
+            $query->whereIn('drawing_id', (array)$request->drawing_id);
         }
-
+    
         if ($request->filled('current_residence')) {
             $query->where('current_residence', 'like', '%'.$request->current_residence.'%');
         }
-
+    
         if ($request->filled('birth_date_from')) {
             $query->whereDate('birth_date', '>=', $request->birth_date_from);
         }
-
+    
         if ($request->filled('birth_date_to')) {
             $query->whereDate('birth_date', '<=', $request->birth_date_to);
         }
-
+    
         // Apply sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortDirection = $request->get('sort_direction', 'desc');
         
-        $allowedSortFields = ['created_at', 'first_name', 'last_name', 'national_id', 'birth_date', 'status'];
+        $allowedSortFields = [
+            'created_at', 'first_name', 'last_name', 'full_name', 'national_id', 
+            'birth_date', 'status', 'gender', 'cluster_id', 'office_id', 
+            'narration_id', 'drawing_id'
+        ];
+        
         if (!in_array($sortBy, $allowedSortFields)) {
             $sortBy = 'created_at';
         }
-
+    
         if (!in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'desc';
         }
-
+    
         $query->orderBy($sortBy, $sortDirection);
-
+    
         $examinees = $query->get();
-
+    
         return view('examinees.print', compact('examinees'));
     }
 
@@ -516,15 +541,23 @@ class ExamineeController extends Controller
      */
     public function reject(Request $request, Examinee $examinee)
     {
+        $user = auth()->user();
+        $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
+        
+        // Check permission
+        if (!empty($userClusterIds) && !in_array($examinee->cluster_id, $userClusterIds)) {
+            abort(403, 'ليس لديك صلاحية لرفض هذا الممتحن');
+        }
+        
         $request->validate([
-            'rejection_reason' => 'required|string|max:1000',
+            'rejection_reason' => 'nullable|string|max:1000',
         ]);
-
+    
         $examinee->update([
-            'status' => 'withdrawn',
+            'status' => 'rejected',
             'rejection_reason' => $request->rejection_reason
         ]);
-
+    
         return redirect()->route('examinees.index')
             ->with('success', 'تم رفض الممتحن بنجاح');
     }

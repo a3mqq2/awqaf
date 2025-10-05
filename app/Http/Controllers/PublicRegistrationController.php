@@ -86,21 +86,49 @@ class PublicRegistrationController extends Controller
             'whatsapp' => 'nullable|string|max:20',
             'current_residence' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'birth_date' => 'required|date',
-            'office_id' => 'required|exists:offices,id',
+            'birth_date' => 'required|date|before_or_equal:2008-12-31',
             'cluster_id' => 'required|exists:clusters,id',
-            'narration_id' => 'required|exists:narrations,id',
-            'drawing_id' => 'required|exists:drawings,id',
+            'office_name' => 'required|string|max:255',
+            'narration_name' => 'required|string|max:255',
+            'drawing_name' => 'required|string|max:255',
         ];
-
+    
         if ($request->identity_type === 'national_id') {
-            $rules['national_id'] = 'required|string|max:50|unique:examinees,national_id';
+            $rules['national_id'] = 'required|string|size:12';
         } else {
-            $rules['passport_no'] = 'required|string|max:50|unique:examinees,passport_no';
+            $rules['passport_no'] = 'required|string|max:50';
         }
-
+    
         $data = $request->validate($rules);
-        $data['phone'] = '218' . $data['phone'];
+        
+        // Prepare phone number with country code
+        $phoneWithCode = '218' . $data['phone'];
+        
+        // Check if user is already registered
+        $existingExaminee = null;
+        
+        if ($request->identity_type === 'national_id') {
+            $existingExaminee = Examinee::where(function($query) use ($data, $phoneWithCode) {
+                $query->where('national_id', $data['national_id']);
+            })->first();
+        } else {
+            $existingExaminee = Examinee::where(function($query) use ($data, $phoneWithCode) {
+                $query->where('passport_no', $data['passport_no']);
+            })->first();
+        }
+        
+        if ($existingExaminee) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'أنت مسجل مسبقاً في امتحان الإجازة. يمكنك مراجعة تسجيلك من خلال صفحة الاستعلام.');
+        }
+        
+        // Add +218 to phone numbers
+        $data['phone'] = $phoneWithCode;
+        if (!empty($data['whatsapp'])) {
+            $data['whatsapp'] = '218' . $data['whatsapp'];
+        }
         
         // Generate full_name
         $data['full_name'] = trim(
@@ -109,18 +137,41 @@ class PublicRegistrationController extends Controller
             ($data['grandfather_name'] ?? '') . ' ' . 
             ($data['last_name'] ?? '')
         );
-
-        // Set status as confirmed
+    
+        // Handle Office with firstOrCreate
+        $office = Office::firstOrCreate(
+            ['name' => $data['office_name']],
+            ['name' => $data['office_name']]
+        );
+        $data['office_id'] = $office->id;
+        unset($data['office_name']);
+    
+        // Handle Narration with firstOrCreate
+        $narration = Narration::firstOrCreate(
+            ['name' => $data['narration_name']],
+            ['name' => $data['narration_name']]
+        );
+        $data['narration_id'] = $narration->id;
+        unset($data['narration_name']);
+    
+        // Handle Drawing with firstOrCreate
+        $drawing = Drawing::firstOrCreate(
+            ['name' => $data['drawing_name']],
+            ['name' => $data['drawing_name']]
+        );
+        $data['drawing_id'] = $drawing->id;
+        unset($data['drawing_name']);
+    
+        // Set status as under review
         $data['status'] = 'under_review';
-
+    
         // Remove identity_type from data
         unset($data['identity_type']);
-
+    
         $examinee = Examinee::create($data);
-
+    
         return redirect()->route('public.registration.success', $examinee->id);
     }
-
     /**
      * Show success page
      */
@@ -147,10 +198,6 @@ class PublicRegistrationController extends Controller
      */
     public function withdraw(Request $request, Examinee $examinee)
     {
-        $request->validate([
-            'confirmation' => 'required|string|in:انا اوكد الانسحاب',
-        ]);
-
         $examinee->update(['status' => 'withdrawn']);
 
         return redirect()->route('public.registration.index')

@@ -192,7 +192,7 @@
             <div class="filter-item"><strong>الاسم:</strong> {{ request('name') }}</div>
         @endif
         @if(request('national_id'))
-            <div class="filter-item"><strong>الرقم الوطني:</strong> {{ request('national_id') }}</div>
+            <div class="filter-item"><strong>الرقم الوطني/ او الاداري:</strong> {{ request('national_id') }}</div>
         @endif
         @if(request('passport_no'))
             <div class="filter-item"><strong>رقم الجواز:</strong> {{ request('passport_no') }}</div>
@@ -224,7 +224,7 @@
             <tr>
                 <th width="30">#</th>
                 <th>الاسم الكامل</th>
-                <th>الرقم الوطني</th>
+                <th>الرقم الوطني/ او الاداري</th>
                 <th>رقم الجواز</th>
                 <th>الهاتف</th>
                 <th>الجنسية</th>

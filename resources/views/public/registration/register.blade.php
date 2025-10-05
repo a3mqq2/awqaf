@@ -7,6 +7,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         :root {
@@ -237,6 +238,67 @@
             color: white;
         }
         
+        .review-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .review-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .review-item:last-child {
+            border-bottom: none;
+        }
+        
+        .review-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        
+        .review-value {
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .cairo-font {
+            font-family: 'Cairo', sans-serif !important;
+        }
+        
+        .swal2-popup {
+            border-radius: 20px !important;
+        }
+        
+        .swal2-title {
+            font-size: 24px !important;
+            padding: 20px !important;
+        }
+        
+        .swal2-html-container {
+            margin: 20px 0 !important;
+        }
+        
+        .swal2-confirm {
+            font-size: 16px !important;
+            padding: 12px 40px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+        }
+        
         @media (max-width: 768px) {
             .identity-cards {
                 grid-template-columns: 1fr;
@@ -278,6 +340,10 @@
                 <div class="step-circle">4</div>
                 <div class="step-label">بيانات الامتحان</div>
             </div>
+            <div class="step-item" data-step="5">
+                <div class="step-circle">5</div>
+                <div class="step-label">المراجعة</div>
+            </div>
         </div>
 
         <form action="{{ route('public.registration.register') }}" method="POST" id="registrationForm">
@@ -292,7 +358,7 @@
                         <input type="radio" name="identity_type" value="national_id" required>
                         <div class="identity-icon">🇱🇾</div>
                         <div class="identity-label">ليبي الجنسية</div>
-                        <small class="text-muted">الرقم الوطني</small>
+                        <small class="text-muted">الرقم الوطني / او الاداري</small>
                     </label>
                     
                     <label class="identity-card" id="foreignCard">
@@ -307,7 +373,7 @@
                     <a href="{{ route('public.registration.index') }}" class="btn btn-outline-secondary btn-navigation">
                         رجوع
                     </a>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="nextStep(2)" id="step1Next" disabled>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(1, 2)" id="step1Next" disabled>
                         التالي
                     </button>
                 </div>
@@ -323,51 +389,36 @@
                             الاسم الأول
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="first_name" class="form-control @error('first_name') is-invalid @enderror" value="{{ old('first_name') }}" required>
-                        @error('first_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="first_name" id="first_name" class="form-control" required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">
                             اسم الأب
                         </label>
-                        <input type="text" name="father_name" class="form-control @error('father_name') is-invalid @enderror" value="{{ old('father_name') }}">
-                        @error('father_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="father_name" id="father_name" class="form-control">
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">
                             اسم الجد
                         </label>
-                        <input type="text" name="grandfather_name" class="form-control @error('grandfather_name') is-invalid @enderror" value="{{ old('grandfather_name') }}">
-                        @error('grandfather_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="grandfather_name" id="grandfather_name" class="form-control">
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">
                             اللقب
                         </label>
-                        <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror" value="{{ old('last_name') }}">
-                        @error('last_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="last_name" id="last_name" class="form-control">
                     </div>
 
                     <div class="col-md-6" id="nationalIdField" style="display: none;">
                         <label class="form-label">
-                            الرقم الوطني
+                            الرقم الوطني / او الاداري
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="national_id" class="form-control @error('national_id') is-invalid @enderror" value="{{ old('national_id') }}" placeholder="12 رقم">
-                        @error('national_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="12 رقم" maxlength="12">
                     </div>
 
                     <div class="col-md-6" id="passportField" style="display: none;">
@@ -375,32 +426,18 @@
                             رقم الهوية
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="passport_no" class="form-control @error('passport_no') is-invalid @enderror" value="{{ old('passport_no') }}">
-                        @error('passport_no')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="passport_no" id="passport_no" class="form-control">
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            الجنسية
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="nationality" class="form-control @error('nationality') is-invalid @enderror" value="{{ old('nationality') }}" required>
-                        @error('nationality')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <input type="hidden" name="nationality" id="nationality" value="ليبية">
 
                     <div class="col-md-6">
                         <label class="form-label">
                             تاريخ الميلاد
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="date" name="birth_date" class="form-control @error('birth_date') is-invalid @enderror" value="{{ old('birth_date') }}" required>
-                        @error('birth_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="date" name="birth_date" id="birth_date" class="form-control" max="2008-12-31" required>
+                        <small class="text-muted">الحد الأقصى: 2008</small>
                     </div>
 
                     <div class="col-md-6">
@@ -408,14 +445,11 @@
                             الجنس
                             <span class="text-danger">*</span>
                         </label>
-                        <select name="gender" class="form-select @error('gender') is-invalid @enderror" required>
+                        <select name="gender" id="gender" class="form-select" required>
                             <option value="">اختر...</option>
-                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>ذكر</option>
-                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>أنثى</option>
+                            <option value="male">ذكر</option>
+                            <option value="female">أنثى</option>
                         </select>
-                        @error('gender')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
 
@@ -423,7 +457,7 @@
                     <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(1)">
                         السابق
                     </button>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="nextStep(3)">
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(2, 3)">
                         التالي
                     </button>
                 </div>
@@ -441,11 +475,8 @@
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">+218</span>
-                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="912345678" value="{{ old('phone') }}" required>
+                            <input type="text" name="phone" id="phone" class="form-control" placeholder="912345678" maxlength="9" required>
                         </div>
-                        @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="col-md-6">
@@ -454,11 +485,8 @@
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">+218</span>
-                            <input type="text" name="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" placeholder="912345678" value="{{ old('whatsapp') }}">
+                            <input type="text" name="whatsapp" id="whatsapp" class="form-control" placeholder="912345678" maxlength="9">
                         </div>
-                        @error('whatsapp')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="col-md-12">
@@ -466,10 +494,7 @@
                             مكان الإقامة الحالي
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="current_residence" class="form-control @error('current_residence') is-invalid @enderror" placeholder="المدينة والمنطقة" value="{{ old('current_residence') }}" required>
-                        @error('current_residence')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="current_residence" id="current_residence" class="form-control" placeholder="المدينة والمنطقة" required>
                     </div>
                 </div>
 
@@ -477,7 +502,7 @@
                     <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(2)">
                         السابق
                     </button>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="nextStep(4)">
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(3, 4)">
                         التالي
                     </button>
                 </div>
@@ -493,17 +518,7 @@
                             المكتب
                             <span class="text-danger">*</span>
                         </label>
-                        <select name="office_id" class="form-select @error('office_id') is-invalid @enderror" required>
-                            <option value="">اختر المكتب...</option>
-                            @foreach($offices as $office)
-                                <option value="{{ $office->id }}" {{ old('office_id') == $office->id ? 'selected' : '' }}>
-                                    {{ $office->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('office_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="office_name" id="office_name" class="form-control" placeholder="اسم المكتب" required>
                     </div>
 
                     <div class="col-md-6">
@@ -511,17 +526,12 @@
                             التجمع
                             <span class="text-danger">*</span>
                         </label>
-                        <select name="cluster_id" class="form-select @error('cluster_id') is-invalid @enderror" required>
+                        <select name="cluster_id" id="cluster_id" class="form-select" required>
                             <option value="">اختر التجمع...</option>
                             @foreach($clusters as $cluster)
-                                <option value="{{ $cluster->id }}" {{ old('cluster_id') == $cluster->id ? 'selected' : '' }}>
-                                    {{ $cluster->name }}
-                                </option>
+                                <option value="{{ $cluster->id }}">{{ $cluster->name }}</option>
                             @endforeach
                         </select>
-                        @error('cluster_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="col-md-6">
@@ -529,17 +539,7 @@
                             الرواية
                             <span class="text-danger">*</span>
                         </label>
-                        <select name="narration_id" class="form-select @error('narration_id') is-invalid @enderror" required>
-                            <option value="">اختر الرواية...</option>
-                            @foreach($narrations as $narration)
-                                <option value="{{ $narration->id }}" {{ old('narration_id') == $narration->id ? 'selected' : '' }}>
-                                    {{ $narration->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('narration_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="narration_name" id="narration_name" class="form-control" placeholder="اسم الرواية" required>
                     </div>
 
                     <div class="col-md-6">
@@ -547,30 +547,98 @@
                             الرسم
                             <span class="text-danger">*</span>
                         </label>
-                        <select name="drawing_id" class="form-select @error('drawing_id') is-invalid @enderror" required>
-                            <option value="">اختر الرسم...</option>
-                            @foreach($drawings as $drawing)
-                                <option value="{{ $drawing->id }}" {{ old('drawing_id') == $drawing->id ? 'selected' : '' }}>
-                                    {{ $drawing->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('drawing_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <input type="text" name="drawing_name" id="drawing_name" class="form-control" placeholder="اسم الرسم" required>
                     </div>
-                </div>
-
-                <div class="alert alert-info mt-4">
-                    <strong>ملاحظة:</strong> تأكد من صحة جميع البيانات قبل التسجيل
                 </div>
 
                 <div class="d-flex gap-3 mt-4">
                     <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(3)">
                         السابق
                     </button>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(4, 5)">
+                        التالي
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Review -->
+            <div class="form-step" data-step="5">
+                <h2 class="step-title">مراجعة البيانات قبل التأكيد</h2>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ تنبيه:</strong> يرجى التأكد من صحة البيانات المدخلة قبل إتمام التسجيل
+                </div>
+
+                <div class="review-section">
+                    <h3 class="review-title">البيانات الشخصية</h3>
+                    <div class="review-item">
+                        <span class="review-label">نوع الهوية:</span>
+                        <span class="review-value" id="review_identity_type"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">الاسم الكامل:</span>
+                        <span class="review-value" id="review_full_name"></span>
+                    </div>
+                    <div class="review-item" id="review_national_id_row" style="display: none;">
+                        <span class="review-label">الرقم الوطني / او الاداري:</span>
+                        <span class="review-value" id="review_national_id"></span>
+                    </div>
+                    <div class="review-item" id="review_passport_row" style="display: none;">
+                        <span class="review-label">رقم الهوية:</span>
+                        <span class="review-value" id="review_passport"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">تاريخ الميلاد:</span>
+                        <span class="review-value" id="review_birth_date"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">الجنس:</span>
+                        <span class="review-value" id="review_gender"></span>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h3 class="review-title">بيانات الاتصال</h3>
+                    <div class="review-item">
+                        <span class="review-label">رقم الهاتف:</span>
+                        <span class="review-value" id="review_phone"></span>
+                    </div>
+                    <div class="review-item" id="review_whatsapp_row">
+                        <span class="review-label">رقم الواتساب:</span>
+                        <span class="review-value" id="review_whatsapp"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">مكان الإقامة:</span>
+                        <span class="review-value" id="review_residence"></span>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h3 class="review-title">بيانات الامتحان</h3>
+                    <div class="review-item">
+                        <span class="review-label">المكتب:</span>
+                        <span class="review-value" id="review_office"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">التجمع:</span>
+                        <span class="review-value" id="review_cluster"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">الرواية:</span>
+                        <span class="review-value" id="review_narration"></span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">الرسم:</span>
+                        <span class="review-value" id="review_drawing"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(4)">
+                        تعديل البيانات
+                    </button>
                     <button type="submit" class="btn btn-primary btn-navigation flex-grow-1">
-                        إتمام التسجيل
+                        ✓ تأكيد وإتمام التسجيل
                     </button>
                 </div>
             </div>
@@ -582,6 +650,58 @@
         let selectedIdentityType = null;
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle session errors and success messages
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: '<span style="font-family: Cairo; color: #dc3545;">خطأ</span>',
+                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('error') }}</p>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#dc3545',
+                    backdrop: 'rgba(220, 53, 69, 0.4)',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '<span style="font-family: Cairo; color: #28a745;">نجح</span>',
+                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#28a745',
+                    backdrop: 'rgba(40, 167, 69, 0.4)',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+
+            @if($errors->any())
+                let errorsList = '<ul style="text-align: right; padding-right: 20px; margin: 0;">';
+                @foreach($errors->all() as $error)
+                    errorsList += '<li style="margin-bottom: 8px;">{{ $error }}</li>';
+                @endforeach
+                errorsList += '</ul>';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: '<span style="font-family: Cairo; color: #dc3545;">يوجد أخطاء في النموذج</span>',
+                    html: '<div style="font-family: Cairo; font-size: 16px; direction: rtl;">' + errorsList + '</div>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#dc3545',
+                    backdrop: 'rgba(220, 53, 69, 0.4)',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+
             const libyanCard = document.getElementById('libyanCard');
             const foreignCard = document.getElementById('foreignCard');
             const step1Next = document.getElementById('step1Next');
@@ -596,8 +716,9 @@
                 
                 nationalIdField.style.display = 'block';
                 passportField.style.display = 'none';
-                document.querySelector('input[name="national_id"]').required = true;
-                document.querySelector('input[name="passport_no"]').required = false;
+                document.getElementById('national_id').required = true;
+                document.getElementById('passport_no').required = false;
+                document.getElementById('nationality').value = 'ليبية';
             });
             
             foreignCard.addEventListener('click', function() {
@@ -608,12 +729,121 @@
                 
                 nationalIdField.style.display = 'none';
                 passportField.style.display = 'block';
-                document.querySelector('input[name="national_id"]').required = false;
-                document.querySelector('input[name="passport_no"]').required = true;
+                document.getElementById('national_id').required = false;
+                document.getElementById('passport_no').required = true;
+                document.getElementById('nationality').value = '';
             });
         });
 
-        function nextStep(step) {
+        function validateAndNext(currentStep, nextStep) {
+            if (validateStep(currentStep)) {
+                goToStep(nextStep);
+            } else {
+                // Error is already shown in validateStep function
+            }
+        }
+
+        function validateStep(step) {
+            const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+            const requiredInputs = currentStepElement.querySelectorAll('[required]');
+            
+            for (let input of requiredInputs) {
+                if (!input.value.trim()) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '<span style="font-family: Cairo; color: #3c5e7f;">حقل مطلوب</span>',
+                        html: `<p style="font-family: Cairo; font-size: 16px; direction: rtl;">يرجى تعبئة حقل <strong>${getFieldLabel(input)}</strong></p>`,
+                        confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                        confirmButtonColor: '#3c5e7f',
+                        backdrop: 'rgba(60, 94, 127, 0.4)',
+                        customClass: {
+                            popup: 'cairo-font',
+                            confirmButton: 'cairo-font'
+                        }
+                    });
+                    input.focus();
+                    return false;
+                }
+                
+                // Validate birth date
+                if (input.id === 'birth_date') {
+                    const birthDate = new Date(input.value);
+                    const maxDate = new Date('2008-12-31');
+                    if (birthDate > maxDate) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: '<span style="font-family: Cairo; color: #998965;">تاريخ غير صحيح</span>',
+                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">تاريخ الميلاد يجب أن يكون <strong>2008 أو أقل</strong></p>',
+                            confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
+                            confirmButtonColor: '#998965',
+                            backdrop: 'rgba(153, 137, 101, 0.4)',
+                            customClass: {
+                                popup: 'cairo-font',
+                                confirmButton: 'cairo-font'
+                            }
+                        });
+                        input.focus();
+                        return false;
+                    }
+                }
+                
+                // Validate national ID length
+                if (input.id === 'national_id' && input.required) {
+                    if (input.value.length !== 12) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '<span style="font-family: Cairo; color: #3c5e7f;">رقم وطني غير صحيح</span>',
+                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">الرقم الوطني / او الاداري يجب أن يكون <strong>12 رقم</strong><br>الأرقام المدخلة حالياً: <strong>' + input.value.length + '</strong></p>',
+                            confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
+                            confirmButtonColor: '#3c5e7f',
+                            backdrop: 'rgba(60, 94, 127, 0.4)',
+                            customClass: {
+                                popup: 'cairo-font',
+                                confirmButton: 'cairo-font'
+                            }
+                        });
+                        input.focus();
+                        return false;
+                    }
+                }
+                
+                // Validate phone number
+                if (input.id === 'phone') {
+                    if (input.value.length !== 9) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '<span style="font-family: Cairo; color: #3c5e7f;">رقم هاتف غير صحيح</span>',
+                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">رقم الهاتف يجب أن يكون <strong>9 أرقام</strong> بدون صفر<br>الأرقام المدخلة حالياً: <strong>' + input.value.length + '</strong></p>',
+                            confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
+                            confirmButtonColor: '#3c5e7f',
+                            backdrop: 'rgba(60, 94, 127, 0.4)',
+                            customClass: {
+                                popup: 'cairo-font',
+                                confirmButton: 'cairo-font'
+                            }
+                        });
+                        input.focus();
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+
+        function getFieldLabel(input) {
+            const label = input.closest('.col-md-6, .col-md-12')?.querySelector('.form-label');
+            if (label) {
+                return label.textContent.replace('*', '').trim();
+            }
+            return 'هذا الحقل';
+        }
+
+        function goToStep(step) {
+            if (step === 5) {
+                updateReviewSection();
+            }
+            
             document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
             document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
             
@@ -623,12 +853,7 @@
         }
 
         function prevStep(step) {
-            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
-            
-            updateStepIndicators(step);
-            currentStep = step;
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            goToStep(step);
         }
 
         function updateStepIndicators(activeStep) {
@@ -642,6 +867,77 @@
                     item.classList.add('active');
                 }
             });
+        }
+
+        function updateReviewSection() {
+            // Identity type
+            const identityType = document.querySelector('input[name="identity_type"]:checked').value;
+            document.getElementById('review_identity_type').textContent = 
+                identityType === 'national_id' ? 'ليبي الجنسية' : 'جنسية أخرى';
+            
+            // Full name
+            const firstName = document.getElementById('first_name').value;
+            const fatherName = document.getElementById('father_name').value;
+            const grandfatherName = document.getElementById('grandfather_name').value;
+            const lastName = document.getElementById('last_name').value;
+            document.getElementById('review_full_name').textContent = 
+                `${firstName} ${fatherName} ${grandfatherName} ${lastName}`.trim();
+            
+            // National ID or Passport
+            if (identityType === 'national_id') {
+                document.getElementById('review_national_id_row').style.display = 'flex';
+                document.getElementById('review_passport_row').style.display = 'none';
+                document.getElementById('review_national_id').textContent = 
+                    document.getElementById('national_id').value;
+            } else {
+                document.getElementById('review_national_id_row').style.display = 'none';
+                document.getElementById('review_passport_row').style.display = 'flex';
+                document.getElementById('review_passport').textContent = 
+                    document.getElementById('passport_no').value;
+            }
+            
+            // Birth date
+            document.getElementById('review_birth_date').textContent = 
+                document.getElementById('birth_date').value;
+            
+            // Gender
+            const gender = document.getElementById('gender').value;
+            document.getElementById('review_gender').textContent = 
+                gender === 'male' ? 'ذكر' : 'أنثى';
+            
+            // Phone
+            document.getElementById('review_phone').textContent = 
+                '+218' + document.getElementById('phone').value;
+            
+            // WhatsApp
+            const whatsapp = document.getElementById('whatsapp').value;
+            if (whatsapp) {
+                document.getElementById('review_whatsapp_row').style.display = 'flex';
+                document.getElementById('review_whatsapp').textContent = '+218' + whatsapp;
+            } else {
+                document.getElementById('review_whatsapp_row').style.display = 'none';
+            }
+            
+            // Residence
+            document.getElementById('review_residence').textContent = 
+                document.getElementById('current_residence').value;
+            
+            // Office
+            document.getElementById('review_office').textContent = 
+                document.getElementById('office_name').value;
+            
+            // Cluster
+            const clusterId = document.getElementById('cluster_id').value;
+            const clusterText = document.querySelector(`#cluster_id option[value="${clusterId}"]`).textContent;
+            document.getElementById('review_cluster').textContent = clusterText;
+            
+            // Narration
+            document.getElementById('review_narration').textContent = 
+                document.getElementById('narration_name').value;
+            
+            // Drawing
+            document.getElementById('review_drawing').textContent = 
+                document.getElementById('drawing_name').value;
         }
     </script>
 </body>

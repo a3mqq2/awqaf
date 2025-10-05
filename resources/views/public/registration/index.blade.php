@@ -159,7 +159,10 @@
             <h1 class="main-title">
                 التحقق من تسجيل امتحان الإجازة
             </h1>
-            <p class="sub-title">1446 / 1447 هـ - 2025 / 2026 م</p>
+            <p class="sub-title">
+                لسنة
+                2025م - 1447هـ 
+            </p>
         </div>
 
         <!-- Action Cards -->
@@ -208,5 +211,65 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- SweetAlert2 Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // Show elegant alert on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '<strong style="color: #3c5e7f;">تنبيه هام</strong>',
+                icon: 'info',
+                html: `
+                    <div style="text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; line-height: 2;">
+                        <p style="font-size: 18px; color: #2c3e50; margin-bottom: 15px;">
+                            <strong>عزيزي الممتحن،</strong>
+                        </p>
+                        <p style="font-size: 16px; color: #34495e; margin-bottom: 20px;">
+                            يرجى مراجعة <span style="color: #3c5e7f; font-weight: bold;">رابط الاستعلام</span> 
+                            لمعرفة تأكيد قبول تسجيلك في امتحان الإجازة
+                        </p>
+                        <div style="background: #f0f4f8; padding: 15px; border-radius: 10px; border-right: 4px solid #3c5e7f;">
+                            <p style="font-size: 15px; color: #555; margin: 0;">
+                                 يمكنك التحقق من حالة تسجيلك من خلال الضغط على زر 
+                                <strong>"الاستعلام عن تسجيل سابق"</strong>
+                            </p>
+                        </div>
+                    </div>
+                `,
+                showCloseButton: true,
+                confirmButtonText: '<span style="font-family: Cairo;">فهمت، شكراً</span>',
+                confirmButtonColor: '#3c5e7f',
+                width: '600px',
+                padding: '2em',
+                backdrop: 'rgba(60, 94, 127, 0.4)',
+                customClass: {
+                    popup: 'custom-alert-popup',
+                    confirmButton: 'custom-confirm-button'
+                }
+            });
+        });
+    </script>
+    
+    <style>
+        .custom-alert-popup {
+            border-radius: 20px !important;
+            font-family: 'Cairo', sans-serif !important;
+        }
+        
+        .custom-confirm-button {
+            font-size: 16px !important;
+            padding: 12px 30px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+        }
+        
+        .swal2-icon.swal2-info {
+            border-color: #3c5e7f !important;
+            color: #3c5e7f !important;
+        }
+    </style>
 </body>
 </html>
