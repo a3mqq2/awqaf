@@ -21,55 +21,50 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
         if (empty(array_filter($row))) {
             return null;
         }
-        if (isset($row[0]) && is_numeric($row[0])) {
-            unset($row[0]);
-        }
 
-        $narrationId = !empty($this->cleanCell($row[18] ?? null))
-            ? Narration::firstOrCreate(['name' => $this->cleanCell($row[18])])->id
+        $narrationId = !empty($this->cleanCell($row['الرواية'] ?? null))
+            ? Narration::firstOrCreate(['name' => $this->cleanCell($row['الرواية'])])->id
             : null;
 
-        $drawingId = !empty($this->cleanCell($row[20] ?? null))
-            ? Drawing::firstOrCreate(['name' => $this->cleanCell($row[20])])->id
+        $drawingId = !empty($this->cleanCell($row['الرسم'] ?? null))
+            ? Drawing::firstOrCreate(['name' => $this->cleanCell($row['الرسم'])])->id
             : null;
 
-        $firstName  = $this->cleanCell($row[4] ?? '-');
-        $fatherName = $this->cleanCell($row[5] ?? '-');
-        $grandName  = $this->cleanCell($row[6] ?? '-');
-        $lastName   = $this->cleanCell($row[7] ?? '-');
+        $firstName  = $this->cleanCell($row['الاسم الأول'] ?? '-');
+        $fatherName = $this->cleanCell($row['اسم الأب'] ?? '-');
+        $grandName  = $this->cleanCell($row['اسم الجد'] ?? '-');
+        $lastName   = $this->cleanCell($row['اللقب'] ?? '-');
 
         return Examinee::firstOrCreate(
-            ['national_id' => $this->normalizeNationalId($row[10] ?? '-')],
+            ['national_id' => $this->normalizeNationalId($row['الرقم الوطني'] ?? '-')],
             [
                 'first_name'        => $firstName,
                 'father_name'       => $fatherName,
                 'grandfather_name'  => $grandName,
                 'last_name'         => $lastName,
                 'full_name'         => trim("$firstName $fatherName $grandName $lastName"),
-                'nationality'       => $this->cleanCell($row[9] ?? '-'),
-                'passport_no'       => $this->cleanCell($row[11] ?? '-'),
-                'current_residence' => $this->cleanCell($row[12] ?? '-'),
-                'gender'            => ($this->cleanCell($row[13] ?? '') === 'ذكر') ? 'male' : 'female',
-                'birth_date'        => $this->transformDate($row[14] ?? null),
-                'office_id'         => !empty($this->cleanCell($row[15]))
-                    ? Office::firstOrCreate(['name' => $this->cleanCell($row[15])])->id
+                'nationality'       => $this->cleanCell($row['الجنسية'] ?? '-'),
+                'passport_no'       => $this->cleanCell($row['رقم جواز السفر'] ?? '-'),
+                'current_residence' => $this->cleanCell($row['مكان الإقامة الحالي'] ?? '-'),
+                'gender'            => ($this->cleanCell($row['الجنس'] ?? '') === 'ذكر') ? 'male' : 'female',
+                'birth_date'        => $this->transformDate($row['تاريخ الميلاد'] ?? null),
+                'office_id'         => !empty($this->cleanCell($row['اسم مكتب الأوقاف التابع له'] ?? null))
+                    ? Office::firstOrCreate(['name' => $this->cleanCell($row['اسم مكتب الأوقاف التابع له'])])->id
                     : null,
-                'cluster_id'        => !empty($this->cleanCell($row[19]))
-                    ? Cluster::firstOrCreate(['name' => $this->cleanCell($row[19])])->id
-                    : null,
+                'cluster_id'        => null, // مش موجود في هذا الشيت
                 'narration_id'      => $narrationId,
                 'drawing_id'        => $drawingId,
                 'status'            => 'pending',
-                'phone'             => $this->normalizePhone($row[16] ?? null),
-                'whatsapp'          => $this->normalizePhone($row[17] ?? null),
-                'created_at'        => $this->transformDateTime($row[3] ?? null),
+                'phone'             => $this->normalizePhone($row['رقم الهاتف للتواصل'] ?? null),
+                'whatsapp'          => $this->normalizePhone($row['رقم الوتس أب '] ?? null),
+                'created_at'        => $this->transformDateTime($row['Submitted at'] ?? null),
             ]
         );
     }
 
     public function headingRow(): int
     {
-        return 1;
+        return 1; // الصف الأول يحتوي أسماء الأعمدة
     }
 
     public function chunkSize(): int
@@ -80,8 +75,7 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
     public function sheets(): array
     {
         return [
-            // رقم الورقة يبدأ من 0
-            1 => $this, // معناها استخدم الورقة الثانية
+            'الورقة1' => $this, // نستهدف الشيت بالاسم
         ];
     }
 
