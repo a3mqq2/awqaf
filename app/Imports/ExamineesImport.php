@@ -49,15 +49,24 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
             ? Cluster::firstOrCreate(['name' => trim($row[14])])->id
             : null;
 
-        // تاريخ الميلاد (مثلاً العمود 10)
-        $birthDate = null;
-        if (!empty($row[10] ?? null)) {
-            try {
-                $birthDate = ExcelDate::excelToDateTimeObject($row[10]);
-            } catch (\Exception $e) {
-                $birthDate = Carbon::parse($row[10]);
+            $birthDate = null;
+            if (!empty($row[10])) {
+                if (is_numeric($row[10])) {
+                    // Excel serial number
+                    try {
+                        $birthDate = ExcelDate::excelToDateTimeObject($row[10]);
+                    } catch (\Exception $e) {
+                        $birthDate = null;
+                    }
+                } else {
+                    // نص (String date)
+                    try {
+                        $birthDate = Carbon::parse($row[10]);
+                    } catch (\Exception $e) {
+                        $birthDate = null;
+                    }
+                }
             }
-        }
 
         return new Examinee([
             'submitted_at'     => !empty($row[0]) ? Carbon::parse($row[0]) : now(),
