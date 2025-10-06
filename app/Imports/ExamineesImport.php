@@ -28,8 +28,13 @@ class ExamineesImport implements
             return null;
         }
 
-        // الاسم الكامل كمفتاح أساسي
-        $fullName = trim($row['الاسم الرباعي'] ?? '');
+        // الاسم الكامل للتفرد
+        $fullName = trim(
+            ($row['الاسم الأول'] ?? '') . ' ' .
+            ($row['اسم الأب'] ?? '') . ' ' .
+            ($row['اسم الجد'] ?? '') . ' ' .
+            ($row['اللقب'] ?? '')
+        );
 
         if (!$fullName) {
             return null;
@@ -74,14 +79,17 @@ class ExamineesImport implements
             'full_name'        => $fullName,
             'nationality'      => trim($row['الجنسية'] ?? 'ليبي'),
             'national_id'      => !empty($row['الرقم الوطني']) ? trim($row['الرقم الوطني']) : null,
+            'passport_no'      => !empty($row['رقم جواز السفر']) ? trim($row['رقم جواز السفر']) : null,
+            'current_residence'=> trim($row['مكان الإقامة الحالي'] ?? ''),
+            'gender'           => (trim($row['الجنس'] ?? '') === 'أنثى') ? 'female' : 'male',
+            'birth_date'       => $birthDate,
             'office_id'        => $officeId,
             'cluster_id'       => $clusterId,
             'narration_id'     => $narrationId,
             'drawing_id'       => $drawingId,
             'status'           => 'pending',
-            'phone'            => trim($row['رقم الهاتف'] ?? ''),
-            'whatsapp'         => trim($row['واتساب'] ?? ''),
-            'birth_date'       => $birthDate,
+            'phone'            => trim($row['رقم الهاتف للتواصل'] ?? ''),
+            'whatsapp'         => trim($row['رقم الوتس أب'] ?? ''),
         ]);
     }
 
