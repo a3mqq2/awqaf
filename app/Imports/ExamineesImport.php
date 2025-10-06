@@ -25,7 +25,7 @@ class ExamineesImport implements
     public function model(array $row)
     {
         if (empty(array_filter($row))) {
-            return null;
+            return null; // الصف فاضي
         }
 
         // الاسم الكامل
@@ -37,20 +37,12 @@ class ExamineesImport implements
         );
 
         if (!$fullName) {
-            return null;
+            return null; // لو مفيش اسم نتجاهله
         }
 
-        // منع التكرار
-        if (Examinee::where('full_name', $fullName)->exists()) {
-            return null;
-        }
-
-        // الرواية (يدعم الحقلين)
-        $narrationName = $row['الرواية المشارك بها'] 
-            ?? ($row['الرواية'] ?? null);
-
-        $narrationId = !empty($narrationName)
-            ? Narration::firstOrCreate(['name' => trim($narrationName)])->id
+        // الرواية
+        $narrationId = !empty($row['الرواية المشارك بها'] ?? null)
+            ? Narration::firstOrCreate(['name' => trim($row['الرواية المشارك بها'])])->id
             : null;
 
         // الرسم
@@ -78,27 +70,31 @@ class ExamineesImport implements
             }
         }
 
-        return new Examinee([
-            'submitted_at'     => !empty($row['Submitted at']) ? Carbon::parse($row['Submitted at']) : now(),
-            'first_name'       => trim($row['الاسم الأول'] ?? ''),
-            'father_name'      => trim($row['اسم الأب'] ?? ''),
-            'grandfather_name' => trim($row['اسم الجد'] ?? ''),
-            'last_name'        => trim($row['اللقب'] ?? ''),
-            'full_name'        => $fullName,
-            'nationality'      => trim($row['الجنسية'] ?? 'ليبي'),
-            'national_id'      => !empty($row['الرقم الوطني']) ? strval(intval($row['الرقم الوطني'])) : null,
-            'passport_no'      => !empty($row['رقم جواز السفر']) ? trim($row['رقم جواز السفر']) : null,
-            'current_residence'=> trim($row['مكان الإقامة الحالي'] ?? ''),
-            'gender'           => (trim($row['الجنس'] ?? '') === 'أنثى') ? 'female' : 'male',
-            'birth_date'       => $birthDate,
-            'office_id'        => $officeId,
-            'cluster_id'       => $clusterId,
-            'narration_id'     => $narrationId,
-            'drawing_id'       => $drawingId,
-            'status'           => 'pending',
-            'phone'            => !empty($row['رقم الهاتف للتواصل']) ? strval($row['رقم الهاتف للتواصل']) : '',
-            'whatsapp'         => !empty($row['رقم الوتس أب']) ? strval($row['رقم الوتس أب']) : '',
-        ]);
+        return Examinee::firstOrCreate(
+            [
+                'full_name' => $fullName, // المفتاح الأساسي
+            ],
+            [
+                'submitted_at'     => !empty($row['Submitted at']) ? Carbon::parse($row['Submitted at']) : now(),
+                'first_name'       => trim($row['الاسم الأول'] ?? ''),
+                'father_name'      => trim($row['اسم الأب'] ?? ''),
+                'grandfather_name' => trim($row['اسم الجد'] ?? ''),
+                'last_name'        => trim($row['اللقب'] ?? ''),
+                'nationality'      => trim($row['الجنسية'] ?? 'ليبي'),
+                'national_id'      => !empty($row['الرقم الوطني']) ? strval(intval($row['الرقم الوطني'])) : null,
+                'passport_no'      => !empty($row['رقم جواز السفر']) ? trim($row['رقم جواز السفر']) : null,
+                'current_residence'=> trim($row['مكان الإقامة الحالي'] ?? ''),
+                'gender'           => (trim($row['الجنس'] ?? '') === 'أنثى') ? 'female' : 'male',
+                'birth_date'       => $birthDate,
+                'office_id'        => $officeId,
+                'cluster_id'       => $clusterId,
+                'narration_id'     => $narrationId,
+                'drawing_id'       => $drawingId,
+                'status'           => 'pending',
+                'phone'            => !empty($row['رقم الهاتف للتواصل']) ? strval($row['رقم الهاتف للتواصل']) : '',
+                'whatsapp'         => !empty($row['رقم الوتس أب']) ? strval($row['رقم الوتس أب']) : '',
+            ]
+        );
     }
 
     public function chunkSize(): int
