@@ -20,7 +20,6 @@ class ExamineesImport implements
     WithChunkReading, 
     WithCalculatedFormulas, 
     WithHeadingRow, 
-    WithMultipleSheets
 {
     public function model(array $row)
     {
