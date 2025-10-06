@@ -11,94 +11,79 @@ use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class ExamineesImport implements 
-    ToModel, 
-    WithChunkReading, 
-    WithCalculatedFormulas, 
-    WithHeadingRow
+class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormulas
 {
     public function model(array $row)
     {
-        if (empty(array_filter($row))) {
-            return null; // الصف فاضي
+        // تجاهل العنوان أو الصفوف الفارغة
+        if (!isset($row[1]) || empty(array_filter($row))) {
+            return null;
         }
 
         // الاسم الكامل
-        $fullName = trim(
-            ($row['الاسم الأول'] ?? '') . ' ' .
-            ($row['اسم الأب'] ?? '') . ' ' .
-            ($row['اسم الجد'] ?? '') . ' ' .
-            ($row['اللقب'] ?? '')
-        );
+        $fullName = trim(($row[1] ?? '') . ' ' . ($row[2] ?? '') . ' ' . ($row[3] ?? '') . ' ' . ($row[4] ?? ''));
 
         if (!$fullName) {
-            return null; // لو مفيش اسم نتجاهله
+            return null;
         }
 
-        // الرواية
-        $narrationId = !empty($row['الرواية المشارك بها'] ?? null)
-            ? Narration::firstOrCreate(['name' => trim($row['الرواية المشارك بها'])])->id
+        // الرواية (مثلاً العمود 15 حسب التمبلت)
+        $narrationId = !empty($row[15] ?? null)
+            ? Narration::firstOrCreate(['name' => trim($row[15])])->id
             : null;
 
-        // الرسم
-        $drawingId = !empty($row['الرسم'] ?? null)
-            ? Drawing::firstOrCreate(['name' => trim($row['الرسم'])])->id
+        // الرسم (مثلاً العمود 16)
+        $drawingId = !empty($row[16] ?? null)
+            ? Drawing::firstOrCreate(['name' => trim($row[16])])->id
             : null;
 
-        // المكتب
-        $officeId = !empty($row['اسم مكتب الأوقاف التابع له'] ?? null)
-            ? Office::firstOrCreate(['name' => trim($row['اسم مكتب الأوقاف التابع له'])])->id
+        // المكتب (مثلاً العمود 11)
+        $officeId = !empty($row[11] ?? null)
+            ? Office::firstOrCreate(['name' => trim($row[11])])->id
             : null;
 
-        // مكان الامتحان
-        $clusterId = !empty($row['مكان الامتحان'] ?? null)
-            ? Cluster::firstOrCreate(['name' => trim($row['مكان الامتحان'])])->id
+        // مكان الامتحان (مثلاً العمود 14)
+        $clusterId = !empty($row[14] ?? null)
+            ? Cluster::firstOrCreate(['name' => trim($row[14])])->id
             : null;
 
-        // تاريخ الميلاد
+        // تاريخ الميلاد (مثلاً العمود 10)
         $birthDate = null;
-        if (!empty($row['تاريخ الميلاد'] ?? null)) {
+        if (!empty($row[10] ?? null)) {
             try {
-                $birthDate = ExcelDate::excelToDateTimeObject($row['تاريخ الميلاد']);
+                $birthDate = ExcelDate::excelToDateTimeObject($row[10]);
             } catch (\Exception $e) {
-                $birthDate = Carbon::parse($row['تاريخ الميلاد']);
+                $birthDate = Carbon::parse($row[10]);
             }
         }
 
-        return Examinee::firstOrCreate(
-            [
-                'full_name' => $fullName, // المفتاح الأساسي
-            ],
-            [
-                'submitted_at'     => !empty($row['Submitted at']) ? Carbon::parse($row['Submitted at']) : now(),
-                'first_name'       => trim($row['الاسم الأول'] ?? ''),
-                'father_name'      => trim($row['اسم الأب'] ?? ''),
-                'grandfather_name' => trim($row['اسم الجد'] ?? ''),
-                'last_name'        => trim($row['اللقب'] ?? ''),
-                'nationality'      => trim($row['الجنسية'] ?? 'ليبي'),
-                'national_id'      => !empty($row['الرقم الوطني']) ? strval(intval($row['الرقم الوطني'])) : null,
-                'passport_no'      => !empty($row['رقم جواز السفر']) ? trim($row['رقم جواز السفر']) : null,
-                'current_residence'=> trim($row['مكان الإقامة الحالي'] ?? ''),
-                'gender'           => (trim($row['الجنس'] ?? '') === 'أنثى') ? 'female' : 'male',
-                'birth_date'       => $birthDate,
-                'office_id'        => $officeId,
-                'cluster_id'       => $clusterId,
-                'narration_id'     => $narrationId,
-                'drawing_id'       => $drawingId,
-                'status'           => 'pending',
-                'phone'            => !empty($row['رقم الهاتف للتواصل']) ? strval($row['رقم الهاتف للتواصل']) : '',
-                'whatsapp'         => !empty($row['رقم الوتس أب']) ? strval($row['رقم الوتس أب']) : '',
-            ]
-        );
+        return new Examinee([
+            'submitted_at'     => !empty($row[0]) ? Carbon::parse($row[0]) : now(),
+            'first_name'       => trim($row[1] ?? ''),
+            'father_name'      => trim($row[2] ?? ''),
+            'grandfather_name' => trim($row[3] ?? ''),
+            'last_name'        => trim($row[4] ?? ''),
+            'full_name'        => $fullName,
+            'nationality'      => trim($row[5] ?? 'ليبي'),
+            'national_id'      => !empty($row[6]) ? strval(intval($row[6])) : null,
+            'passport_no'      => !empty($row[7]) ? trim($row[7]) : null,
+            'current_residence'=> trim($row[8] ?? ''),
+            'gender'           => (trim($row[9] ?? '') === 'أنثى') ? 'female' : 'male',
+            'birth_date'       => $birthDate,
+            'office_id'        => $officeId,
+            'cluster_id'       => $clusterId,
+            'narration_id'     => $narrationId,
+            'drawing_id'       => $drawingId,
+            'status'           => 'pending',
+            'phone'            => !empty($row[12]) ? strval($row[12]) : '',
+            'whatsapp'         => !empty($row[13]) ? strval($row[13]) : '',
+        ]);
     }
 
     public function chunkSize(): int
     {
         return 100;
     }
-
 }
