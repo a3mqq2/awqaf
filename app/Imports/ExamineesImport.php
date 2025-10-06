@@ -28,7 +28,7 @@ class ExamineesImport implements
             return null;
         }
 
-        // الاسم الكامل للتفرد
+        // بناء الاسم الكامل
         $fullName = trim(
             ($row['الاسم الأول'] ?? '') . ' ' .
             ($row['اسم الأب'] ?? '') . ' ' .
@@ -40,27 +40,32 @@ class ExamineesImport implements
             return null;
         }
 
-        // منع التكرار
+        // منع التكرار بالاسم الكامل
         if (Examinee::where('full_name', $fullName)->exists()) {
             return null;
         }
 
+        // الرواية
         $narrationId = !empty($row['الرواية المشارك بها'] ?? null)
             ? Narration::firstOrCreate(['name' => trim($row['الرواية المشارك بها'])])->id
             : null;
 
+        // الرسم
         $drawingId = !empty($row['الرسم'] ?? null)
             ? Drawing::firstOrCreate(['name' => trim($row['الرسم'])])->id
             : null;
 
+        // المكتب
         $officeId = !empty($row['اسم مكتب الأوقاف التابع له'] ?? null)
             ? Office::firstOrCreate(['name' => trim($row['اسم مكتب الأوقاف التابع له'])])->id
             : null;
 
+        // مكان الامتحان (التجمع)
         $clusterId = !empty($row['مكان الامتحان'] ?? null)
             ? Cluster::firstOrCreate(['name' => trim($row['مكان الامتحان'])])->id
             : null;
 
+        // تاريخ الميلاد
         $birthDate = null;
         if (!empty($row['تاريخ الميلاد'] ?? null)) {
             try {
@@ -89,7 +94,7 @@ class ExamineesImport implements
             'drawing_id'       => $drawingId,
             'status'           => 'pending',
             'phone'            => trim($row['رقم الهاتف للتواصل'] ?? ''),
-            'whatsapp'         => trim($row['رقم الوتس أب'] ?? ''),
+            'whatsapp'         => trim($row['رقم الوتس أب '] ?? ''), // لاحظ المسافة
         ]);
     }
 
