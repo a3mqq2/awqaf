@@ -443,12 +443,12 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">اسم الأب</label>
+                        <label class="form-label">اسم الأب</label> <span class="text-danger">*</span></label>
                         <input type="text" name="father_name" id="father_name" class="form-control" required value="{{ old('father_name') }}">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">اسم الجد</label>
+                        <label class="form-label">اسم الجد</label> <span class="text-danger">*</span></label>
                         <input type="text" name="grandfather_name" id="grandfather_name" required class="form-control" value="{{ old('grandfather_name') }}">
                     </div>
 
