@@ -358,7 +358,7 @@
                         <input type="radio" name="identity_type" value="national_id" required>
                         <div class="identity-icon">🇱🇾</div>
                         <div class="identity-label">ليبي الجنسية</div>
-                        <small class="text-muted">الرقم الوطني / او الاداري</small>
+                        <small class="text-muted">الرقم الوطني / او الإداري</small>
                     </label>
                     
                     <label class="identity-card" id="foreignCard">
@@ -415,7 +415,7 @@
 
                     <div class="col-md-6" id="nationalIdField" style="display: none;">
                         <label class="form-label">
-                            الرقم الوطني / او الاداري
+                            الرقم الوطني / أو الإداري
                             <span class="text-danger">*</span>
                         </label>
                         <input type="text" name="national_id" id="national_id" class="form-control" placeholder="12 رقم" maxlength="12">
@@ -792,7 +792,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: '<span style="font-family: Cairo; color: #3c5e7f;">رقم وطني غير صحيح</span>',
-                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">الرقم الوطني / او الاداري يجب أن يكون <strong>12 رقم</strong><br>الأرقام المدخلة حالياً: <strong>' + input.value.length + '</strong></p>',
+                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">الرقم الوطني / أو الإداري يجب أن يكون <strong>12 رقم</strong><br>الأرقام المدخلة حالياً: <strong>' + input.value.length + '</strong></p>',
                             confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
                             confirmButtonColor: '#3c5e7f',
                             backdrop: 'rgba(60, 94, 127, 0.4)',
