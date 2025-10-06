@@ -104,24 +104,28 @@ class PublicRegistrationController extends Controller
         // Prepare phone number with country code
         $phoneWithCode = '218' . $data['phone'];
         
-        // Check if user is already registered
+        // Check if user is already registered - IMPROVED
         $existingExaminee = null;
         
         if ($request->identity_type === 'national_id') {
-            $existingExaminee = Examinee::where(function($query) use ($data, $phoneWithCode) {
-                $query->where('national_id', $data['national_id']);
-            })->first();
+            $existingExaminee = Examinee::where('national_id', $data['national_id'])->first();
+            
+            if ($existingExaminee) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'الرقم الوطني مسجل مسبقاً في امتحان الإجازة. يمكنك مراجعة تسجيلك من خلال صفحة الاستعلام.');
+            }
         } else {
-            $existingExaminee = Examinee::where(function($query) use ($data, $phoneWithCode) {
-                $query->where('passport_no', $data['passport_no']);
-            })->first();
-        }
-        
-        if ($existingExaminee) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'أنت مسجل مسبقاً في امتحان الإجازة. يمكنك مراجعة تسجيلك من خلال صفحة الاستعلام.');
+            // التحقق من رقم جواز السفر
+            $existingExaminee = Examinee::where('passport_no', $data['passport_no'])->first();
+            
+            if ($existingExaminee) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'رقم جواز السفر مسجل مسبقاً في امتحان الإجازة. يمكنك مراجعة تسجيلك من خلال صفحة الاستعلام.');
+            }
         }
         
         // Add +218 to phone numbers
@@ -168,9 +172,18 @@ class PublicRegistrationController extends Controller
         // Remove identity_type from data
         unset($data['identity_type']);
     
-        $examinee = Examinee::create($data);
-    
-        return redirect()->route('public.registration.success', $examinee->id);
+        try {
+            $examinee = Examinee::create($data);
+            return redirect()->route('public.registration.success', $examinee->id);
+        } catch (\Exception $e) {
+            // في حالة حدوث أي خطأ في قاعدة البيانات
+            \Log::error('Registration error: ' . $e->getMessage());
+            
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'حدث خطأ أثناء التسجيل. قد تكون البيانات مسجلة مسبقاً. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.');
+        }
     }
     /**
      * Show success page
