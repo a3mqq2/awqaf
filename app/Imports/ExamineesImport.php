@@ -28,7 +28,7 @@ class ExamineesImport implements
             return null;
         }
 
-        // بناء الاسم الكامل
+        // الاسم الكامل
         $fullName = trim(
             ($row['الاسم الأول'] ?? '') . ' ' .
             ($row['اسم الأب'] ?? '') . ' ' .
@@ -40,14 +40,17 @@ class ExamineesImport implements
             return null;
         }
 
-        // منع التكرار بالاسم الكامل
+        // منع التكرار
         if (Examinee::where('full_name', $fullName)->exists()) {
             return null;
         }
 
-        // الرواية
-        $narrationId = !empty($row['الرواية المشارك بها'] ?? null)
-            ? Narration::firstOrCreate(['name' => trim($row['الرواية المشارك بها'])])->id
+        // الرواية (يدعم الحقلين)
+        $narrationName = $row['الرواية المشارك بها'] 
+            ?? ($row['الرواية'] ?? null);
+
+        $narrationId = !empty($narrationName)
+            ? Narration::firstOrCreate(['name' => trim($narrationName)])->id
             : null;
 
         // الرسم
@@ -60,7 +63,7 @@ class ExamineesImport implements
             ? Office::firstOrCreate(['name' => trim($row['اسم مكتب الأوقاف التابع له'])])->id
             : null;
 
-        // مكان الامتحان (التجمع)
+        // مكان الامتحان
         $clusterId = !empty($row['مكان الامتحان'] ?? null)
             ? Cluster::firstOrCreate(['name' => trim($row['مكان الامتحان'])])->id
             : null;
@@ -83,7 +86,7 @@ class ExamineesImport implements
             'last_name'        => trim($row['اللقب'] ?? ''),
             'full_name'        => $fullName,
             'nationality'      => trim($row['الجنسية'] ?? 'ليبي'),
-            'national_id'      => !empty($row['الرقم الوطني']) ? trim($row['الرقم الوطني']) : null,
+            'national_id'      => !empty($row['الرقم الوطني']) ? strval(intval($row['الرقم الوطني'])) : null,
             'passport_no'      => !empty($row['رقم جواز السفر']) ? trim($row['رقم جواز السفر']) : null,
             'current_residence'=> trim($row['مكان الإقامة الحالي'] ?? ''),
             'gender'           => (trim($row['الجنس'] ?? '') === 'أنثى') ? 'female' : 'male',
@@ -93,8 +96,8 @@ class ExamineesImport implements
             'narration_id'     => $narrationId,
             'drawing_id'       => $drawingId,
             'status'           => 'pending',
-            'phone'            => trim($row['رقم الهاتف للتواصل'] ?? ''),
-            'whatsapp'         => trim($row['رقم الوتس أب '] ?? ''), // لاحظ المسافة
+            'phone'            => !empty($row['رقم الهاتف للتواصل']) ? strval($row['رقم الهاتف للتواصل']) : '',
+            'whatsapp'         => !empty($row['رقم الوتس أب']) ? strval($row['رقم الوتس أب']) : '',
         ]);
     }
 
