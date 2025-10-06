@@ -413,7 +413,7 @@
                         <input type="radio" name="identity_type" value="national_id" required>
                         <div class="identity-icon">🇱🇾</div>
                         <div class="identity-label">ليبي الجنسية</div>
-                        <small class="text-muted">الرقم الوطني / او الاداري</small>
+                        <small class="text-muted">الرقم الوطني / او الإداري</small>
                     </label>
                     
                     <label class="identity-card" id="foreignCard">
@@ -456,8 +456,11 @@
                     </div>
 
                     <div class="col-md-6" id="nationalIdField" style="display: none;">
-                        <label class="form-label">الرقم الوطني / او الاداري <span class="text-danger">*</span></label>
-                        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="أدخل الرقم الوطني" value="{{ old('national_id') }}">
+                        <label class="form-label">
+                            الرقم الوطني / او الإداري
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="12 رقم" maxlength="12">
                     </div>
 
                     <div class="col-md-6" id="passportField" style="display: none;">
