@@ -102,10 +102,4 @@ class ExamineesImport implements
         return 100;
     }
 
-    public function sheets(): array
-    {
-        return [
-            'الورقة1' => $this,
-        ];
-    }
 }
