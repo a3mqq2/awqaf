@@ -15,24 +15,28 @@ class Examinee extends Model
         'father_name',
         'grandfather_name',
         'last_name',
+        'full_name',
+        'phone',
+        'whatsapp',
+        'nationality',
         'national_id',
         'passport_no',
-        'birth_date',
+        'rejection_reason',
+        'current_residence',
         'gender',
-        'phone',
-        'email',
-        'address',
+        'birth_date',
         'office_id',
         'cluster_id',
+        'status',
+        'has_previous_exam',
+        'notes',
         'narration_id',
         'drawing_id',
-        'status',
-        'notes',
-        'rejection_reason',
     ];
 
     protected $casts = [
         'birth_date' => 'date',
+        'has_previous_exam' => 'boolean',
     ];
 
     public function office()

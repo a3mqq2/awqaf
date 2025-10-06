@@ -26,13 +26,23 @@
                                         <i class="ti ti-circle-check me-1"></i>
                                         مؤكد
                                     </span>
+                                @elseif($examinee->status == 'under_review')
+                                    <span class="badge bg-light-info text-info">
+                                        <i class="ti ti-hourglass me-1"></i>
+                                        قيد المراجعة
+                                    </span>
                                 @elseif($examinee->status == 'pending')
                                     <span class="badge bg-light-warning text-warning">
                                         <i class="ti ti-clock me-1"></i>
                                         قيد التأكيد
                                     </span>
-                                @else
+                                @elseif($examinee->status == 'rejected')
                                     <span class="badge bg-light-danger text-danger">
+                                        <i class="ti ti-x-circle me-1"></i>
+                                        مرفوض
+                                    </span>
+                                @else
+                                    <span class="badge bg-light-secondary text-secondary">
                                         <i class="ti ti-circle-x me-1"></i>
                                         منسحب
                                     </span>
@@ -49,14 +59,42 @@
                             <i class="ti ti-arrow-right me-1"></i>
                             رجوع
                         </a>
+                        
+                        @can('examinees.edit')
                         <a href="{{ route('examinees.edit', $examinee) }}" class="btn btn-primary">
                             <i class="ti ti-edit me-1"></i>
                             تعديل
                         </a>
+                        @endcan
+                        
+                        @if($examinee->status == 'under_review')
+                            @can('examinees.approve')
+                            <button type="button" 
+                                    class="btn btn-success" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#approveModal">
+                                <i class="ti ti-check me-1"></i>
+                                قبول
+                            </button>
+                            @endcan
+                            
+                            @can('examinees.reject')
+                            <button type="button" 
+                                    class="btn btn-warning" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#rejectModal">
+                                <i class="ti ti-x me-1"></i>
+                                رفض
+                            </button>
+                            @endcan
+                        @endif
+                        
+                        @can('examinees.delete')
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                             <i class="ti ti-trash me-1"></i>
                             حذف
                         </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -188,7 +226,7 @@
                                     <i class="ti ti-map-pin me-1"></i>
                                     مكان الإقامة الحالي
                                 </label>
-                                <p class="fw-semibold mb-0">{{ $examinee->current_residence ?? '-' }}</p>
+                                <p class="fw-semibold mb-0">{{ $examinee->address ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
@@ -206,7 +244,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label text-muted small">
                                     <i class="ti ti-building-store me-1"></i>
                                     المكتب
@@ -221,7 +259,7 @@
                                     @endif
                                 </p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label text-muted small">
                                     <i class="ti ti-users me-1"></i>
                                     التجمع
@@ -236,7 +274,37 @@
                                     @endif
                                 </p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">
+                                    <i class="ti ti-book me-1"></i>
+                                    الرواية
+                                </label>
+                                <p class="mb-0">
+                                    @if($examinee->narration)
+                                        <span class="badge bg-light-secondary text-secondary fs-6">
+                                            {{ $examinee->narration->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">
+                                    <i class="ti ti-pencil me-1"></i>
+                                    الرسم
+                                </label>
+                                <p class="mb-0">
+                                    @if($examinee->drawing)
+                                        <span class="badge bg-light-secondary text-secondary fs-6">
+                                            {{ $examinee->drawing->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="col-md-12">
                                 <label class="form-label text-muted small">
                                     <i class="ti ti-circle-check me-1"></i>
                                     الحالة
@@ -247,19 +315,40 @@
                                             <i class="ti ti-circle-check me-1"></i>
                                             مؤكد
                                         </span>
+                                    @elseif($examinee->status == 'under_review')
+                                        <span class="badge bg-light-info text-info fs-6">
+                                            <i class="ti ti-hourglass me-1"></i>
+                                            قيد المراجعة
+                                        </span>
                                     @elseif($examinee->status == 'pending')
                                         <span class="badge bg-light-warning text-warning fs-6">
                                             <i class="ti ti-clock me-1"></i>
                                             قيد التأكيد
                                         </span>
-                                    @else
+                                    @elseif($examinee->status == 'rejected')
                                         <span class="badge bg-light-danger text-danger fs-6">
+                                            <i class="ti ti-x-circle me-1"></i>
+                                            مرفوض
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light-secondary text-secondary fs-6">
                                             <i class="ti ti-circle-x me-1"></i>
                                             منسحب
                                         </span>
                                     @endif
                                 </p>
                             </div>
+                            @if($examinee->rejection_reason)
+                                <div class="col-md-12">
+                                    <label class="form-label text-muted small">
+                                        <i class="ti ti-alert-circle me-1"></i>
+                                        سبب الرفض
+                                    </label>
+                                    <div class="alert alert-danger border mb-0">
+                                        <p class="mb-0">{{ $examinee->rejection_reason }}</p>
+                                    </div>
+                                </div>
+                            @endif
                             @if($examinee->notes)
                                 <div class="col-md-12">
                                     <label class="form-label text-muted small">
@@ -272,116 +361,9 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="row g-3">
-                            @if($examinee->narration)
-                            <div class="info-row">
-                                <span class="info-label">الرواية:</span>
-                                <span class="info-value">{{ $examinee->narration->name }}</span>
-                            </div>
-                            @endif
-
-                            @if($examinee->drawing)
-                            <div class="info-row">
-                                <span class="info-label">الرسم:</span>
-                                <span class="info-value">{{ $examinee->drawing->name }}</span>
-                            </div>
-                            @endif
-                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- محاولات الامتحان -->
-            {{-- @if($examinee->examAttempts && $examinee->examAttempts->count() > 0)
-                <div class="col-md-12">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="ti ti-certificate me-2 text-warning"></i>
-                                محاولات الامتحان
-                                <span class="badge bg-light-warning text-warning ms-2">
-                                    {{ $examinee->examAttempts->count() }}
-                                </span>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>
-                                                <i class="ti ti-calendar me-1"></i>
-                                                السنة
-                                            </th>
-                                            <th>
-                                                <i class="ti ti-book me-1"></i>
-                                                الرواية
-                                            </th>
-                                            <th>
-                                                <i class="ti ti-pencil me-1"></i>
-                                                الرسم
-                                            </th>
-                                            <th>
-                                                <i class="ti ti-layout-sidebar me-1"></i>
-                                                الجانب
-                                            </th>
-                                            <th>
-                                                <i class="ti ti-checkbox me-1"></i>
-                                                النتيجة
-                                            </th>
-                                            <th>
-                                                <i class="ti ti-percentage me-1"></i>
-                                                النسبة المئوية
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($examinee->examAttempts as $attempt)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-light-secondary text-secondary">
-                                                        {{ $attempt->year ?? '-' }}
-                                                    </span>
-                                                </td>
-                                                <td>{{ $attempt->narration->name ?? '-' }}</td>
-                                                <td>{{ $attempt->drawing->name ?? '-' }}</td>
-                                                <td>{{ $attempt->side ?? '-' }}</td>
-                                                <td>
-                                                    @if($attempt->result)
-                                                        <span class="badge bg-light-info text-info">
-                                                            {{ $attempt->result }}
-                                                        </span>
-                                                    @else
-                                                        -
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($attempt->percentage)
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="progress flex-grow-1 me-2" style="height: 20px;">
-                                                                <div class="progress-bar bg-primary" 
-                                                                     role="progressbar" 
-                                                                     style="width: {{ $attempt->percentage }}%"
-                                                                     aria-valuenow="{{ $attempt->percentage }}" 
-                                                                     aria-valuemin="0" 
-                                                                     aria-valuemax="100">
-                                                                </div>
-                                                            </div>
-                                                            <span class="fw-semibold">{{ $attempt->percentage }}%</span>
-                                                        </div>
-                                                    @else
-                                                        -
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif --}}
 
             <!-- معلومات النظام -->
             <div class="col-md-12">
@@ -422,24 +404,138 @@
     </div>
 </div>
 
+<!-- Approve Modal -->
+@can('examinees.approve')
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0 bg-success">
+                <h5 class="modal-title text-white" id="approveModalLabel">
+                    <i class="ti ti-circle-check me-2"></i>
+                    قبول الممتحن
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('examinees.approve', $examinee) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="ti ti-circle-check display-1 text-success mb-3"></i>
+                        <h6>هل أنت متأكد من قبول الممتحن؟</h6>
+                        <p class="text-muted mb-0">
+                            سيتم قبول الممتحن <strong>{{ $examinee->full_name }}</strong> وتأكيد تسجيله
+                        </p>
+                    </div>
+                    
+                    <div class="alert alert-success d-flex align-items-center" role="alert">
+                        <i class="ti ti-info-circle me-2"></i>
+                        <div>
+                            سيتم تغيير حالة الممتحن إلى "مؤكد" ويمكنه المشاركة في الاختبار
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ti ti-check me-1"></i>
+                        قبول الممتحن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
+
+<!-- Reject Modal -->
+@can('examinees.reject')
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0 bg-warning">
+                <h5 class="modal-title text-white" id="rejectModalLabel">
+                    <i class="ti ti-alert-triangle me-2"></i>
+                    رفض الممتحن
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('examinees.reject', $examinee) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="ti ti-user-x display-1 text-warning mb-3"></i>
+                        <h6>هل أنت متأكد من رفض الممتحن؟</h6>
+                        <p class="text-muted mb-0">
+                            سيتم رفض الممتحن <strong>{{ $examinee->full_name }}</strong>
+                        </p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="rejection_reason" class="form-label">
+                            سبب الرفض <span class="text-muted">(اختياري)</span>
+                        </label>
+                        <textarea name="rejection_reason" 
+                                  id="rejection_reason" 
+                                  class="form-control" 
+                                  rows="4" 
+                                  placeholder="اكتب سبب رفض الممتحن (اختياري)...">{{ old('rejection_reason', $examinee->rejection_reason) }}</textarea>
+                        <small class="text-muted">يمكن إرسال سبب الرفض للممتحن إذا تم تعبئته</small>
+                    </div>
+                    
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="ti ti-info-circle me-2"></i>
+                        <div>
+                            سيتم تغيير حالة الممتحن إلى "مرفوض"
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i>
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="ti ti-x me-1"></i>
+                        رفض الممتحن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
+
 <!-- Delete Modal -->
+@can('examinees.delete')
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title text-danger" id="deleteModalLabel">
+            <div class="modal-header border-0 bg-danger">
+                <h5 class="modal-title text-white" id="deleteModalLabel">
                     <i class="ti ti-alert-triangle me-2"></i>
                     تأكيد الحذف
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="text-center">
+                <div class="text-center mb-4">
                     <i class="ti ti-trash display-1 text-danger mb-3"></i>
                     <h6>هل أنت متأكد من حذف الممتحن؟</h6>
                     <p class="text-muted mb-0">
                         سيتم حذف الممتحن <strong>{{ $examinee->full_name ?? $examinee->first_name }}</strong> نهائياً ولا يمكن التراجع عن هذا الإجراء.
                     </p>
+                </div>
+                
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="ti ti-alert-circle me-2"></i>
+                    <div>
+                        <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه!
+                    </div>
                 </div>
             </div>
             <div class="modal-footer border-0 justify-content-center">
@@ -459,6 +555,7 @@
         </div>
     </div>
 </div>
+@endcan
 @endsection
 
 @push('styles')

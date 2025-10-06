@@ -203,4 +203,52 @@ class PublicRegistrationController extends Controller
         return redirect()->route('public.registration.index')
             ->with('success', 'تم الانسحاب من التسجيل');
     }
+
+
+// الكود الموجود حاليًا...
+    
+    /**
+     * البحث عن المكاتب - AJAX
+     */
+    public function searchOffices(Request $request)
+    {
+        $query = $request->get('query', '');
+        
+        $offices = Office::where('name', 'LIKE', "%{$query}%")
+            ->where('is_active', true)
+            ->limit(10)
+            ->get(['id', 'name']);
+        
+        return response()->json($offices);
+    }
+    
+    /**
+     * البحث عن الروايات - AJAX
+     */
+    public function searchNarrations(Request $request)
+    {
+        $query = $request->get('query', '');
+        
+        $narrations = Narration::where('name', 'LIKE', "%{$query}%")
+            ->where('is_active', true)
+            ->limit(10)
+            ->get(['id', 'name']);
+        
+        return response()->json($narrations);
+    }
+    
+    /**
+     * البحث عن الرسوم - AJAX
+     */
+    public function searchDrawings(Request $request)
+    {
+        $query = $request->get('query', '');
+        
+        $drawings = Drawing::where('name', 'LIKE', "%{$query}%")
+            ->where('is_active', true)
+            ->limit(10)
+            ->get(['id', 'name']);
+        
+        return response()->json($drawings);
+    }
 }

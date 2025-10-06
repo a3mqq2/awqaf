@@ -274,6 +274,63 @@
             font-weight: 600;
             color: #212529;
         }
+
+        /* Autocomplete Styles */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+        }
+
+        .autocomplete-results.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: rgba(60, 94, 127, 0.1);
+        }
+
+        .autocomplete-item.active {
+            background: rgba(60, 94, 127, 0.15);
+        }
+
+        .autocomplete-loading {
+            padding: 12px 16px;
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .autocomplete-empty {
+            padding: 12px 16px;
+            text-align: center;
+            color: #6c757d;
+        }
         
         .cairo-font {
             font-family: 'Cairo', sans-serif !important;
@@ -316,13 +373,11 @@
 </head>
 <body>
     <div class="register-container">
-        <!-- Header -->
         <div class="header-card">
             <h1 class="page-title">تسجيل جديد</h1>
             <p class="text-muted mb-0">املأ البيانات المطلوبة بدقة</p>
         </div>
 
-        <!-- Steps Progress -->
         <div class="steps-container">
             <div class="step-item active" data-step="1">
                 <div class="step-circle">1</div>
@@ -370,12 +425,8 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    <a href="{{ route('public.registration.index') }}" class="btn btn-outline-secondary btn-navigation">
-                        رجوع
-                    </a>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(1, 2)" id="step1Next" disabled>
-                        التالي
-                    </button>
+                    <a href="/registration" class="btn btn-outline-secondary btn-navigation">رجوع</a>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(1, 2)" id="step1Next" disabled>التالي</button>
                 </div>
             </div>
 
@@ -385,80 +436,57 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">
-                            الاسم الأول
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="first_name" id="first_name" class="form-control" required>
+                        <label class="form-label">الاسم الأول <span class="text-danger">*</span></label>
+                        <input type="text" name="first_name" id="first_name" class="form-control" required value="{{ old('first_name') }}">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            اسم الأب
-                        </label>
-                        <input type="text" name="father_name" id="father_name" class="form-control">
+                        <label class="form-label">اسم الأب</label>
+                        <input type="text" name="father_name" id="father_name" class="form-control" required value="{{ old('father_name') }}">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            اسم الجد
-                        </label>
-                        <input type="text" name="grandfather_name" id="grandfather_name" class="form-control">
+                        <label class="form-label">اسم الجد</label>
+                        <input type="text" name="grandfather_name" id="grandfather_name" required class="form-control" value="{{ old('grandfather_name') }}">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            اللقب
-                        </label>
-                        <input type="text" name="last_name" id="last_name" class="form-control">
+                        <label class="form-label">اللقب</label>
+                        <input type="text" name="last_name" id="last_name" class="form-control" required value="{{ old('last_name') }}">
                     </div>
 
                     <div class="col-md-6" id="nationalIdField" style="display: none;">
-                        <label class="form-label">
-                            الرقم الوطني / او الاداري
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="12 رقم" maxlength="12">
+                        <label class="form-label">الرقم الوطني / او الاداري <span class="text-danger">*</span></label>
+                        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="أدخل الرقم الوطني" value="{{ old('national_id') }}">
                     </div>
 
                     <div class="col-md-6" id="passportField" style="display: none;">
-                        <label class="form-label">
-                            رقم الهوية
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="passport_no" id="passport_no" class="form-control">
+                        <label class="form-label">رقم الهوية <span class="text-danger">*</span></label>
+                        <input type="text" name="passport_no" id="passport_no" class="form-control" value="{{ old('passport_no') }}">
                     </div>
 
-                    <input type="hidden" name="nationality" id="nationality" value="ليبية">
+                    <input type="hidden" name="nationality" id="nationality" value="">
+
+                    <input type="hidden" name="current_residence" id="current_residence_hidden">
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            تاريخ الميلاد
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="date" name="birth_date" id="birth_date" class="form-control" max="2009-12-31" required>
+                        <label class="form-label">تاريخ الميلاد <span class="text-danger">*</span></label>
+                        <input type="date" name="birth_date" id="birth_date" class="form-control" max="2009-12-31" required value="{{ old('birth_date') }}">
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            الجنس
-                            <span class="text-danger">*</span>
-                        </label>
+                        <label class="form-label">الجنس <span class="text-danger">*</span></label>
                         <select name="gender" id="gender" class="form-select" required>
                             <option value="">اختر...</option>
-                            <option value="male">ذكر</option>
-                            <option value="female">أنثى</option>
+                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>ذكر</option>
+                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>أنثى</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="d-flex gap-3 mt-4">
-                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(1)">
-                        السابق
-                    </button>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(2, 3)">
-                        التالي
-                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(1)">السابق</button>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(2, 3)">التالي</button>
                 </div>
             </div>
 
@@ -468,95 +496,100 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">
-                            رقم الهاتف (بدون صفر)
-                            <span class="text-danger">*</span>
-                        </label>
+                        <label class="form-label">رقم الهاتف (بدون صفر) <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text">+218</span>
-                            <input type="text" name="phone" id="phone" class="form-control" placeholder="912345678" maxlength="9" required>
+                            <input type="text" name="phone" id="phone" class="form-control" placeholder="912345678" maxlength="9" required value="{{ old('phone') }}">
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            رقم الواتساب (اختياري)
-                        </label>
+                        <label class="form-label">رقم الواتساب (اختياري)</label>
                         <div class="input-group">
                             <span class="input-group-text">+218</span>
-                            <input type="text" name="whatsapp" id="whatsapp" class="form-control" placeholder="912345678" maxlength="9">
+                            <input type="text" name="whatsapp" id="whatsapp" class="form-control" placeholder="912345678" maxlength="9" value="{{ old('whatsapp') }}">
                         </div>
                     </div>
 
                     <div class="col-md-12">
-                        <label class="form-label">
-                            مكان الإقامة الحالي
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="current_residence" id="current_residence" class="form-control" placeholder="المدينة والمنطقة" required>
+                        <label class="form-label">مكان الإقامة الحالي <span class="text-danger">*</span></label>
+                        <input type="text" name="current_residence" id="current_residence" class="form-control" placeholder="المدينة والمنطقة" required value="{{ old('current_residence') }}">
                     </div>
                 </div>
 
                 <div class="d-flex gap-3 mt-4">
-                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(2)">
-                        السابق
-                    </button>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(3, 4)">
-                        التالي
-                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(2)">السابق</button>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(3, 4)">التالي</button>
                 </div>
             </div>
 
-            <!-- Step 4: Exam Information -->
+            <!-- Step 4: Exam Information with Autocomplete -->
             <div class="form-step" data-step="4">
                 <h2 class="step-title">بيانات الامتحان</h2>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">
-                            المكتب
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="office_name" id="office_name" class="form-control" placeholder="اسم المكتب" required>
+                        <label class="form-label">المكتب <span class="text-danger">*</span></label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" 
+                                   name="office_name" 
+                                   id="office_name" 
+                                   class="form-control autocomplete-input" 
+                                   placeholder="ابدأ بالكتابة للبحث أو أدخل اسم المكتب..." 
+                                   autocomplete="off"
+                                   required>
+                            <input type="hidden" name="office_id" id="office_id">
+                            <div class="autocomplete-results" id="office_results"></div>
+                        </div>
+                        <small class="text-muted">يمكنك الاختيار من القائمة أو كتابة اسم جديد</small>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            التجمع
-                            <span class="text-danger">*</span>
-                        </label>
+                        <label class="form-label">التجمع <span class="text-danger">*</span></label>
                         <select name="cluster_id" id="cluster_id" class="form-select" required>
                             <option value="">اختر التجمع...</option>
-                            @foreach($clusters as $cluster)
-                                <option value="{{ $cluster->id }}">{{ $cluster->name }}</option>
+                            @foreach ($clusters as $cluster)
+                                <option value="{{$cluster->id}}">{{$cluster->name}}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            الرواية
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="narration_name" id="narration_name" class="form-control" placeholder="اسم الرواية" required>
+                        <label class="form-label">الرواية <span class="text-danger">*</span></label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" 
+                                   name="narration_name" 
+                                   id="narration_name" 
+                                   class="form-control autocomplete-input" 
+                                   placeholder="ابدأ بالكتابة للبحث أو أدخل اسم الرواية..." 
+                                   autocomplete="off"
+                                   required>
+                            <input type="hidden" name="narration_id" id="narration_id">
+                            <div class="autocomplete-results" id="narration_results"></div>
+                        </div>
+                        <small class="text-muted">يمكنك الاختيار من القائمة أو كتابة اسم جديد</small>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">
-                            الرسم
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="drawing_name" id="drawing_name" class="form-control" placeholder="اسم الرسم" required>
+                        <label class="form-label">الرسم <span class="text-danger">*</span></label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" 
+                                   name="drawing_name" 
+                                   id="drawing_name" 
+                                   class="form-control autocomplete-input" 
+                                   placeholder="ابدأ بالكتابة للبحث أو أدخل اسم الرسم..." 
+                                   autocomplete="off"
+                                   required>
+                            <input type="hidden" name="drawing_id" id="drawing_id">
+                            <div class="autocomplete-results" id="drawing_results"></div>
+                        </div>
+                        <small class="text-muted">يمكنك الاختيار من القائمة أو كتابة اسم جديد</small>
                     </div>
                 </div>
 
                 <div class="d-flex gap-3 mt-4">
-                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(3)">
-                        السابق
-                    </button>
-                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(4, 5)">
-                        التالي
-                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(3)">السابق</button>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="validateAndNext(4, 5)">التالي</button>
                 </div>
             </div>
 
@@ -633,12 +666,8 @@
                 </div>
 
                 <div class="d-flex gap-3 mt-4">
-                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(4)">
-                        تعديل البيانات
-                    </button>
-                    <button type="submit" class="btn btn-primary btn-navigation flex-grow-1">
-                        ✓ تأكيد وإتمام التسجيل
-                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-navigation" onclick="prevStep(4)">تعديل البيانات</button>
+                    <button type="button" class="btn btn-primary btn-navigation flex-grow-1" onclick="showFinalConfirmation()">✓ تأكيد وإتمام التسجيل</button>
                 </div>
             </div>
         </form>
@@ -648,58 +677,186 @@
         let currentStep = 1;
         let selectedIdentityType = null;
 
+        // Autocomplete System
+        class Autocomplete {
+            constructor(inputId, resultsId, hiddenId, searchUrl) {
+                this.input = document.getElementById(inputId);
+                this.results = document.getElementById(resultsId);
+                this.hidden = document.getElementById(hiddenId);
+                this.searchUrl = searchUrl;
+                this.timeout = null;
+                this.selectedIndex = -1;
+                this.items = [];
+                
+                this.init();
+            }
+            
+            init() {
+                this.input.addEventListener('input', (e) => this.handleInput(e));
+                this.input.addEventListener('focus', (e) => this.handleFocus(e));
+                this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+                
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.autocomplete-wrapper')) {
+                        this.hideResults();
+                    }
+                });
+            }
+            
+            handleInput(e) {
+                clearTimeout(this.timeout);
+                const query = e.target.value.trim();
+                
+                if (query.length < 2) {
+                    this.hideResults();
+                    // Don't clear hidden value - allow manual text entry
+                    return;
+                }
+                
+                this.timeout = setTimeout(() => this.search(query), 300);
+            }
+            
+            handleFocus(e) {
+                if (this.input.value.trim().length >= 2) {
+                    this.search(this.input.value.trim());
+                }
+            }
+            
+            handleKeydown(e) {
+                if (!this.results.classList.contains('show')) return;
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.selectNext();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.selectPrev();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.selectedIndex >= 0) {
+                            this.selectItem(this.items[this.selectedIndex]);
+                        }
+                        break;
+                    case 'Escape':
+                        this.hideResults();
+                        break;
+                }
+            }
+            
+            async search(query) {
+                this.showLoading();
+                
+                try {
+                    const response = await fetch(`${this.searchUrl}?query=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    this.items = data;
+                    this.displayResults(data);
+                } catch (error) {
+                    console.error('Search error:', error);
+                    this.showError();
+                }
+            }
+            
+            showLoading() {
+                this.results.innerHTML = '<div class="autocomplete-loading">جاري البحث...</div>';
+                this.results.classList.add('show');
+            }
+            
+            showError() {
+                this.results.innerHTML = '<div class="autocomplete-empty">حدث خطأ في البحث</div>';
+            }
+            
+            displayResults(data) {
+                if (data.length === 0) {
+                    this.results.innerHTML = '<div class="autocomplete-empty">لا توجد نتائج</div>';
+                    return;
+                }
+                
+                this.results.innerHTML = data.map((item, index) => 
+                    `<div class="autocomplete-item" data-id="${item.id}" data-name="${item.name}" data-index="${index}">
+                        ${item.name}
+                    </div>`
+                ).join('');
+                
+                this.results.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        this.selectItem({
+                            id: item.dataset.id,
+                            name: item.dataset.name
+                        });
+                    });
+                });
+                
+                this.selectedIndex = -1;
+                this.results.classList.add('show');
+            }
+            
+            selectNext() {
+                const items = this.results.querySelectorAll('.autocomplete-item');
+                if (items.length === 0) return;
+                
+                if (this.selectedIndex < items.length - 1) {
+                    this.selectedIndex++;
+                    this.updateSelection(items);
+                }
+            }
+            
+            selectPrev() {
+                const items = this.results.querySelectorAll('.autocomplete-item');
+                if (items.length === 0) return;
+                
+                if (this.selectedIndex > 0) {
+                    this.selectedIndex--;
+                    this.updateSelection(items);
+                }
+            }
+            
+            updateSelection(items) {
+                items.forEach(item => item.classList.remove('active'));
+                if (this.selectedIndex >= 0) {
+                    items[this.selectedIndex].classList.add('active');
+                    items[this.selectedIndex].scrollIntoView({ block: 'nearest' });
+                }
+            }
+            
+            selectItem(item) {
+                this.input.value = item.name;
+                this.hidden.value = item.id;
+                this.hideResults();
+                this.input.dispatchEvent(new Event('change'));
+            }
+            
+            hideResults() {
+                this.results.classList.remove('show');
+                this.selectedIndex = -1;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle session errors and success messages
-            @if(session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: '<span style="font-family: Cairo; color: #dc3545;">خطأ</span>',
-                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('error') }}</p>',
-                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                    confirmButtonColor: '#dc3545',
-                    backdrop: 'rgba(220, 53, 69, 0.4)',
-                    customClass: {
-                        popup: 'cairo-font',
-                        confirmButton: 'cairo-font'
-                    }
-                });
-            @endif
-
-            @if(session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: '<span style="font-family: Cairo; color: #28a745;">نجح</span>',
-                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
-                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                    confirmButtonColor: '#28a745',
-                    backdrop: 'rgba(40, 167, 69, 0.4)',
-                    customClass: {
-                        popup: 'cairo-font',
-                        confirmButton: 'cairo-font'
-                    }
-                });
-            @endif
-
-            @if($errors->any())
-                let errorsList = '<ul style="text-align: right; padding-right: 20px; margin: 0;">';
-                @foreach($errors->all() as $error)
-                    errorsList += '<li style="margin-bottom: 8px;">{{ $error }}</li>';
-                @endforeach
-                errorsList += '</ul>';
-
-                Swal.fire({
-                    icon: 'error',
-                    title: '<span style="font-family: Cairo; color: #dc3545;">يوجد أخطاء في النموذج</span>',
-                    html: '<div style="font-family: Cairo; font-size: 16px; direction: rtl;">' + errorsList + '</div>',
-                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                    confirmButtonColor: '#dc3545',
-                    backdrop: 'rgba(220, 53, 69, 0.4)',
-                    customClass: {
-                        popup: 'cairo-font',
-                        confirmButton: 'cairo-font'
-                    }
-                });
-            @endif
+            // Initialize Autocomplete for all three fields
+            const officeAutocomplete = new Autocomplete(
+                'office_name',
+                'office_results',
+                'office_id',
+                '/registration/search/offices'
+            );
+            
+            const narrationAutocomplete = new Autocomplete(
+                'narration_name',
+                'narration_results',
+                'narration_id',
+                '/registration/search/narrations'
+            );
+            
+            const drawingAutocomplete = new Autocomplete(
+                'drawing_name',
+                'drawing_results',
+                'drawing_id',
+                '/registration/search/drawings'
+            );
 
             const libyanCard = document.getElementById('libyanCard');
             const foreignCard = document.getElementById('foreignCard');
@@ -717,7 +874,7 @@
                 passportField.style.display = 'none';
                 document.getElementById('national_id').required = true;
                 document.getElementById('passport_no').required = false;
-                document.getElementById('nationality').value = 'ليبية';
+                document.getElementById('nationality').value = 'ليبي';
             });
             
             foreignCard.addEventListener('click', function() {
@@ -730,15 +887,13 @@
                 passportField.style.display = 'block';
                 document.getElementById('national_id').required = false;
                 document.getElementById('passport_no').required = true;
-                document.getElementById('nationality').value = '';
+                document.getElementById('nationality').value = 'غير ليبي';
             });
         });
 
         function validateAndNext(currentStep, nextStep) {
             if (validateStep(currentStep)) {
                 goToStep(nextStep);
-            } else {
-                // Error is already shown in validateStep function
             }
         }
 
@@ -754,7 +909,6 @@
                         html: `<p style="font-family: Cairo; font-size: 16px; direction: rtl;">يرجى تعبئة حقل <strong>${getFieldLabel(input)}</strong></p>`,
                         confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
                         confirmButtonColor: '#3c5e7f',
-                        backdrop: 'rgba(60, 94, 127, 0.4)',
                         customClass: {
                             popup: 'cairo-font',
                             confirmButton: 'cairo-font'
@@ -764,7 +918,6 @@
                     return false;
                 }
                 
-                // Validate birth date
                 if (input.id === 'birth_date') {
                     const birthDate = new Date(input.value);
                     const maxDate = new Date('2009-12-31');
@@ -775,7 +928,6 @@
                             html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">تاريخ الميلاد يجب أن يكون <strong>2009 أو أقل</strong></p>',
                             confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
                             confirmButtonColor: '#998965',
-                            backdrop: 'rgba(153, 137, 101, 0.4)',
                             customClass: {
                                 popup: 'cairo-font',
                                 confirmButton: 'cairo-font'
@@ -786,27 +938,10 @@
                     }
                 }
                 
-                // Validate national ID length
                 if (input.id === 'national_id' && input.required) {
-                    if (input.value.length !== 12) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '<span style="font-family: Cairo; color: #3c5e7f;">رقم وطني غير صحيح</span>',
-                            html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">الرقم الوطني / او الاداري يجب أن يكون <strong>12 رقم</strong><br>الأرقام المدخلة حالياً: <strong>' + input.value.length + '</strong></p>',
-                            confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
-                            confirmButtonColor: '#3c5e7f',
-                            backdrop: 'rgba(60, 94, 127, 0.4)',
-                            customClass: {
-                                popup: 'cairo-font',
-                                confirmButton: 'cairo-font'
-                            }
-                        });
-                        input.focus();
-                        return false;
-                    }
+                    // No validation - field is open
                 }
                 
-                // Validate phone number
                 if (input.id === 'phone') {
                     if (input.value.length !== 9) {
                         Swal.fire({
@@ -815,7 +950,6 @@
                             html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">رقم الهاتف يجب أن يكون <strong>9 أرقام</strong> بدون صفر<br>الأرقام المدخلة حالياً: <strong>' + input.value.length + '</strong></p>',
                             confirmButtonText: '<span style="font-family: Cairo;">تصحيح</span>',
                             confirmButtonColor: '#3c5e7f',
-                            backdrop: 'rgba(60, 94, 127, 0.4)',
                             customClass: {
                                 popup: 'cairo-font',
                                 confirmButton: 'cairo-font'
@@ -826,6 +960,9 @@
                     }
                 }
             }
+            
+            // No validation needed for office, narration, and drawing
+            // They can be entered as text if not found in autocomplete
             
             return true;
         }
@@ -869,12 +1006,10 @@
         }
 
         function updateReviewSection() {
-            // Identity type
             const identityType = document.querySelector('input[name="identity_type"]:checked').value;
             document.getElementById('review_identity_type').textContent = 
                 identityType === 'national_id' ? 'ليبي الجنسية' : 'جنسية أخرى';
             
-            // Full name
             const firstName = document.getElementById('first_name').value;
             const fatherName = document.getElementById('father_name').value;
             const grandfatherName = document.getElementById('grandfather_name').value;
@@ -882,7 +1017,6 @@
             document.getElementById('review_full_name').textContent = 
                 `${firstName} ${fatherName} ${grandfatherName} ${lastName}`.trim();
             
-            // National ID or Passport
             if (identityType === 'national_id') {
                 document.getElementById('review_national_id_row').style.display = 'flex';
                 document.getElementById('review_passport_row').style.display = 'none';
@@ -895,20 +1029,16 @@
                     document.getElementById('passport_no').value;
             }
             
-            // Birth date
             document.getElementById('review_birth_date').textContent = 
                 document.getElementById('birth_date').value;
             
-            // Gender
             const gender = document.getElementById('gender').value;
             document.getElementById('review_gender').textContent = 
                 gender === 'male' ? 'ذكر' : 'أنثى';
             
-            // Phone
             document.getElementById('review_phone').textContent = 
                 '+218' + document.getElementById('phone').value;
             
-            // WhatsApp
             const whatsapp = document.getElementById('whatsapp').value;
             if (whatsapp) {
                 document.getElementById('review_whatsapp_row').style.display = 'flex';
@@ -917,26 +1047,92 @@
                 document.getElementById('review_whatsapp_row').style.display = 'none';
             }
             
-            // Residence
             document.getElementById('review_residence').textContent = 
                 document.getElementById('current_residence').value;
             
-            // Office
             document.getElementById('review_office').textContent = 
                 document.getElementById('office_name').value;
             
-            // Cluster
             const clusterId = document.getElementById('cluster_id').value;
             const clusterText = document.querySelector(`#cluster_id option[value="${clusterId}"]`).textContent;
             document.getElementById('review_cluster').textContent = clusterText;
             
-            // Narration
             document.getElementById('review_narration').textContent = 
                 document.getElementById('narration_name').value;
             
-            // Drawing
             document.getElementById('review_drawing').textContent = 
                 document.getElementById('drawing_name').value;
+        }
+
+        function showFinalConfirmation() {
+            Swal.fire({
+                title: '<div style="font-family: Cairo; color: #3c5e7f; font-size: 26px; font-weight: 700; line-height: 1.6;">تأكيد التسجيل النهائي</div>',
+                html: `
+                    <div style="font-family: Cairo; text-align: center; padding: 20px; direction: rtl;">
+                        <div style="font-size: 20px; font-weight: 600; color: #212529; margin-bottom: 20px;">
+                            هل أنت متأكد من التسجيل في
+                        </div>
+                        <div style="background: linear-gradient(135deg, #3c5e7f 0%, #2d4a5f 100%); 
+                                    color: white; 
+                                    padding: 25px; 
+                                    border-radius: 15px; 
+                                    margin: 20px 0;
+                                    box-shadow: 0 5px 20px rgba(60, 94, 127, 0.3);">
+                            <div style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">
+                                امتحان الإجازة
+                            </div>
+                            <div style="font-size: 32px; font-weight: 900; letter-spacing: 2px;">
+                                2025 - 1447م
+                            </div>
+                        </div>
+                        <div style="background: #fff3cd; 
+                                    border: 2px solid #ffc107; 
+                                    border-radius: 10px; 
+                                    padding: 15px; 
+                                    margin-top: 20px;
+                                    color: #856404;">
+                            <strong>⚠️ تنبيه مهم:</strong>
+                            <div style="margin-top: 10px;">
+                                بعد التأكيد لن تتمكن من تعديل البيانات
+                            </div>
+                        </div>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3c5e7f',
+                cancelButtonColor: '#998965',
+                confirmButtonText: '<span style="font-family: Cairo; font-size: 18px; font-weight: 700;">نعم، أنا متأكد</span>',
+                cancelButtonText: '<span style="font-family: Cairo; font-size: 18px; font-weight: 600;">مراجعة البيانات</span>',
+                reverseButtons: true,
+                width: '600px',
+                padding: '2em',
+                backdrop: 'rgba(60, 94, 127, 0.4)',
+                customClass: {
+                    popup: 'cairo-font',
+                    confirmButton: 'cairo-font',
+                    cancelButton: 'cairo-font'
+                },
+                buttonsStyling: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: '<span style="font-family: Cairo;">جاري إتمام التسجيل...</span>',
+                        html: '<p style="font-family: Cairo;">يرجى الانتظار</p>',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Submit the form
+                    document.getElementById('registrationForm').submit();
+                }
+            });
         }
     </script>
 </body>

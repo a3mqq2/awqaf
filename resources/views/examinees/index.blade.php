@@ -150,6 +150,7 @@
                                     <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>مؤكد</option>
                                     <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>قيد المراجعة</option>
                                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>قيد التأكيد</option>
+                                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>مرفوض</option>
                                     <option value="withdrawn" {{ request('status') == 'withdrawn' ? 'selected' : '' }}>منسحب</option>
                                 </select>
                             </div>
@@ -359,6 +360,7 @@
                                                             @if(request('status') == 'confirmed') مؤكد
                                                             @elseif(request('status') == 'under_review') قيد المراجعة
                                                             @elseif(request('status') == 'pending') قيد التأكيد
+                                                            @elseif(request('status') == 'rejected') مرفوض
                                                             @else منسحب
                                                             @endif
                                                         </span>
@@ -545,8 +547,22 @@
                                                 <i class="ti ti-clock me-1"></i>
                                                 قيد التأكيد
                                             </span>
-                                        @else
+                                        @elseif($examinee->status == 'rejected')
                                             <span class="badge bg-light-danger text-danger">
+                                                <i class="ti ti-x-circle me-1"></i>
+                                                مرفوض
+                                            </span>
+                                            @if($examinee->rejection_reason)
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-link text-danger p-0 ms-1" 
+                                                        data-bs-toggle="tooltip" 
+                                                        data-bs-html="true"
+                                                        title="<strong>سبب الرفض:</strong><br>{{ $examinee->rejection_reason }}">
+                                                    <i class="ti ti-info-circle"></i>
+                                                </button>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-light-secondary text-secondary">
                                                 <i class="ti ti-circle-x me-1"></i>
                                                 منسحب
                                             </span>
@@ -578,7 +594,6 @@
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#approveModal"
                                                     data-examinee-id="{{ $examinee->id }}"
-                                                    data-examinee-name
                                                     data-examinee-name="{{ $examinee->full_name }}"
                                                     title="قبول">
                                                 <i class="ti ti-check"></i>
@@ -973,4 +988,4 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSelectedCount();
 });
 </script>
-@endpush    
+@endpush

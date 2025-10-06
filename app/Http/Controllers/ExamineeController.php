@@ -343,7 +343,6 @@ class ExamineeController extends Controller
 
         $examinee->update($data);
 
-        // Handle exam attempts - delete all old ones and recreate
         $examinee->examAttempts()->delete();
 
         if ($request->has('exam_attempts')) {

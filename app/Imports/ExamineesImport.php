@@ -17,7 +17,6 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
 {
     public function model(array $row)
     {
-        // تخطي الصفوف الفارغة أو صف العناوين
         if (empty(array_filter($row, fn ($v) => $v !== null && $v !== ''))) {
             return null;
         }
@@ -25,7 +24,6 @@ class ExamineesImport implements ToModel, WithChunkReading, WithCalculatedFormul
             return null;
         }
 
-        // فهارس الأعمدة في "الورقة1"
         $idx = [
             'submitted_at' => 2,
             'first_name'   => 3,
