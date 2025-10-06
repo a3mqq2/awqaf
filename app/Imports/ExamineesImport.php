@@ -19,7 +19,7 @@ class ExamineesImport implements
     ToModel, 
     WithChunkReading, 
     WithCalculatedFormulas, 
-    WithHeadingRow, 
+    WithHeadingRow
 {
     public function model(array $row)
     {
