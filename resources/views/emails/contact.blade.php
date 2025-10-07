@@ -70,28 +70,29 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📩 رسالة تواصل جديدة</h1>
+            <img src="{{asset('logo-white.png')}}" alt="">
+            <h1> رسالة تواصل جديدة</h1>
             <p style="margin: 5px 0 0 0;">نظام امتحان الإجازة</p>
         </div>
         
         <div class="content">
             <div class="field">
-                <span class="label">👤 الاسم الكامل:</span>
+                <span class="label"> الاسم الكامل:</span>
                 <span class="value">{{ $contactName }}</span>
             </div>
             
             <div class="field">
-                <span class="label">📱 رقم الهاتف:</span>
+                <span class="label"> رقم الهاتف:</span>
                 <span class="value">{{ $contactPhone }}</span>
             </div>
             
             <div class="field">
-                <span class="label">📍 المدينة:</span>
+                <span class="label"> المدينة:</span>
                 <span class="value">{{ $contactCity }}</span>
             </div>
             
             <div class="field">
-                <span class="label">💬 الرسالة:</span>
+                <span class="label"> الرسالة:</span>
                 <div class="message-box">
                     <div class="value">{{ $contactMessage }}</div>
                 </div>
