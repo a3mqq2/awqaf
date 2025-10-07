@@ -991,7 +991,7 @@ textarea.form-control {
                                               required></textarea>
                                 </div>
             
-                                <input type="hidden" name="email_to" value="info@waqsa.ly">
+                                <input type="hidden" name="email_to" value="aishaaltery89@gmail.com">
             
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-submit-contact">
