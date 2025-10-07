@@ -917,7 +917,7 @@ textarea.form-control {
             <div class="float-button-container">
                 <div class="float-tooltip">
                     <span class="float-tooltip-arrow">👈</span>
-                    اضغط هنا للتواصل مع الإدارة
+                    هل تواجه مشكلة؟ اضغط هنا للتواصل مع الإدارة
                 </div>
                 <button class="float-button" data-bs-toggle="modal" data-bs-target="#contactModal" title="اضغط هنا للتواصل مع الإدارة">
                     <i class="ti ti-message-circle"></i>
