@@ -14,84 +14,77 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class ExamineesImport implements 
-    ToModel, 
-    WithChunkReading, 
-    WithCalculatedFormulas, 
+class ExamineesImport implements
+    ToModel,
+    WithChunkReading,
+    WithCalculatedFormulas,
     WithStartRow
 {
     public function model(array $row)
     {
-        // لو الصف كله فاضي نتجاهله
         if (empty(array_filter($row))) {
             return null;
         }
 
-        // الاسم الكامل
-        $fullName = trim(($row[1] ?? '') . ' ' . ($row[2] ?? '') . ' ' . ($row[3] ?? '') . ' ' . ($row[4] ?? ''));
+        $firstName       = trim((string)($row[1] ?? ''));
+        $fatherName      = trim((string)($row[2] ?? ''));
+        $grandfatherName = trim((string)($row[3] ?? ''));
+        $lastName        = trim((string)($row[4] ?? ''));
 
-        if (!$fullName) {
+        $fullName = trim(preg_replace('/\s+/', ' ', implode(' ', array_filter([
+            $firstName, $fatherName, $grandfatherName, $lastName,
+        ], fn($v) => $v != ''))));
+
+        if ($fullName == '') {
             return null;
         }
 
-        // الرواية (العمود 15)
-        $narrationId = !empty($row[15] ?? null)
-            ? Narration::firstOrCreate(['name' => trim($row[15])])->id
-            : null;
+        $submittedAt = $this->parseDate($row[0] ?? null);
+        $birthDate   = $this->parseDate($row[10] ?? null);
 
-        // الرسم (العمود 16)
-        $drawingId = !empty($row[16] ?? null)
-            ? Drawing::firstOrCreate(['name' => trim($row[16])])->id
-            : null;
-
-        // المكتب (العمود 11)
         $officeId = !empty($row[11] ?? null)
-            ? Office::firstOrCreate(['name' => trim($row[11])])->id
+            ? Office::firstOrCreate(['name' => trim((string)$row[11])])->id
             : null;
 
-        // مكان الامتحان (العمود 14)
-        $clusterId = !empty($row[14] ?? null)
-            ? Cluster::firstOrCreate(['name' => trim($row[14])])->id
+        $narrationId = !empty($row[14] ?? null)
+            ? Narration::firstOrCreate(['name' => trim((string)$row[14])])->id
             : null;
 
-        // تاريخ الميلاد (العمود 10)
-        $birthDate = null;
-        if (!empty($row[10] ?? null)) {
-            if (is_numeric($row[10])) {
-                try {
-                    $birthDate = ExcelDate::excelToDateTimeObject($row[10]);
-                } catch (\Exception $e) {
-                    $birthDate = null;
-                }
-            } else {
-                try {
-                    $birthDate = Carbon::parse($row[10]);
-                } catch (\Exception $e) {
-                    $birthDate = null;
-                }
-            }
-        }
+        $clusterId = !empty($row[15] ?? null)
+            ? Cluster::firstOrCreate(['name' => trim((string)$row[15])])->id
+            : null;
+
+        $drawingId = !empty($row[16] ?? null)
+            ? Drawing::firstOrCreate(['name' => trim((string)$row[16])])->id
+            : null;
+
+        $genderRaw = trim((string)($row[9] ?? ''));
+        $gender    = $genderRaw == 'أنثى' ? 'female' : 'male';
+
+        $nationalId = $this->digits($row[6] ?? null);
+        $phone      = $this->digits($row[12] ?? null);
+        $whatsapp   = $this->digits($row[13] ?? null);
 
         return new Examinee([
-            'submitted_at'     => !empty($row[0]) ? Carbon::parse($row[0]) : now(),
-            'first_name'       => trim($row[1] ?? ''),
-            'father_name'      => trim($row[2] ?? ''),
-            'grandfather_name' => trim($row[3] ?? ''),
-            'last_name'        => trim($row[4] ?? ''),
-            'full_name'        => $fullName,
-            'nationality'      => trim($row[5] ?? 'ليبي'),
-            'national_id'      => !empty($row[6]) ? strval(intval($row[6])) : null,
-            'passport_no'      => !empty($row[7]) ? trim($row[7]) : null,
-            'current_residence'=> trim($row[8] ?? ''),
-            'gender'           => (trim($row[9] ?? '') === 'أنثى') ? 'female' : 'male',
-            'birth_date'       => $birthDate,
-            'office_id'        => $officeId,
-            'cluster_id'       => $clusterId,
-            'narration_id'     => $narrationId,
-            'drawing_id'       => $drawingId,
-            'status'           => 'pending',
-            'phone'            => !empty($row[12]) ? strval($row[12]) : '',
-            'whatsapp'         => !empty($row[13]) ? strval($row[13]) : '',
+            'submitted_at'      => $submittedAt ?? now(),
+            'first_name'        => $firstName,
+            'father_name'       => $fatherName,
+            'grandfather_name'  => $grandfatherName,
+            'last_name'         => $lastName,
+            'full_name'         => $fullName,
+            'nationality'       => trim((string)($row[5] ?? 'ليبي')),
+            'national_id'       => $nationalId != '' ? $nationalId : null,
+            'passport_no'       => !empty($row[7]) ? trim((string)$row[7]) : null,
+            'current_residence' => trim((string)($row[8] ?? '')),
+            'gender'            => $gender,
+            'birth_date'        => $birthDate,
+            'office_id'         => $officeId,
+            'cluster_id'        => $clusterId,
+            'narration_id'      => $narrationId,
+            'drawing_id'        => $drawingId,
+            'status'            => 'pending',
+            'phone'             => $phone != '' ? $phone : null,
+            'whatsapp'          => $whatsapp != '' ? $whatsapp : null,
         ]);
     }
 
@@ -102,6 +95,42 @@ class ExamineesImport implements
 
     public function startRow(): int
     {
-        return 2; // نتجاهل الصف الأول (العناوين)
+        return 2;
+    }
+
+    private function parseDate($value): ?Carbon
+    {
+        if (empty($value) && $value != 0) {
+            return null;
+        }
+
+        try {
+            if (is_numeric($value)) {
+                $dt = ExcelDate::excelToDateTimeObject((float)$value);
+                return Carbon::instance($dt);
+            }
+            return Carbon::parse((string)$value);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function digits($value): string
+    {
+        if ($value == null) {
+            return '';
+        }
+
+        $s = (string)$value;
+
+        $map = [
+            '٠' => '0','١' => '1','٢' => '2','٣' => '3','٤' => '4',
+            '٥' => '5','٦' => '6','٧' => '7','٨' => '8','٩' => '9',
+        ];
+        $s = strtr($s, $map);
+
+        $s = preg_replace('/\D+/', '', $s) ?? '';
+
+        return ltrim($s, '0') == '' && $s != '' ? '0' : $s;
     }
 }
