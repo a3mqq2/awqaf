@@ -85,6 +85,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('examinees/{examinee}/reject', [ExamineeController::class, 'reject'])->name('examinees.reject');
     Route::resource('examinees', ExamineeController::class);
 
+
+    // contact.send
+
     // Logout
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout'); 
 });
+
+
+Route::post('contact/send', [DashboardController::class, 'send'])->name('contact.send');

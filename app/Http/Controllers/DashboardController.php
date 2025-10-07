@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Examinee;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Office;
 use App\Models\Cluster;
-use App\Models\User;
-use App\Models\Narration;
 use App\Models\Drawing;
-use Carbon\Carbon;
+use App\Models\Examinee;
+use App\Models\Narration;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class DashboardController extends Controller
 {
@@ -151,5 +154,49 @@ class DashboardController extends Controller
             'drawingData',
             'latestExaminees'
         ));
+    }
+
+
+    public function send(Request $request)
+    {
+        // التحقق من البيانات
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'city' => 'required|string|max:255',
+            'message' => 'required|string|max:1000',
+            'email_to' => 'required|email'
+        ], [
+            'name.required' => 'الاسم مطلوب',
+            'phone.required' => 'رقم الهاتف مطلوب',
+            'city.required' => 'المدينة مطلوبة',
+            'message.required' => 'الرسالة مطلوبة',
+            'email_to.required' => 'البريد الإلكتروني مطلوب',
+            'email_to.email' => 'البريد الإلكتروني غير صحيح'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
+
+        try {
+            // إرسال البريد الإلكتروني
+            Mail::send('emails.contact', [
+                'contactName' => $request->name,
+                'contactPhone' => $request->phone,
+                'contactCity' => $request->city,
+                'contactMessage' => $request->message,
+            ], function ($message) use ($request) {
+                $message->to($request->email_to)
+                        ->subject('رسالة جديدة من نظام التسجيل - ' . $request->name);
+                $message->from(config('mail.from.address'), config('mail.from.name'));
+            });
+
+            return back()->with('success', 'تم إرسال رسالتك بنجاح. سيتم التواصل معك قريباً.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Contact form error: ' . $e->getMessage());
+            return back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
+        }
     }
 }

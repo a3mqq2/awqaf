@@ -147,6 +147,103 @@
         .mb-3 {
             margin-bottom: 1.25rem;
         }
+        
+        /* Float Button Styles */
+        .float-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #3c5e7f 0%, #2d4960 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(60, 94, 127, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: none;
+            animation: pulse 2s infinite;
+        }
+        
+        .float-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(60, 94, 127, 0.4);
+        }
+        
+        .float-button i {
+            animation: wave 1s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(60, 94, 127, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(60, 94, 127, 0.5);
+            }
+        }
+        
+        @keyframes wave {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-15deg);
+            }
+            75% {
+                transform: rotate(15deg);
+            }
+        }
+        
+        .modal-header {
+            background-color: #3c5e7f;
+            color: white;
+            border-bottom: none;
+            border-radius: 0;
+        }
+        
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 1;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+        }
+        
+        .contact-form .form-label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-submit-contact {
+            background-color: #3c5e7f;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-submit-contact:hover {
+            background-color: #2d4960;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
     </style>
 </head>
 <body>
@@ -223,8 +320,6 @@
                         @enderror
                     </div>
 
-           
-
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-check">
                             <i class="ti ti-search me-2"></i>
@@ -236,6 +331,92 @@
                 <div class="footer-text">
                     <i class="ti ti-info-circle me-1"></i>
                     يرجى إدخال البيانات كما تم تسجيلها للحصول على النتيجة الصحيحة
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Float Button -->
+    <button class="float-button" data-bs-toggle="modal" data-bs-target="#contactModal" title="هل تواجه مشكلة ؟ اضغط هنا للتواصل مع الادارة">
+        <i class="ti ti-message-circle"></i>
+    </button>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">
+                        <i class="ti ti-message-dots me-2"></i>
+                        تواصل مع الإدارة
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ route('contact.send') }}" class="contact-form">
+                        @csrf
+                        
+                        <div class="mb-3">
+                            <label for="contact_name" class="form-label">
+                                <i class="ti ti-user me-1"></i>
+                                الاسم الكامل
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="contact_name" 
+                                   name="name" 
+                                   placeholder="أدخل اسمك الكامل"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="contact_phone" class="form-label">
+                                <i class="ti ti-phone me-1"></i>
+                                رقم الهاتف
+                            </label>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="contact_phone" 
+                                   name="phone" 
+                                   placeholder="أدخل رقم الهاتف"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="contact_city" class="form-label">
+                                <i class="ti ti-map-pin me-1"></i>
+                                المدينة
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="contact_city" 
+                                   name="city" 
+                                   placeholder="أدخل اسم المدينة"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="contact_message" class="form-label">
+                                <i class="ti ti-message me-1"></i>
+                                الرسالة
+                            </label>
+                            <textarea class="form-control" 
+                                      id="contact_message" 
+                                      name="message" 
+                                      rows="4" 
+                                      placeholder="اكتب رسالتك هنا..."
+                                      required></textarea>
+                        </div>
+
+                        <input type="hidden" name="email_to" value="info@waqsa.ly">
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-submit-contact">
+                                <i class="ti ti-send me-2"></i>
+                                إرسال الرسالة
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
