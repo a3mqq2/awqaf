@@ -483,7 +483,7 @@
                 <i class="ti ti-building-store me-2 text-success"></i>
                 أكثر المكاتب نشاطاً
             </h5>
-            <a href="{{ route('examinees.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+            <a href="{{ route('offices.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
                 <i class="ti ti-eye me-1"></i>
                 عرض الكل
             </a>
@@ -560,7 +560,7 @@
                 <i class="ti ti-users-group me-2 text-warning"></i>
                 أكثر التجمعات نشاطاً
             </h5>
-            <a href="{{ route('examinees.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+            <a href="{{ route('clusters.index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
                 <i class="ti ti-eye me-1"></i>
                 عرض الكل
             </a>
