@@ -70,7 +70,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{asset('logo-white.png')}}" width="150" alt="">
+            <img src="{{asset('logo-white.png')}}" width="200" alt="">
             <h1> رسالة تواصل جديدة</h1>
             <p style="margin: 5px 0 0 0;">نظام امتحان الإجازة</p>
         </div>
