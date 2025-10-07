@@ -702,10 +702,21 @@
                                                 <i class="ti ti-circle-check me-1"></i>
                                                 مؤكد
                                             </span>
-                                        @elseif($examinee->status == 'pending')
+                                            @elseif($examinee->status == 'pending')
                                             <span class="badge bg-warning bg-opacity-10 text-warning">
                                                 <i class="ti ti-clock me-1"></i>
                                                 قيد التأكيد
+                                            </span>
+
+                                            @elseif($examinee->status == 'under_review')
+                                            <span class="badge bg-warning bg-opacity-10 text-warning">
+                                                <i class="ti ti-clock me-1"></i>
+                                                قيد المراجعه
+                                            </span>
+                                            @elseif($examinee->status == 'rejected')
+                                            <span class="badge bg-danger bg-opacity-10 text-danger">
+                                                <i class="ti ti-circle-x me-1"></i>
+                                                مرفوض
                                             </span>
                                         @else
                                             <span class="badge bg-danger bg-opacity-10 text-danger">
