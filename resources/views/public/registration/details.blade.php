@@ -610,7 +610,7 @@
                                       required></textarea>
                         </div>
 
-                        <input type="hidden" name="email_to" value="aishaaltery89@gmail.com">
+                        <input type="hidden" name="email_to" value="support@waqsa.ly">
 
                         <div class="d-grid">
                             <button type="submit" class="btn btn-submit-contact">
