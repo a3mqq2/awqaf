@@ -469,11 +469,6 @@
                 @endif
                 
 
-                @if ($examinee->status == 'confirmed')
-                    <a href="{{ route('public.registration.print-card', ['ids' => $examinee->id]) }}" class="btn btn-success flex-grow-1" target="_blank">
-                        🖨️ طباعة بطاقة الدخول للامتحان
-                    </a>
-                @endif
 
                 <a href="{{ route('public.registration.index') }}" class="btn btn-secondary">
                     العودة للرئيسية
