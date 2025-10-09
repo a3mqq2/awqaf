@@ -13,7 +13,6 @@
         <h4 class="text-center f-w-500 mb-3 mt-3">مرحباً بعودتك</h4>
         <p class="text-center text-muted mb-4">يرجى تسجيل الدخول للوصول إلى حسابك</p>
         
-       
         @include('layouts.messages')
 
         <form method="POST" action="{{ route('login.submit') }}" dir="rtl" style="direction: rtl !important;">
@@ -111,6 +110,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
         }, 5000);
+    });
+
+    // Disable submit buttons on page load
+    const submitButtons = document.querySelectorAll("button[type='submit'], input[type='submit']");
+    submitButtons.forEach(btn => btn.disabled = true);
+
+    window.addEventListener("load", function() {
+        submitButtons.forEach(btn => btn.disabled = false);
+    });
+
+    // Prevent double submit
+    const forms = document.querySelectorAll("form");
+    forms.forEach(form => {
+        form.addEventListener("submit", function() {
+            submitButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> جاري المعالجة...';
+            });
+        });
     });
 });
 </script>
