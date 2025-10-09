@@ -125,7 +125,8 @@
             color: #155724;
         }
         
-        .status-under_review {
+        .status-under_review,
+        .status-pending {
             background: #fff3cd;
             color: #856404;
         }
@@ -191,6 +192,52 @@
             padding: 20px;
             margin-bottom: 25px;
             font-weight: 600;
+        }
+        
+        .card-alert {
+            background: #e8f5e9;
+            border: 3px solid #28a745;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+            animation: pulseGreen 2s ease-in-out infinite;
+        }
+        
+        .card-alert-title {
+            color: #28a745;
+            font-weight: 800;
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .card-alert-message {
+            color: #155724;
+            font-size: 18px;
+            line-height: 1.8;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .card-alert-submessage {
+            color: #2d5016;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes pulseGreen {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(40, 167, 69, 0.4);
+            }
         }
         
         .important-note {
@@ -478,6 +525,14 @@
             .float-tooltip-arrow {
                 font-size: 20px;
             }
+            
+            .card-alert-title {
+                font-size: 20px;
+            }
+            
+            .card-alert-message {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -497,6 +552,30 @@
                 <div class="alert alert-success">
                     {{ session('success') }}
                 </div>
+            @endif
+
+            <!-- Card Print Alert for Confirmed Status -->
+            @if($examinee->status == 'confirmed')
+            <div class="card-alert">
+                <div class="card-alert-title">
+                    <span>تنبيه هام جداً</span>
+                </div>
+                <div class="card-alert-message">
+                    يجب عليك سحب بطاقة الدخول وطباعتها
+                </div>
+                <div class="card-alert-submessage">
+                    البطاقة إلزامية لحضور الامتحان ولن يسمح بالدخول بدونها
+                </div>
+                <a href="{{ route('public.registration.print-card', ['ids' => $examinee->id]) }}" 
+                   target="_blank" 
+                   class="btn-print-card"
+                   style="display: inline-block; margin-top: 10px;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline-block; vertical-align: middle; margin-left: 8px;">
+                        <path d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"/>
+                    </svg>
+                    طباعة البطاقة الآن
+                </a>
+            </div>
             @endif
 
             <div class="info-box">
@@ -559,7 +638,7 @@
                         @elseif($examinee->status == 'pending')
                             <span class="status-badge status-pending">⏳ قيد المراجعة</span>
                         @elseif($examinee->status == 'under_review')
-                            <span class="status-badge status-review">⏳ قيد المراجعة</span>
+                            <span class="status-badge status-under_review">⏳ قيد المراجعة</span>
                         @else
                             <span class="status-badge status-withdrawn">✗ منسحب</span>
                         @endif
@@ -577,7 +656,7 @@
                 <ul>
                     <li>تأكد من صحة رقمك الوطني أو الإداري أو الهوية للاستعلام عن القبول في الامتحان</li>
                     @if ($examinee->status == "confirmed")
-                    <li>يمكنك طباعة بطاقتك الشخصية من خلال الزر أدناه</li>
+                    <li><strong>يجب طباعة بطاقة الدخول - البطاقة إلزامية لحضور الامتحان</strong></li>
                     @endif
                     <li>يمكنك العودة لتأكيد أو تعديل تسجيلك من خلال صفحة الاستعلام</li>
                     <li>تأكد من صحة رقم الهاتف المسجل للتواصل</li>
@@ -587,7 +666,7 @@
 
             <div class="buttons-container">
                 @if ($examinee->status == "confirmed")
-                <a href="{{ route('examinees.print.cards') }}?ids={{ $examinee->id }}" 
+                <a href="{{ route('public.registration.print-card', ['ids' => $examinee->id]) }}" 
                     target="_blank" 
                     class="btn-print-card">
                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display: inline-block; vertical-align: middle; margin-left: 8px;">
@@ -701,43 +780,43 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         // Auto-scroll to top on page load
         window.addEventListener('load', function() {
             window.scrollTo(0, 0);
         });
-    </script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: '<span style="font-family: Cairo; color: #dc3545;">تنبيه</span>',
-                html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('error') }}</p>',
-                confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                confirmButtonColor: '#dc3545',
-                customClass: {
-                    popup: 'cairo-font',
-                    confirmButton: 'cairo-font'
-                }
-            });
-        @endif
         
-        @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: '<span style="font-family: Cairo; color: #28a745;"> تمت بنجاح </span>',
-                html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
-                confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                confirmButtonColor: '#28a745',
-                customClass: {
-                    popup: 'cairo-font',
-                    confirmButton: 'cairo-font'
-                }
-            });
-        @endif
-    });
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: '<span style="font-family: Cairo; color: #dc3545;">تنبيه</span>',
+                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('error') }}</p>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#dc3545',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+            
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '<span style="font-family: Cairo; color: #28a745;">تمت بنجاح</span>',
+                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#28a745',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+        });
     </script>
 
 </body>
