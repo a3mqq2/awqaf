@@ -457,5 +457,18 @@
     </script>
   
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+      // Disable all submit buttons as soon as the script runs
+      document.addEventListener("DOMContentLoaded", function() {
+          const submitButtons = document.querySelectorAll("button[type='submit'], input[type='submit']");
+          submitButtons.forEach(btn => btn.disabled = true);
+      });
+  
+      // Re-enable them once the page fully loads
+      window.addEventListener("load", function() {
+          const submitButtons = document.querySelectorAll("button[type='submit'], input[type='submit']");
+          submitButtons.forEach(btn => btn.disabled = false);
+      });
+  </script>  
   </body>
 </html>

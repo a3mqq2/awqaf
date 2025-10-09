@@ -428,6 +428,30 @@
         </div>
         @endif
 
+        <!-- Confirmed Alert - Print Card Reminder -->
+        @if($examinee->status == 'confirmed')
+        <div class="rejection-alert" style="background: #e8f5e9; border-color: #28a745;">
+            <div class="rejection-title" style="color: #28a745;">
+                <span>✓</span>
+                <span>تنبيه هام</span>
+            </div>
+            <div class="rejection-reason" style="border-right-color: #28a745;">
+                <strong>يجب عليك سحب بطاقة الدخول وطباعتها</strong>
+                <br>
+                البطاقة إلزامية لحضور الامتحان ولن يسمح بالدخول بدونها
+            </div>
+            <div class="mt-3 text-center">
+                <a href="{{ route('public.registration.print-card', ['ids' => $examinee->id]) }}" 
+                   class="btn btn-success" 
+                   target="_blank"
+                   style="padding: 12px 40px; font-size: 17px; font-weight: 700;">
+                    <i class="ti ti-printer"></i>
+                    طباعة بطاقة الدخول الآن
+                </a>
+            </div>
+        </div>
+        @endif
+
         <!-- Actions -->
         <div class="detail-card">
             <div class="action-buttons">

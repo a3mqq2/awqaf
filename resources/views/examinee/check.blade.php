@@ -423,5 +423,19 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Disable all submit buttons as soon as the script runs
+        document.addEventListener("DOMContentLoaded", function() {
+            const submitButtons = document.querySelectorAll("button[type='submit'], input[type='submit']");
+            submitButtons.forEach(btn => btn.disabled = true);
+        });
+    
+        // Re-enable them once the page fully loads
+        window.addEventListener("load", function() {
+            const submitButtons = document.querySelectorAll("button[type='submit'], input[type='submit']");
+            submitButtons.forEach(btn => btn.disabled = false);
+        });
+    </script>
+    
 </body>
 </html>
