@@ -90,6 +90,11 @@
                 <span class="label"> المدينة:</span>
                 <span class="value">{{ $contactCity }}</span>
             </div>
+
+            <div class="field">
+                <span class="label"> الرقم الوطني او جواز سفر :</span>
+                <span class="value">{{ $contactNationalId }}</span>
+            </div>
             
             <div class="field">
                 <span class="label"> الرسالة:</span>

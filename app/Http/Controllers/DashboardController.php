@@ -166,14 +166,14 @@ class DashboardController extends Controller
             'city' => 'required|string|max:255',
             'message' => 'required|string|max:1000',
             'email_to' => 'required|email',
-            'national_id' => 'nullable|string|max:20',
+            'national_id' => 'nullable|string',
         ], [
             'name.required' => 'الاسم مطلوب',
             'phone.required' => 'رقم الهاتف مطلوب',
             'city.required' => 'المدينة مطلوبة',
             'message.required' => 'الرسالة مطلوبة',
             'email_to.required' => 'البريد الإلكتروني مطلوب',
-            'email_to.email' => 'البريد الإلكتروني غير صحيح'
+            'email_to.email' => 'البريد الإلكتروني غير صحيح',
         ]);
 
         if ($validator->fails()) {
@@ -187,6 +187,7 @@ class DashboardController extends Controller
                 'contactPhone' => $request->phone,
                 'contactCity' => $request->city,
                 'contactMessage' => $request->message,
+                'contactNationalId' => $request->national_id,
             ], function ($message) use ($request) {
                 $message->to($request->email_to)
                         ->subject('رسالة جديدة من نظام التسجيل - ' . $request->name);
