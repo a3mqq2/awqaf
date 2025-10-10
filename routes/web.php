@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ReportController;
@@ -97,7 +98,8 @@ Route::middleware(['auth'])->group(function () {
 
     
     // contact.send
-
+    Route::get('/backup/download', [BackupController::class, 'download'])
+    ->name('backup.download');
     // Logout
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout'); 
 });

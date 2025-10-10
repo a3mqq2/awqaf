@@ -12,12 +12,7 @@ class SystemLogSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [
-            'system_logs',   // صلاحية عرض سجلات النظام
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web', 'name_ar' => 'سجلات النظام']);
-        }
+        Permission::firstOrCreate(['name' => 'system_logs'],['name' => 'system_logs', 'guard_name' => 'web', 'name_ar' => 'سجلات النظام']);
+        Permission::firstOrCreate(['name' => 'backup'],['name' => 'backup', 'guard_name' => 'web', 'name_ar' => ' النسخ الاحتياطي' ]);
     }
 }

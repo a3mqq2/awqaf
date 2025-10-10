@@ -129,6 +129,18 @@
 @endcan
 
 
+@can('backup')
+<li class="pc-item">
+  <a href="{{ route('backup.download') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-database-export"></i>
+    </span>
+    <span class="pc-mtext">تنزيل نسخة احتياطية</span>
+  </a>
+</li>
+@endcan
+
+
 @can('system_logs')
 <li class="pc-item">
   <a href="{{ route('system_logs.index') }}" class="pc-link">
