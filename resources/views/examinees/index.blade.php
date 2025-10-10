@@ -173,6 +173,7 @@
                                     المكاتب
                                 </label>
                                 <select name="office_id[]" class="form-select select2-multiple" multiple="multiple">
+                                    <option value="">الكل</option>
                                     @foreach($offices as $office)
                                         <option value="{{ $office->id }}" 
                                             {{ in_array($office->id, (array)request('office_id', [])) ? 'selected' : '' }}>
@@ -189,6 +190,7 @@
                                     التجمعات
                                 </label>
                                 <select name="cluster_id[]" class="form-select select2-multiple" multiple="multiple">
+                                    <option value="">الكل</option>
                                     @foreach($clusters as $cluster)
                                         <option value="{{ $cluster->id }}" 
                                             {{ in_array($cluster->id, (array)request('cluster_id', [])) ? 'selected' : '' }}>
