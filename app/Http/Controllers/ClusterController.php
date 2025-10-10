@@ -9,12 +9,18 @@ class ClusterController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Cluster::withCount('examinees');
-
+        $query = Cluster::query();
+    
+        $query->withCount(['examinees' => function ($q) use ($request) {
+            if ($request->filled('examinee_status')) {
+                $q->where('status', $request->examinee_status);
+            }
+        }]);
+    
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-
+    
         if ($request->filled('status')) {
             if ($request->status === 'active') {
                 $query->where('is_active', true);
@@ -22,7 +28,7 @@ class ClusterController extends Controller
                 $query->where('is_active', false);
             }
         }
-
+    
         if ($request->filled('sort')) {
             switch ($request->sort) {
                 case 'oldest':
@@ -44,12 +50,13 @@ class ClusterController extends Controller
         } else {
             $query->latest();
         }
-
+    
         $perPage = $request->get('per_page', 10);
         $clusters = $query->paginate($perPage)->appends($request->query());
-
+    
         return view('clusters.index', compact('clusters'));
     }
+    
 
     public function create()
     {

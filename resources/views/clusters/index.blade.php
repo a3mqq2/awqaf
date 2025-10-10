@@ -42,6 +42,16 @@
                             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>غير مفعل</option>
                         </select>
                     </div>
+                    <div class="col-md-2">
+                        <label class="form-label">حالة الممتحن</label>
+                        <select name="examinee_status" class="form-select">
+                            <option value="">كل الحالات</option>
+                            <option value="confirmed" {{ request('examinee_status') == 'confirmed' ? 'selected' : '' }}>مؤكد</option>
+                            <option value="pending" {{ request('examinee_status') == 'pending' ? 'selected' : '' }}>قيد التأكيد</option>
+                            <option value="withdrawn" {{ request('examinee_status') == 'withdrawn' ? 'selected' : '' }}>منسحب</option>
+                        </select>
+                    </div>
+                    
                     <div class="col-md-3">
                         <label class="form-label">ترتيب حسب</label>
                         <select name="sort" class="form-select">
@@ -96,7 +106,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('examinees.index', ['cluster_id' => $cluster->id]) }}" class="badge bg-primary text-white">
+                                        <a href="{{ route('examinees.index', ['cluster_id' => $cluster->id, 'status' => request('examinee_status')]) }}" class="badge bg-primary text-white">
                                             {{ $cluster->examinees_count }}
                                         </a>
                                     </td>
