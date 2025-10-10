@@ -16,6 +16,7 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\TreasuryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NarrationController;
+use App\Http\Controllers\SystemLogController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\TransactionController;
@@ -86,6 +87,15 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('examinees', ExamineeController::class);
 
 
+
+    Route::prefix('system-logs')->name('system_logs.')->middleware('auth')->group(function () {
+        Route::get('/', [SystemLogController::class, 'index'])->name('index');
+        Route::get('/{systemLog}', [SystemLogController::class, 'show'])->name('show');
+        Route::delete('/{systemLog}', [SystemLogController::class, 'destroy'])->name('destroy');
+        Route::delete('/clear/all', [SystemLogController::class, 'clear'])->name('clear');
+    });
+
+    
     // contact.send
 
     // Logout

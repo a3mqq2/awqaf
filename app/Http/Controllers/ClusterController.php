@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cluster;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClusterController extends Controller
 {
@@ -69,9 +71,15 @@ class ClusterController extends Controller
             'name' => 'required|string|max:255|unique:clusters,name',
         ]);
 
-        Cluster::create([
+        $cluster = Cluster::create([
             'name' => $request->name,
             'is_active' => $request->boolean('is_active', true),
+        ]);
+
+        // سجل العملية
+        SystemLog::create([
+            'description' => "قام المستخدم بإضافة تجمع جديد: {$cluster->name}",
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('clusters.index')->with('success', 'تمت إضافة التجمع بنجاح');
@@ -93,12 +101,25 @@ class ClusterController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
+        // سجل العملية
+        SystemLog::create([
+            'description' => "قام المستخدم بتحديث بيانات التجمع: {$cluster->name}",
+            'user_id' => Auth::id(),
+        ]);
+
         return redirect()->route('clusters.index')->with('success', 'تم تحديث التجمع بنجاح');
     }
 
     public function destroy(Cluster $cluster)
     {
+        $name = $cluster->name;
         $cluster->delete();
+
+        // سجل العملية
+        SystemLog::create([
+            'description' => "قام المستخدم بحذف التجمع: {$name}",
+            'user_id' => Auth::id(),
+        ]);
 
         return redirect()->route('clusters.index')->with('success', 'تم حذف التجمع بنجاح');
     }
@@ -106,6 +127,13 @@ class ClusterController extends Controller
     public function toggle(Cluster $cluster)
     {
         $cluster->update(['is_active' => !$cluster->is_active]);
+
+        // سجل العملية
+        $status = $cluster->is_active ? 'تفعيل' : 'إلغاء التفعيل';
+        SystemLog::create([
+            'description' => "قام المستخدم بعملية {$status} للتجمع: {$cluster->name}",
+            'user_id' => Auth::id(),
+        ]);
 
         return redirect()->route('clusters.index')->with('success', 'تم تغيير حالة التفعيل');
     }

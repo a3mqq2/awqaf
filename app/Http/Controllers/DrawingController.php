@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Drawing;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DrawingController extends Controller
 {
@@ -62,9 +64,14 @@ class DrawingController extends Controller
             'name' => 'required|string|max:255|unique:drawings,name',
         ]);
 
-        Drawing::create([
+        $drawing = Drawing::create([
             'name' => $request->name,
             'is_active' => $request->has('is_active'),
+        ]);
+
+        SystemLog::create([
+            'description' => "قام المستخدم بإضافة رسم جديد: {$drawing->name}",
+            'user_id'     => Auth::id(),
         ]);
 
         return redirect()->route('drawings.index')->with('success', 'تمت إضافة الرسم بنجاح');
@@ -86,12 +93,23 @@ class DrawingController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
+        SystemLog::create([
+            'description' => "قام المستخدم بتعديل بيانات الرسم: {$drawing->name}",
+            'user_id'     => Auth::id(),
+        ]);
+
         return redirect()->route('drawings.index')->with('success', 'تم تعديل الرسم بنجاح');
     }
 
     public function destroy(Drawing $drawing)
     {
+        $name = $drawing->name;
         $drawing->delete();
+
+        SystemLog::create([
+            'description' => "قام المستخدم بحذف الرسم: {$name}",
+            'user_id'     => Auth::id(),
+        ]);
 
         return redirect()->route('drawings.index')->with('success', 'تم حذف الرسم بنجاح');
     }
@@ -100,6 +118,12 @@ class DrawingController extends Controller
     {
         $drawing->is_active = ! $drawing->is_active;
         $drawing->save();
+
+        $status = $drawing->is_active ? 'تفعيل' : 'إلغاء التفعيل';
+        SystemLog::create([
+            'description' => "قام المستخدم بعملية {$status} للرسم: {$drawing->name}",
+            'user_id'     => Auth::id(),
+        ]);
 
         return redirect()->route('drawings.index')->with('success', 'تم تغيير حالة الرسم بنجاح');
     }

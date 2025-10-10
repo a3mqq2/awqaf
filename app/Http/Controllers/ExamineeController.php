@@ -253,6 +253,13 @@ class ExamineeController extends Controller
             }
         }
 
+
+        SystemLog::create([
+            'description' => "قام المستخدم بإضافة ممتحن جديد: {$examinee->full_name} (رقم وطني: {$examinee->national_id})",
+            'user_id'     => Auth::id(),
+        ]);
+
+
         return redirect()->route('examinees.index')
             ->with('success', 'تم إضافة الممتحن بنجاح');
     }
@@ -308,61 +315,85 @@ class ExamineeController extends Controller
         }
         
         $data = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'father_name' => 'nullable|string|max:255',
+            'first_name'       => 'required|string|max:255',
+            'father_name'      => 'nullable|string|max:255',
             'grandfather_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'nationality' => 'nullable|string|max:255',
-            'national_id' => 'nullable|string|max:50|unique:examinees,national_id,'.$examinee->id,
-            'passport_no' => 'nullable|string|max:50',
-            'phone' => 'nullable|string|max:20',
-            'whatsapp' => 'nullable|string|max:20',
-            'current_residence' => 'nullable|string|max:255',
-            'gender' => 'nullable|in:male,female',
-            'birth_date' => 'nullable|date',
-            'office_id' => 'required|exists:offices,id',
-            'cluster_id' => 'required|exists:clusters,id',
-            'narration_id' => 'required|exists:narrations,id',
-            'drawing_id' => 'required|exists:drawings,id',
-            'status' => 'required|in:confirmed,pending,withdrawn',
-            'notes' => 'nullable|string',
+            'last_name'        => 'nullable|string|max:255',
+            'nationality'      => 'nullable|string|max:255',
+            'national_id'      => 'nullable|string|max:50|unique:examinees,national_id,'.$examinee->id,
+            'passport_no'      => 'nullable|string|max:50',
+            'phone'            => 'nullable|string|max:20',
+            'whatsapp'         => 'nullable|string|max:20',
+            'current_residence'=> 'nullable|string|max:255',
+            'gender'           => 'nullable|in:male,female',
+            'birth_date'       => 'nullable|date',
+            'office_id'        => 'required|exists:offices,id',
+            'cluster_id'       => 'required|exists:clusters,id',
+            'narration_id'     => 'required|exists:narrations,id',
+            'drawing_id'       => 'required|exists:drawings,id',
+            'status'           => 'required|in:confirmed,pending,withdrawn',
+            'notes'            => 'nullable|string',
         ]);
-
-        // التحقق من صلاحية تغيير الـ cluster
-        if (!empty($userClusterIds) && !in_array($data['cluster_id'], $userClusterIds)) {
-            abort(403, 'ليس لديك صلاحية لنقل الممتحن إلى هذا التجمع');
-        }
-
-        // Generate full_name
+    
+        // إعادة توليد full_name
         $data['full_name'] = trim(
             ($data['first_name'] ?? '') . ' ' . 
             ($data['father_name'] ?? '') . ' ' . 
             ($data['grandfather_name'] ?? '') . ' ' . 
             ($data['last_name'] ?? '')
         );
-
+    
+        // حفظ القيم القديمة
+        $oldValues = $examinee->getOriginal();
+    
+        // تحديث البيانات
         $examinee->update($data);
-
-        $examinee->examAttempts()->delete();
-
-        if ($request->has('exam_attempts')) {
-            foreach ($request->exam_attempts as $attempt) {
-                if (!empty($attempt['year']) || !empty($attempt['narration_id']) || !empty($attempt['drawing_id'])) {
-                    $examinee->examAttempts()->create([
-                        'year' => $attempt['year'] ?? null,
-                        'narration_id' => $attempt['narration_id'] ?? null,
-                        'drawing_id' => $attempt['drawing_id'] ?? null,
-                        'side' => $attempt['side'] ?? null,
-                        'result' => $attempt['result'] ?? null,
-                        'percentage' => $attempt['percentage'] ?? null,
-                    ]);
-                }
+    
+        // ترجمات الحقول
+        $fieldLabels = [
+            'first_name'        => 'الاسم الأول',
+            'father_name'       => 'اسم الأب',
+            'grandfather_name'  => 'اسم الجد',
+            'last_name'         => 'اللقب',
+            'full_name'         => 'الاسم الكامل',
+            'nationality'       => 'الجنسية',
+            'national_id'       => 'الرقم الوطني',
+            'passport_no'       => 'رقم الجواز',
+            'phone'             => 'رقم الهاتف',
+            'whatsapp'          => 'الواتساب',
+            'current_residence' => 'مكان الإقامة',
+            'gender'            => 'الجنس',
+            'birth_date'        => 'تاريخ الميلاد',
+            'office_id'         => 'المكتب',
+            'cluster_id'        => 'التجمع',
+            'narration_id'      => 'الرواية',
+            'drawing_id'        => 'الرسم',
+            'status'            => 'الحالة',
+            'notes'             => 'الملاحظات',
+        ];
+    
+        // مقارنة القيم القديمة والجديدة
+        $changes = [];
+        foreach ($data as $field => $newValue) {
+            $oldValue = $oldValues[$field] ?? null;
+            if ($oldValue != $newValue) {
+                $label = $fieldLabels[$field] ?? $field;
+                $changes[] = "تم تغيير [{$label}] من '{$oldValue}' إلى '{$newValue}'";
             }
         }
-
+    
+        if (!empty($changes)) {
+            \App\Models\SystemLog::create([
+                'description' => "قام المستخدم بتعديل بيانات الممتحن: {$examinee->full_name} (ID: {$examinee->id})\n"
+                               . implode("\n", $changes),
+                'user_id'     => $user->id,
+            ]);
+        }
+    
         return redirect()->route('examinees.show', $examinee)
             ->with('success', 'تم تحديث بيانات الممتحن بنجاح');
     }
+    
 
     public function destroy(Examinee $examinee)
     {
@@ -373,12 +404,22 @@ class ExamineeController extends Controller
         if (!empty($userClusterIds) && !in_array($examinee->cluster_id, $userClusterIds)) {
             abort(403, 'ليس لديك صلاحية لحذف هذا الممتحن');
         }
-        
+    
+        $name = $examinee->full_name;
+        $id   = $examinee->id;
+    
         $examinee->delete();
-        
+    
+        // إضافة سجل بسيط في system_logs
+        \App\Models\SystemLog::create([
+            'description' => "تم حذف الممتحن: {$name} (ID: {$id})",
+            'user_id'     => $user->id,
+        ]);
+    
         return redirect()->route('examinees.index')
             ->with('success', 'تم حذف الممتحن بنجاح');
     }
+    
 
     public function print(Request $request)
     {
@@ -489,6 +530,11 @@ class ExamineeController extends Controller
     
         $examinees = $query->get();
     
+        \App\Models\SystemLog::create([
+            'description' => "تم طباعة كشف ممتحنين",
+            'user_id'     => $user->id,
+        ]);
+
         return view('examinees.print', compact('examinees'));
     }
 
@@ -504,6 +550,10 @@ class ExamineeController extends Controller
         ]);
     
         Excel::import(new ExamineesImport, $request->file('file'));
+        \App\Models\SystemLog::create([
+            'description' => "تم استيراد بيانات من الإكسل",
+            'user_id'     => auth()->id(),
+        ]);
     
         return redirect()->route('examinees.index')
             ->with('success', 'تم استيراد الممتحنين وجميع محاولاتهم بنجاح');
@@ -517,6 +567,12 @@ class ExamineeController extends Controller
         $examinees = Examinee::with(['cluster', 'narration', 'drawing'])
             ->whereIn('id', $ids)
             ->get();
+
+            \App\Models\SystemLog::create([
+                'description' => "تم طباعة كروت ممتحنين",
+                'user_id'     => auth()->id(),
+            ]);
+            
         
         return view('examinees.card-print', compact('examinees'));
     }
@@ -530,6 +586,12 @@ class ExamineeController extends Controller
         $examinee->update([
             'status' => 'confirmed'
         ]);
+
+        \App\Models\SystemLog::create([
+            'description' => "تم قبول ممتحن: {$examinee->full_name} (ID: {$examinee->id})",
+            'user_id'     => auth()->id(),
+        ]);
+
 
         return redirect()->route('examinees.index')
             ->with('success', 'تم قبول الممتحن بنجاح');
@@ -557,6 +619,13 @@ class ExamineeController extends Controller
             'rejection_reason' => $request->rejection_reason
         ]);
     
+
+        \App\Models\SystemLog::create([
+            'description' => "تم رفض ممتحن: {$examinee->full_name} (ID: {$examinee->id})",
+            'user_id'     => $user->id,
+        ]);
+
+        
         return redirect()->route('examinees.index')
             ->with('success', 'تم رفض الممتحن بنجاح');
     }

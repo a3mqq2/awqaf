@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Office;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OfficeController extends Controller
 {
@@ -62,9 +64,15 @@ class OfficeController extends Controller
             'name' => 'required|string|max:255|unique:offices,name',
         ]);
 
-        Office::create([
+        $office = Office::create([
             'name' => $request->name,
             'is_active' => $request->boolean('is_active', true),
+        ]);
+
+        // Log
+        SystemLog::create([
+            'description' => "تمت إضافة المكتب: {$office->name}",
+            'user_id'     => Auth::id(),
         ]);
 
         return redirect()->route('offices.index')->with('success', 'تمت إضافة المكتب بنجاح');
@@ -86,18 +94,39 @@ class OfficeController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
+        // Log
+        SystemLog::create([
+            'description' => "تم تعديل المكتب: {$office->name}",
+            'user_id'     => Auth::id(),
+        ]);
+
         return redirect()->route('offices.index')->with('success', 'تم تحديث المكتب بنجاح');
     }
 
     public function destroy(Office $office)
     {
+        $name = $office->name;
         $office->delete();
+
+        SystemLog::create([
+            'description' => "تم حذف المكتب: {$name}",
+            'user_id'     => Auth::id(),
+        ]);
+
         return redirect()->route('offices.index')->with('success', 'تم حذف المكتب بنجاح');
     }
 
     public function toggle(Office $office)
     {
         $office->update(['is_active' => !$office->is_active]);
+
+        $status = $office->is_active ? 'تفعيل' : 'إلغاء التفعيل';
+
+        SystemLog::create([
+            'description' => "تم {$status} المكتب: {$office->name}",
+            'user_id'     => Auth::id(),
+        ]);
+
         return redirect()->route('offices.index')->with('success', 'تم تغيير حالة المكتب بنجاح');
     }
 }

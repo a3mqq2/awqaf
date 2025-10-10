@@ -128,6 +128,20 @@
 </li>
 @endcan
 
+
+@can('system_logs')
+<li class="pc-item">
+  <a href="{{ route('system_logs.index') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-file"></i>
+    </span>
+    <span class="pc-mtext">سجلات النظام</span>
+  </a>
+</li>
+@endcan
+
+
+
 <li class="pc-item">
   <a href="{{ route('logout') }}" class="pc-link">
     <span class="pc-micon"><i class="ti ti-power"></i></span>

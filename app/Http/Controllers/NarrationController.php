@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Narration;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NarrationController extends Controller
 {
@@ -46,7 +48,6 @@ class NarrationController extends Controller
         }
     
         $perPage = $request->get('per_page', 10);
-    
         $narrations = $query->paginate($perPage)->appends($request->query());
     
         return view('narrations.index', compact('narrations'));
@@ -63,9 +64,15 @@ class NarrationController extends Controller
             'name' => 'required|string|max:255|unique:narrations,name',
         ]);
 
-        Narration::create([
+        $narration = Narration::create([
             'name' => $request->name,
             'is_active' => $request->has('is_active'),
+        ]);
+
+        // Log
+        SystemLog::create([
+            'description' => "تمت إضافة الرواية: {$narration->name}",
+            'user_id'     => Auth::id(),
         ]);
 
         return redirect()->route('narrations.index')->with('success', 'تمت إضافة الرواية بنجاح');
@@ -87,12 +94,25 @@ class NarrationController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
+        // Log
+        SystemLog::create([
+            'description' => "تم تعديل الرواية: {$narration->name}",
+            'user_id'     => Auth::id(),
+        ]);
+
         return redirect()->route('narrations.index')->with('success', 'تم تعديل الرواية بنجاح');
     }
 
     public function destroy(Narration $narration)
     {
+        $name = $narration->name;
         $narration->delete();
+
+        // Log
+        SystemLog::create([
+            'description' => "تم حذف الرواية: {$name}",
+            'user_id'     => Auth::id(),
+        ]);
 
         return redirect()->route('narrations.index')->with('success', 'تم حذف الرواية بنجاح');
     }
@@ -101,6 +121,14 @@ class NarrationController extends Controller
     {
         $narration->is_active = ! $narration->is_active;
         $narration->save();
+
+        $status = $narration->is_active ? 'تفعيل' : 'إلغاء التفعيل';
+
+        // Log
+        SystemLog::create([
+            'description' => "تم {$status} الرواية: {$narration->name}",
+            'user_id'     => Auth::id(),
+        ]);
 
         return redirect()->route('narrations.index')->with('success', 'تم تغيير حالة الرواية بنجاح');
     }
