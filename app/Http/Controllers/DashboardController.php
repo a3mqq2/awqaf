@@ -165,7 +165,8 @@ class DashboardController extends Controller
             'phone' => 'required|string|max:20',
             'city' => 'required|string|max:255',
             'message' => 'required|string|max:1000',
-            'email_to' => 'required|email'
+            'email_to' => 'required|email',
+            'national_id' => 'nullable|string|max:20',
         ], [
             'name.required' => 'الاسم مطلوب',
             'phone.required' => 'رقم الهاتف مطلوب',

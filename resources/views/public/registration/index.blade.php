@@ -516,6 +516,20 @@
                                    required>
                         </div>
 
+
+                        <div class="mb-3">
+                            <label for="national_id" class="form-label">
+                             الرقم الوطني او جواز سفر
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="national_id" 
+                                   name="national_id" 
+                                   placeholder="أدخل الرقم الوطني"
+                                   required>
+                        </div>
+
+
                         <div class="mb-3">
                             <label for="contact_message" class="form-label">
                                 <i class="ti ti-message me-1"></i>
