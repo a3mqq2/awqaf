@@ -111,7 +111,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{ route('examinees.index', ['cluster_id' => $cluster->id]) }}" class="btn btn-sm btn-outline-info" title="عرض الممتحنين">
+                                        <a href="{{ route('examinees.index', ['cluster_id' => $cluster->id, 'status' => request('examinee_status')]) }}" class="btn btn-sm btn-outline-info" title="عرض الممتحنين">
                                             <i class="ti ti-eye"></i>
                                         </a>
                                         <a href="{{ route('clusters.edit', $cluster) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="تعديل">
