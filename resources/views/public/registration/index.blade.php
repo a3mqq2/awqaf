@@ -603,7 +603,7 @@
             @if(session('success'))
                 Swal.fire({
                     icon: 'success',
-                    title: '<span style="font-family: Cairo; color: #28a745;">نجح التسجيل</span>',
+                    title: '<span style="font-family: Cairo; color: #28a745;"> تمت بنجاح </span>',
                     html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
                     confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
                     confirmButtonColor: '#28a745',
