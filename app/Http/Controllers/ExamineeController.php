@@ -372,7 +372,7 @@ class ExamineeController extends Controller
             'notes'             => 'الملاحظات',
         ];
     
-        // ترجمة الحالة للعربية
+        // ترجمة الحالات للعربية
         $statusLabels = [
             'pending'      => 'قيد الانتظار',
             'withdrawn'    => 'منسحب',
@@ -381,7 +381,13 @@ class ExamineeController extends Controller
             'rejected'     => 'مرفوض',
         ];
     
-        // جلب الاسم من الموديلات المرتبطة
+        // ترجمة الجنس للعربية
+        $genderLabels = [
+            'male'   => 'ذكر',
+            'female' => 'أنثى',
+        ];
+    
+        // الموديلات المرتبطة بالحقل
         $relationNames = [
             'office_id'   => \App\Models\Office::class,
             'cluster_id'  => \App\Models\Cluster::class,
@@ -394,6 +400,12 @@ class ExamineeController extends Controller
         foreach ($data as $field => $newValue) {
             $oldValue = $oldValues[$field] ?? null;
     
+            // توحيد صيغة التاريخ قبل المقارنة
+            if ($field === 'birth_date') {
+                $oldValue = $oldValue ? \Carbon\Carbon::parse($oldValue)->format('Y-m-d') : null;
+                $newValue = $newValue ? \Carbon\Carbon::parse($newValue)->format('Y-m-d') : null;
+            }
+    
             // إذا الحقل من نوع *_id نجيب الاسم من العلاقة
             if (array_key_exists($field, $relationNames)) {
                 $modelClass = $relationNames[$field];
@@ -403,12 +415,19 @@ class ExamineeController extends Controller
                 $newValue = $newName;
             }
     
-            // ترجمة الحالة للعربية
+            // ترجمة الحالة
             if ($field === 'status') {
                 $oldValue = $statusLabels[$oldValue] ?? $oldValue;
                 $newValue = $statusLabels[$newValue] ?? $newValue;
             }
     
+            // ترجمة الجنس
+            if ($field === 'gender') {
+                $oldValue = $genderLabels[$oldValue] ?? $oldValue;
+                $newValue = $genderLabels[$newValue] ?? $newValue;
+            }
+    
+            // فقط نسجل التغيير الحقيقي
             if ($oldValue != $newValue) {
                 $label = $fieldLabels[$field] ?? $field;
                 $changes[] = "تم تغيير [{$label}] من '{$oldValue}' إلى '{$newValue}'";
