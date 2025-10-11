@@ -331,7 +331,7 @@ class ExamineeController extends Controller
             'cluster_id'       => 'required|exists:clusters,id',
             'narration_id'     => 'required|exists:narrations,id',
             'drawing_id'       => 'required|exists:drawings,id',
-            'status'           => 'required|in:confirmed,pending,withdrawn',
+            'status'           => 'required|in:confirmed,pending,withdrawn,under_review,rejected',
             'notes'            => 'nullable|string',
         ]);
     
@@ -372,10 +372,43 @@ class ExamineeController extends Controller
             'notes'             => 'الملاحظات',
         ];
     
+        // ترجمة الحالة للعربية
+        $statusLabels = [
+            'pending'      => 'قيد الانتظار',
+            'withdrawn'    => 'منسحب',
+            'confirmed'    => 'مؤكد',
+            'under_review' => 'قيد المراجعة',
+            'rejected'     => 'مرفوض',
+        ];
+    
+        // جلب الاسم من الموديلات المرتبطة
+        $relationNames = [
+            'office_id'   => \App\Models\Office::class,
+            'cluster_id'  => \App\Models\Cluster::class,
+            'narration_id'=> \App\Models\Narration::class,
+            'drawing_id'  => \App\Models\Drawing::class,
+        ];
+    
         // مقارنة القيم القديمة والجديدة
         $changes = [];
         foreach ($data as $field => $newValue) {
             $oldValue = $oldValues[$field] ?? null;
+    
+            // إذا الحقل من نوع *_id نجيب الاسم من العلاقة
+            if (array_key_exists($field, $relationNames)) {
+                $modelClass = $relationNames[$field];
+                $oldName = $oldValue ? ($modelClass::find($oldValue)->name ?? null) : null;
+                $newName = $newValue ? ($modelClass::find($newValue)->name ?? null) : null;
+                $oldValue = $oldName;
+                $newValue = $newName;
+            }
+    
+            // ترجمة الحالة للعربية
+            if ($field === 'status') {
+                $oldValue = $statusLabels[$oldValue] ?? $oldValue;
+                $newValue = $statusLabels[$newValue] ?? $newValue;
+            }
+    
             if ($oldValue != $newValue) {
                 $label = $fieldLabels[$field] ?? $field;
                 $changes[] = "تم تغيير [{$label}] من '{$oldValue}' إلى '{$newValue}'";
@@ -393,6 +426,7 @@ class ExamineeController extends Controller
         return redirect()->route('examinees.show', $examinee)
             ->with('success', 'تم تحديث بيانات الممتحن بنجاح');
     }
+    
     
 
     public function destroy(Examinee $examinee)
