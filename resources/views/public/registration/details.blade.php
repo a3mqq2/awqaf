@@ -436,9 +436,7 @@
                 <span>تنبيه هام</span>
             </div>
             <div class="rejection-reason" style="border-right-color: #28a745;">
-                <strong>يجب عليك سحب بطاقة الدخول وطباعتها</strong>
-                <br>
-                البطاقة إلزامية لحضور الامتحان ولن يسمح بالدخول بدونها
+                <strong>جب عليك الاحتفاظ بنسخة من هذه البطاقة؛ لأجل الدخول بها وقت الامتحان..</strong>
             </div>
             <div class="mt-3 text-center">
                 <a href="{{ route('public.registration.print-card', ['ids' => $examinee->id]) }}" 

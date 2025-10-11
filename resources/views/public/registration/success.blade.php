@@ -561,10 +561,7 @@
                     <span>تنبيه هام جداً</span>
                 </div>
                 <div class="card-alert-message">
-                    يجب عليك سحب بطاقة الدخول وطباعتها
-                </div>
-                <div class="card-alert-submessage">
-                    البطاقة إلزامية لحضور الامتحان ولن يسمح بالدخول بدونها
+                    جب عليك الاحتفاظ بنسخة من هذه البطاقة؛ لأجل الدخول بها وقت الامتحان..
                 </div>
                 <a href="{{ route('public.registration.print-card', ['ids' => $examinee->id]) }}" 
                    target="_blank" 
