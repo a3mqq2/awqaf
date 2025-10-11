@@ -530,10 +530,13 @@ class ExamineeController extends Controller
     
         $examinees = $query->get();
     
-        \App\Models\SystemLog::create([
-            'description' => "تم طباعة كشف ممتحنين",
-            'user_id'     => $user->id,
-        ]);
+        if(isset($user))
+        {
+            \App\Models\SystemLog::create([
+                'description' => "تم طباعة كشف ممتحنين",
+                'user_id'     => $user->id,
+            ]);
+        }
 
         return view('examinees.print', compact('examinees'));
     }
@@ -568,10 +571,13 @@ class ExamineeController extends Controller
             ->whereIn('id', $ids)
             ->get();
 
-            \App\Models\SystemLog::create([
-                'description' => "تم طباعة كروت ممتحنين",
-                'user_id'     => auth()->id(),
-            ]);
+            if(auth()->check())
+            {
+                \App\Models\SystemLog::create([
+                    'description' => "تم طباعة كروت ممتحنين",
+                    'user_id'     => auth()->id(),
+                ]);
+            }
             
         
         return view('examinees.card-print', compact('examinees'));
