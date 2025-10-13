@@ -125,6 +125,58 @@
             line-height: 1.8;
         }
         
+        /* Disabled Registration Card Styles */
+        .registration-disabled-wrapper {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .registration-disabled-wrapper .action-card {
+            filter: blur(3px);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .registration-disabled-wrapper:hover .action-card {
+            transform: none;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            border-color: transparent;
+        }
+        
+        .closed-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 16px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.35);
+            pointer-events: auto;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .closed-overlay-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            letter-spacing: 0.5px;
+        }
+        
+        .closed-overlay-text {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
+            opacity: 0.95;
+        }
+        
+
+        
         .footer-text {
             text-align: center;
             color: #6c757d;
@@ -334,23 +386,6 @@
             min-height: 120px;
         }
         
-        .custom-alert-popup {
-            border-radius: 20px !important;
-            font-family: 'Cairo', sans-serif !important;
-        }
-        
-        .custom-confirm-button {
-            font-size: 16px !important;
-            padding: 12px 30px !important;
-            border-radius: 10px !important;
-            font-weight: 600 !important;
-        }
-        
-        .swal2-icon.swal2-info {
-            border-color: #3c5e7f !important;
-            color: #3c5e7f !important;
-        }
-        
         @media (max-width: 768px) {
             .main-title {
                 font-size: 24px;
@@ -389,6 +424,18 @@
             .float-tooltip-arrow {
                 font-size: 20px;
             }
+            
+            .closed-overlay {
+                padding: 20px 30px;
+            }
+            
+            .closed-overlay-title {
+                font-size: 20px;
+            }
+            
+            .closed-overlay-text {
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -396,7 +443,7 @@
     <div class="registration-container">
         <!-- Logo & Title Section -->
         <div class="logo-section">
-            <img src="{{asset('logo-primary.png')}}" alt="">
+            <div class="logo-placeholder">شعار الوزارة</div>
             <h1 class="main-title">
                 التحقق من تسجيل امتحان الإجازة
             </h1>
@@ -410,7 +457,7 @@
         <div class="row g-4">
             <!-- Check Registration Card -->
             <div class="col-md-6">
-                <a href="{{ route('public.registration.check.form') }}" class="text-decoration-none">
+                <a href="#" class="text-decoration-none">
                     <div class="action-card">
                         <div class="action-card-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
@@ -426,9 +473,13 @@
                 </a>
             </div>
 
-            <!-- New Registration Card -->
+            <!-- New Registration Card - DISABLED -->
             <div class="col-md-6">
-                <a href="{{ route('public.registration.register.form') }}" class="text-decoration-none">
+                <div class="registration-disabled-wrapper">
+                    <div class="closed-overlay">
+                        <div class="closed-overlay-title">انتهى التسجيل</div>
+                        <div class="closed-overlay-text">التسجيل غير متاح حالياً</div>
+                    </div>
                     <div class="action-card">
                         <div class="action-card-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
@@ -441,13 +492,13 @@
                             في حال لم تسجل مسبقاً، قم بإنشاء تسجيل جديد لامتحان الإجازة
                         </p>
                     </div>
-                </a>
+                </div>
             </div>
         </div>
 
         <!-- Footer -->
         <p class="footer-text">
-            © {{ date('Y') }} وزارة الأوقاف والشؤون الإسلامية - جميع الحقوق محفوظة
+            © 2025 وزارة الأوقاف والشؤون الإسلامية - جميع الحقوق محفوظة
         </p>
     </div>
 
@@ -474,9 +525,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('contact.send') }}" class="contact-form">
-                        @csrf
-                        
+                    <form class="contact-form">
                         <div class="mb-3">
                             <label for="contact_name" class="form-label">
                                 <i class="ti ti-user me-1"></i>
@@ -516,7 +565,6 @@
                                    required>
                         </div>
 
-
                         <div class="mb-3">
                             <label for="national_id" class="form-label">
                              الرقم الوطني او جواز سفر
@@ -528,7 +576,6 @@
                                    placeholder="أدخل الرقم الوطني"
                                    required>
                         </div>
-
 
                         <div class="mb-3">
                             <label for="contact_message" class="form-label">
@@ -543,8 +590,6 @@
                                       required></textarea>
                         </div>
 
-                        <input type="hidden" name="email_to" value="support@waqsa.ly">
-
                         <div class="d-grid">
                             <button type="submit" class="btn btn-submit-contact">
                                 <i class="ti ti-send me-2"></i>
@@ -558,76 +603,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- SweetAlert2 Library -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <script>
-        // Show elegant alert on page load
-        // window.addEventListener('DOMContentLoaded', function() {
-        //     Swal.fire({
-        //         title: '<strong style="color: #3c5e7f;">تنبيه هام</strong>',
-        //         icon: 'info',
-        //         html: `
-        //             <div style="text-align: right; direction: rtl; font-family: 'Cairo', sans-serif; line-height: 2;">
-        //                 <p style="font-size: 18px; color: #2c3e50; margin-bottom: 15px;">
-        //                     <strong>عزيزي الممتحن،</strong>
-        //                 </p>
-        //                 <p style="font-size: 16px; color: #34495e; margin-bottom: 20px;">
-        //                     يرجى مراجعة <span style="color: #3c5e7f; font-weight: bold;">رابط الاستعلام</span> 
-        //                     لمعرفة تأكيد قبول تسجيلك في امتحان الإجازة
-        //                 </p>
-        //                 <div style="background: #f0f4f8; padding: 15px; border-radius: 10px; border-right: 4px solid #3c5e7f;">
-        //                     <p style="font-size: 15px; color: #555; margin: 0;">
-        //                          يمكنك التحقق من حالة تسجيلك من خلال الضغط على زر 
-        //                         <strong>"الاستعلام عن تسجيل سابق"</strong>
-        //                     </p>
-        //                 </div>
-        //             </div>
-        //         `,
-        //         showCloseButton: true,
-        //         confirmButtonText: '<span style="font-family: Cairo;">فهمت، شكراً</span>',
-        //         confirmButtonColor: '#3c5e7f',
-        //         width: '600px',
-        //         padding: '2em',
-        //         backdrop: 'rgba(60, 94, 127, 0.4)',
-        //         customClass: {
-        //             popup: 'custom-alert-popup',
-        //             confirmButton: 'custom-confirm-button'
-        //         }
-        //     });
-        // });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: '<span style="font-family: Cairo; color: #dc3545;">تنبيه</span>',
-                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('error') }}</p>',
-                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                    confirmButtonColor: '#dc3545',
-                    customClass: {
-                        popup: 'cairo-font',
-                        confirmButton: 'cairo-font'
-                    }
-                });
-            @endif
-            
-            @if(session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: '<span style="font-family: Cairo; color: #28a745;"> تمت بنجاح </span>',
-                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
-                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
-                    confirmButtonColor: '#28a745',
-                    customClass: {
-                        popup: 'cairo-font',
-                        confirmButton: 'cairo-font'
-                    }
-                });
-            @endif
-        });
-        </script>
 </body>
 </html>
