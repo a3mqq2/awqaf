@@ -457,7 +457,7 @@
         <div class="row g-4">
             <!-- Check Registration Card -->
             <div class="col-md-6">
-                <a href="#" class="text-decoration-none">
+                <a href="{{ route('public.registration.check') }}" class="text-decoration-none">
                     <div class="action-card">
                         <div class="action-card-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
