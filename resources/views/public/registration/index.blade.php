@@ -443,7 +443,7 @@
     <div class="registration-container">
         <!-- Logo & Title Section -->
         <div class="logo-section">
-            <div class="logo-placeholder">شعار الوزارة</div>
+            <img src="{{asset('logo-primary.png')}}" alt="شعار الوزارة" style="max-width: 120px; margin-bottom: 20px;">
             <h1 class="main-title">
                 التحقق من تسجيل امتحان الإجازة
             </h1>
@@ -457,7 +457,7 @@
         <div class="row g-4">
             <!-- Check Registration Card -->
             <div class="col-md-6">
-                <a href="{{ route('public.registration.check') }}" class="text-decoration-none">
+                <a href="{{ route('public.registration.check.form') }}" class="text-decoration-none">
                     <div class="action-card">
                         <div class="action-card-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
