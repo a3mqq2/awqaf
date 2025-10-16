@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\JudgeController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\OfficeController;
@@ -15,17 +17,23 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExamineeController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\TreasuryController;
+use App\Http\Controllers\CommitteeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NarrationController;
 use App\Http\Controllers\SystemLogController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\NarrationPdfController;
 use App\Http\Controllers\ShippingTypeController;
 use App\Http\Controllers\DeliveryPriceController;
 use App\Http\Controllers\ExamineeCheckController;
+use App\Http\Controllers\ExamineeReportController;
 use App\Http\Controllers\InvoiceExpenseController;
 use App\Http\Controllers\InvoicePaymentController;
+use App\Http\Controllers\JudgeDashboardController;
+use App\Http\Controllers\OralEvaluationController;
 use App\Http\Controllers\PublicRegistrationController;
 
 Route::redirect('/', '/registration');
@@ -50,6 +58,66 @@ Route::prefix('registration')->name('public.registration.')->group(function () {
     Route::get('/search/offices', [PublicRegistrationController::class, 'searchOffices'])->name('search.offices');
     Route::get('/search/narrations', [PublicRegistrationController::class, 'searchNarrations'])->name('search.narrations');
     Route::get('/search/drawings', [PublicRegistrationController::class, 'searchDrawings'])->name('search.drawings');
+});
+
+
+// Oral Evaluation Routes (الاختبار الشفهي)
+Route::middleware(['auth'])->prefix('judge/oral')->name('judge.oral.')->group(function () {
+    Route::get('/dashboard', [OralEvaluationController::class, 'index'])->name('dashboard');
+    Route::post('/receive-examinee', [OralEvaluationController::class, 'receiveExaminee'])->name('receive');
+    Route::get('/evaluate/{evaluation}', [OralEvaluationController::class, 'evaluate'])->name('evaluate');
+    Route::post('/evaluate/{evaluation}/save', [OralEvaluationController::class, 'save'])->name('save');
+    Route::post('/evaluate/{evaluation}/exclude', [OralEvaluationController::class, 'exclude'])->name('exclude');
+    Route::get('/completed', [OralEvaluationController::class, 'completed'])->name('completed');
+});
+
+
+
+// ========== Judge Routes (Written Test - المنهج العلمي) ==========
+Route::middleware(['auth', 'role:judge'])->prefix('judge')->name('judge.')->group(function () {
+    Route::get('/dashboard', [JudgeDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/receive-examinee', [JudgeDashboardController::class, 'receiveExaminee'])->name('receive');
+    Route::get('/evaluate/{evaluation}', [JudgeDashboardController::class, 'startEvaluation'])->name('evaluate');
+    Route::post('/evaluate/{evaluation}/save', [JudgeDashboardController::class, 'saveEvaluation'])->name('evaluate.save');
+    Route::get('/completed', [JudgeDashboardController::class, 'completedEvaluations'])->name('completed');
+});
+
+// ========== Oral Evaluation Routes (الاختبار الشفهي) ==========
+Route::middleware(['auth', 'role:judge'])->prefix('judge/oral')->name('judge.oral.')->group(function () {
+    // Dashboard
+    Route::get('/', [OralEvaluationController::class, 'index'])->name('dashboard');
+    
+    // استقبال الممتحن
+    Route::post('/receive', [OralEvaluationController::class, 'receiveExaminee'])->name('receive');
+    
+    // صفحة التقييم
+    Route::get('/evaluate/{evaluation}', [OralEvaluationController::class, 'evaluate'])->name('evaluate');
+    
+    // تحديث البنود أثناء التقييم
+    Route::post('/evaluate/{evaluation}/update-deduction', [OralEvaluationController::class, 'updateDeduction'])->name('update.deduction');
+    
+    // اعتماد السؤال الحالي
+    Route::post('/evaluate/{evaluation}/approve-question', [OralEvaluationController::class, 'approveQuestion'])->name('approve.question');
+    
+    // الرجوع للسؤال السابق
+    Route::post('/evaluate/{evaluation}/previous-question', [OralEvaluationController::class, 'previousQuestion'])->name('previous.question');
+    
+    // حفظ التقييم النهائي
+    Route::post('/evaluate/{evaluation}/save', [OralEvaluationController::class, 'save'])->name('save');
+    
+    // استبعاد الممتحن
+    Route::post('/evaluate/{evaluation}/exclude', [OralEvaluationController::class, 'exclude'])->name('exclude');
+    
+    // التقييمات المكتملة
+    Route::get('/completed', [OralEvaluationController::class, 'completed'])->name('completed');
+});
+// Narration PDFs Management
+Route::middleware(['auth', 'can:narrations'])->prefix('narrations/{narration}/pdfs')->name('narrations.pdfs.')->group(function () {
+    Route::get('/', [NarrationPdfController::class, 'index'])->name('index');
+    Route::post('/', [NarrationPdfController::class, 'store'])->name('store');
+    Route::post('/update-order', [NarrationPdfController::class, 'updateOrder'])->name('update-order');
+    Route::patch('/{pdf}/toggle', [NarrationPdfController::class, 'toggle'])->name('toggle');
+    Route::delete('/{pdf}', [NarrationPdfController::class, 'destroy'])->name('destroy');
 });
 
 // Authenticated Routes
@@ -87,22 +155,68 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('examinees/{examinee}/reject', [ExamineeController::class, 'reject'])->name('examinees.reject');
     Route::resource('examinees', ExamineeController::class);
 
+    // Committees Management (اللجان)
+    Route::middleware('can:committees.view')->group(function () {
+        Route::resource('committees', CommitteeController::class);
+    });
+
+    // Judges Management (المحكمين)
+    Route::middleware('can:judges.view')->group(function () {
+        Route::resource('judges', JudgeController::class);
+        Route::patch('judges/{judge}/toggle-status', [JudgeController::class, 'toggleStatus'])->name('judges.toggle-status');
+    });
 
 
-    Route::prefix('system-logs')->name('system_logs.')->middleware('auth')->group(function () {
+    // Examinee Reports (للمدير)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/reports/examinees', [ExamineeReportController::class, 'index'])->name('reports.examinees');
+        Route::get('/reports/examinees/{examinee}/receipt', [ExamineeReportController::class, 'printReceipt'])->name('reports.receipt');
+    });
+
+
+    // Attendance (تسجيل الحضور) - خاص بكنترول اللجنة
+    Route::middleware('can:attendance.mark')->prefix('attendance')->name('attendance.')->group(function () {
+        Route::get('/', [AttendanceController::class, 'index'])->name('index');
+        Route::post('/search', [AttendanceController::class, 'search'])->name('search');
+        Route::post('/mark', [AttendanceController::class, 'markAttendance'])->name('mark');
+        Route::post('/cancel', [AttendanceController::class, 'cancelAttendance'])->name('cancel');
+        Route::get('/report', [AttendanceController::class, 'report'])->name('report')->middleware('can:attendance.view');
+        Route::get('/print', [AttendanceController::class, 'printReport'])->name('print')->middleware('can:attendance.view');
+    });
+
+    // System Logs
+    Route::prefix('system-logs')->name('system_logs.')->group(function () {
         Route::get('/', [SystemLogController::class, 'index'])->name('index');
         Route::get('/{systemLog}', [SystemLogController::class, 'show'])->name('show');
         Route::delete('/{systemLog}', [SystemLogController::class, 'destroy'])->name('destroy');
         Route::delete('/clear/all', [SystemLogController::class, 'clear'])->name('clear');
     });
 
+    // Backup
+    Route::get('/backup/download', [BackupController::class, 'download'])->name('backup.download');
     
-    // contact.send
-    Route::get('/backup/download', [BackupController::class, 'download'])
-    ->name('backup.download');
     // Logout
-    Route::get('/logout', [AuthController::class, 'logout'])->name('logout'); 
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // API Routes
+    // API للحصول على اللجان حسب التجمع
+    Route::get('/api/committees-by-cluster/{cluster}', function($clusterId) {
+        $user = Auth::user();
+        
+        $query = App\Models\Committee::where('cluster_id', $clusterId);
+        
+        // إذا كان المستخدم ليس أدمن، يعرض فقط اللجان في تجمعاته
+        if ($user->hasRole('committee_control') || $user->hasRole('committee_supervisor')) {
+            if (!$user->clusters->pluck('id')->contains($clusterId)) {
+                return response()->json([], 403);
+            }
+        }
+        
+        $committees = $query->select('id', 'name')->get();
+        
+        return response()->json($committees);
+    });
 });
 
-
+// Contact Form (Public)
 Route::post('contact/send', [DashboardController::class, 'send'])->name('contact.send');

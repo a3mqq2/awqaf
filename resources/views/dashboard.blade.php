@@ -212,7 +212,7 @@
     }
     
     .quick-action-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #3c5e7f;
         color: white;
         border-radius: 16px;
         padding: 24px;
@@ -273,7 +273,7 @@
         <div class="card stats-card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-start justify-content-between mb-3">
-                    <div class="stats-icon bg-primary bg-opacity-10">
+                    <div class="stats-icon bg-primary bg-opacity-10 text-white">
                         <i class="ti ti-users text-primary"></i>
                     </div>
                     <span class="stats-trend bg-success bg-opacity-10 text-success">
@@ -359,7 +359,7 @@
     <div class="col-xl-2 col-md-4 col-6">
         <div class="mini-card card">
             <div class="card-body text-center py-3">
-                <div class="stats-icon bg-primary bg-opacity-10 mx-auto mb-2" style="width: 50px; height: 50px; font-size: 22px;">
+                <div class="stats-icon bg-primary bg-opacity-10 text-white mx-auto mb-2" style="width: 50px; height: 50px; font-size: 22px;">
                     <i class="ti ti-gender-male text-primary"></i>
                 </div>
                 <div class="stats-number text-primary" style="font-size: 22px;">{{ number_format($maleExaminees) }}</div>
@@ -662,7 +662,7 @@
                                 <tr>
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar-sm bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3">
+                                            <div class="avatar-sm bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3 text-white">
                                                 <i class="ti ti-user"></i>
                                             </div>
                                             <div>
@@ -688,7 +688,7 @@
                                     </td>
                                     <td>
                                         @if($examinee->cluster)
-                                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                            <span class="badge bg-primary bg-opacity-10 text-primary text-white">
                                                 <i class="ti ti-users me-1"></i>
                                                 {{ $examinee->cluster->name }}
                                             </span>

@@ -139,4 +139,10 @@ public function getClusterIdsAttribute(): array
         
         return in_array($clusterId, $this->cluster_ids);
     }
+
+
+    public function committees()
+    {
+        return $this->belongsToMany(Committee::class, 'committee_user');
+    }
 }

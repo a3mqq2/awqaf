@@ -237,21 +237,7 @@ class ExamineeController extends Controller
 
         $examinee = Examinee::create($data);
 
-        // Handle exam attempts
-        if ($request->has('exam_attempts')) {
-            foreach ($request->exam_attempts as $attempt) {
-                if (!empty($attempt['year']) || !empty($attempt['narration_id']) || !empty($attempt['drawing_id'])) {
-                    $examinee->examAttempts()->create([
-                        'year' => $attempt['year'] ?? null,
-                        'narration_id' => $attempt['narration_id'] ?? null,
-                        'drawing_id' => $attempt['drawing_id'] ?? null,
-                        'side' => $attempt['side'] ?? null,
-                        'result' => $attempt['result'] ?? null,
-                        'percentage' => $attempt['percentage'] ?? null,
-                    ]);
-                }
-            }
-        }
+
 
 
         SystemLog::create([
@@ -274,7 +260,7 @@ class ExamineeController extends Controller
             abort(403, 'ليس لديك صلاحية للوصول إلى هذا الممتحن');
         }
         
-        $examinee->load(['office', 'cluster', 'narration', 'drawing', 'examAttempts.narration', 'examAttempts.drawing']);
+        $examinee->load(['office', 'cluster', 'narration', 'drawing']);
         
         return view('examinees.show', compact('examinee'));
     }

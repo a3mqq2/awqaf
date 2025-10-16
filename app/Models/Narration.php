@@ -18,4 +18,9 @@ class Narration extends Model
     {
         return $this->hasMany(Examinee::class);
     }
+
+    public function pdfs()
+    {
+        return $this->hasMany(NarrationPdf::class)->where('is_active', true)->orderBy('order');
+    }
 }

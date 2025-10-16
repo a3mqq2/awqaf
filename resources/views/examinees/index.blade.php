@@ -140,6 +140,8 @@
                             </div>
 
                             <!-- Status -->
+                            <!-- Status -->
+                            <!-- Status -->
                             <div class="col-md-3">
                                 <label class="form-label">
                                     <i class="ti ti-circle-check me-1"></i>
@@ -148,6 +150,7 @@
                                 <select name="status" class="form-select">
                                     <option value="">كل الحالات</option>
                                     <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>مؤكد</option>
+                                    <option value="attended" {{ request('status') == 'attended' ? 'selected' : '' }}>حضر</option>
                                     <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>قيد المراجعة</option>
                                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>قيد التأكيد</option>
                                     <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>مرفوض</option>
@@ -358,15 +361,16 @@
                                                         <span class="badge bg-primary">الجنس: {{ request('gender') == 'male' ? 'ذكر' : 'أنثى' }}</span>
                                                     @endif
                                                     @if(request('status'))
-                                                        <span class="badge bg-primary">الحالة: 
-                                                            @if(request('status') == 'confirmed') مؤكد
-                                                            @elseif(request('status') == 'under_review') قيد المراجعة
-                                                            @elseif(request('status') == 'pending') قيد التأكيد
-                                                            @elseif(request('status') == 'rejected') مرفوض
-                                                            @else منسحب
-                                                            @endif
-                                                        </span>
-                                                    @endif
+                                                    <span class="badge bg-primary">الحالة: 
+                                                        @if(request('status') == 'confirmed') مؤكد
+                                                        @elseif(request('status') == 'attended') حضر
+                                                        @elseif(request('status') == 'under_review') قيد المراجعة
+                                                        @elseif(request('status') == 'pending') قيد التأكيد
+                                                        @elseif(request('status') == 'rejected') مرفوض
+                                                        @else منسحب
+                                                        @endif
+                                                    </span>
+                                                @endif
                                                     @if(request('nationality'))
                                                         <span class="badge bg-primary">الجنسية: {{ request('nationality') }}</span>
                                                     @endif
@@ -539,6 +543,17 @@
                                                 <i class="ti ti-circle-check me-1"></i>
                                                 مؤكد
                                             </span>
+                                        @elseif($examinee->status == 'attended')
+                                            <span class="badge bg-success">
+                                                <i class="ti ti-user-check me-1"></i>
+                                                حضر
+                                            </span>
+                                            @if($examinee->attended_at)
+                                                <small class="d-block text-muted mt-1">
+                                                    <i class="ti ti-clock me-1"></i>
+                                                    {{ $examinee->attended_at->format('Y-m-d H:i') }}
+                                                </small>
+                                            @endif
                                         @elseif($examinee->status == 'under_review')
                                             <span class="badge bg-light-info text-info">
                                                 <i class="ti ti-hourglass me-1"></i>
@@ -563,10 +578,14 @@
                                                     <i class="ti ti-info-circle"></i>
                                                 </button>
                                             @endif
-                                        @else
+                                        @elseif($examinee->status == 'withdrawn')
                                             <span class="badge bg-light-secondary text-secondary">
                                                 <i class="ti ti-circle-x me-1"></i>
                                                 منسحب
+                                            </span>
+                                        @else
+                                            <span class="badge bg-light-secondary text-secondary">
+                                                {{ $examinee->status }}
                                             </span>
                                         @endif
                                     </td>

@@ -122,7 +122,12 @@
                                                 <i class="ti {{ $narration->is_active ? 'ti-toggle-left' : 'ti-toggle-right' }}"></i>
                                             </button>
                                         </form>
-
+                                        <a href="{{ route('narrations.pdfs.index', $narration) }}" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="tooltip" 
+                                        title="إدارة ملفات PDF">
+                                         <i class="ti ti-file-text"></i>
+                                     </a>
                                         <form action="{{ route('narrations.destroy', $narration) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
                                             @csrf
                                             @method('DELETE')

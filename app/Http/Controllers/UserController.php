@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
@@ -26,6 +27,12 @@ class UserController extends Controller
 
         if ($request->filled('status')) {
             $query->where('is_active', $request->status == 'active');
+        }
+
+        if ($request->filled('role')) {
+            $query->whereHas('roles', function ($q) use ($request) {
+                $q->where('name', $request->role);
+            });
         }
 
         if ($request->filled('cluster_id')) {
@@ -47,17 +54,20 @@ class UserController extends Controller
                 break;
         }
 
-        $users = $query->paginate(10);
+        $users = $query->paginate(15);
         $clusters = Cluster::all();
+        $roles = Role::all();
 
-        return view('users.index', compact('users', 'clusters'));
+        return view('users.index', compact('users', 'clusters', 'roles'));
     }
 
     public function create()
     {
+        $roles = Role::all();
         $permissions = Permission::all();
         $clusters = Cluster::all();
-        return view('users.create', compact('permissions', 'clusters'));
+        
+        return view('users.create', compact('roles', 'permissions', 'clusters'));
     }
 
     public function store(Request $request)
@@ -67,8 +77,11 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'is_active' => 'sometimes|boolean',
+            'role' => 'required|exists:roles,name',
             'clusters' => 'array',
             'clusters.*' => 'exists:clusters,id',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,name',
         ]);
 
         $user = User::create([
@@ -78,13 +91,21 @@ class UserController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
-        $user->syncPermissions($request->input('permissions', []));
+        // إعطاء الـ Role
+        $user->assignRole($request->role);
+
+        // إعطاء صلاحيات إضافية (اختياري)
+        if ($request->filled('permissions')) {
+            $user->givePermissionTo($request->permissions);
+        }
+
+        // ربط التجمعات
         $user->clusters()->sync($request->input('clusters', []));
 
         // Log
         SystemLog::create([
-            'description' => "تم إنشاء مستخدم جديد: {$user->name} ({$user->email})",
-            'user_id'     => Auth::id(),
+            'description' => "تم إنشاء مستخدم جديد: {$user->name} ({$user->email}) - الدور: {$request->role}",
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'تم إنشاء المستخدم بنجاح');
@@ -98,10 +119,12 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $roles = Role::all();
         $permissions = Permission::all();
         $clusters = Cluster::all();
-        $user->load(['permissions', 'clusters']);
-        return view('users.edit', compact('user', 'permissions', 'clusters'));
+        $user->load(['roles', 'permissions', 'clusters']);
+        
+        return view('users.edit', compact('user', 'roles', 'permissions', 'clusters'));
     }
 
     public function update(Request $request, User $user)
@@ -109,13 +132,16 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => [
-                'required','string','email','max:255',
+                'required', 'string', 'email', 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
             'password' => 'nullable|string|min:8|confirmed',
             'is_active' => 'sometimes|boolean',
+            'role' => 'required|exists:roles,name',
             'clusters' => 'array',
             'clusters.*' => 'exists:clusters,id',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,name',
         ]);
 
         $userData = [
@@ -130,13 +156,23 @@ class UserController extends Controller
 
         $user->update($userData);
 
-        $user->syncPermissions($request->input('permissions', []));
+        // تحديث الـ Role
+        $user->syncRoles([$request->role]);
+
+        // تحديث الصلاحيات الإضافية
+        if ($request->filled('permissions')) {
+            $user->syncPermissions($request->permissions);
+        } else {
+            $user->syncPermissions([]);
+        }
+
+        // تحديث التجمعات
         $user->clusters()->sync($request->input('clusters', []));
 
         // Log
         SystemLog::create([
-            'description' => "تم تعديل المستخدم: {$user->name} ({$user->email})",
-            'user_id'     => Auth::id(),
+            'description' => "تم تعديل المستخدم: {$user->name} ({$user->email}) - الدور: {$request->role}",
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');
@@ -156,7 +192,7 @@ class UserController extends Controller
         // Log
         SystemLog::create([
             'description' => "تم حذف المستخدم: {$name} ({$email})",
-            'user_id'     => Auth::id(),
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'تم حذف المستخدم بنجاح');
@@ -164,7 +200,7 @@ class UserController extends Controller
 
     public function toggleStatus(User $user)
     {
-        $user->is_active = ! $user->is_active;
+        $user->is_active = !$user->is_active;
         $user->save();
 
         $status = $user->is_active ? 'تفعيل' : 'إلغاء تفعيل';
@@ -172,58 +208,9 @@ class UserController extends Controller
         // Log
         SystemLog::create([
             'description' => "تم {$status} المستخدم: {$user->name} ({$user->email})",
-            'user_id'     => Auth::id(),
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('users.index')->with('success', 'تم تحديث حالة المستخدم بنجاح');
-    }
-
-    public function bulkAction(Request $request)
-    {
-        $request->validate([
-            'action' => 'required|in:activate,deactivate,delete',
-            'users' => 'required|array',
-            'users.*' => 'exists:users,id',
-        ]);
-
-        $userIds = $request->users;
-        $currentUserId = auth()->id();
-        $message = '';
-
-        switch ($request->action) {
-            case 'activate':
-                User::whereIn('id', $userIds)->update(['is_active' => true]);
-                $message = 'تم تفعيل المستخدمين المحددين بنجاح';
-
-                SystemLog::create([
-                    'description' => "تم تفعيل مجموعة من المستخدمين (IDs: " . implode(',', $userIds) . ")",
-                    'user_id'     => $currentUserId,
-                ]);
-                break;
-
-            case 'deactivate':
-                $filteredUserIds = array_diff($userIds, [$currentUserId]);
-                User::whereIn('id', $filteredUserIds)->update(['is_active' => false]);
-                $message = 'تم إلغاء تفعيل المستخدمين المحددين بنجاح';
-
-                SystemLog::create([
-                    'description' => "تم إلغاء تفعيل مجموعة من المستخدمين (IDs: " . implode(',', $filteredUserIds) . ")",
-                    'user_id'     => $currentUserId,
-                ]);
-                break;
-
-            case 'delete':
-                $filteredUserIds = array_diff($userIds, [$currentUserId]);
-                User::whereIn('id', $filteredUserIds)->delete();
-                $message = 'تم حذف المستخدمين المحددين بنجاح';
-
-                SystemLog::create([
-                    'description' => "تم حذف مجموعة من المستخدمين (IDs: " . implode(',', $filteredUserIds) . ")",
-                    'user_id'     => $currentUserId,
-                ]);
-                break;
-        }
-
-        return redirect()->route('users.index')->with('success', $message);
     }
 }
