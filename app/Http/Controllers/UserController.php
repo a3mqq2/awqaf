@@ -56,14 +56,18 @@ class UserController extends Controller
 
         $users = $query->paginate(15);
         $clusters = Cluster::all();
-        $roles = Role::all();
+        $roles = Role::whereIn('name',[
+            'committee_control','committee_supervisor','admin',
+        ])->get();
 
         return view('users.index', compact('users', 'clusters', 'roles'));
     }
 
     public function create()
     {
-        $roles = Role::all();
+        $roles = Role::whereIn('name',[
+            'committee_control','committee_supervisor','admin',
+        ])->get();
         $permissions = Permission::all();
         $clusters = Cluster::all();
         
@@ -119,7 +123,9 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $roles = Role::all();
+        $roles = Role::whereIn('name',[
+            'committee_control','committee_supervisor','admin',
+        ])->get();
         $permissions = Permission::all();
         $clusters = Cluster::all();
         $user->load(['roles', 'permissions', 'clusters']);

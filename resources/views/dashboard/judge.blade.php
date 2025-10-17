@@ -45,7 +45,7 @@
 <!-- Welcome Banner -->
 <div class="row mb-4 mt-3">
     <div class="col-12">
-        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 20px; color: white;">
+        <div class="card" style="background: #3c5e7f; border: none; border-radius: 20px; color: white;">
             <div class="card-body p-4">
                 <div class="row align-items-center">
                     <div class="col-lg-8">
@@ -82,7 +82,7 @@
         <div class="card stats-card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-start justify-content-between mb-3">
-                    <div class="stats-icon bg-primary bg-opacity-10 text-white">
+                    <div class="stats-icon bg-primary bg-opacity-10">
                         <i class="ti ti-clipboard-check text-primary"></i>
                     </div>
                 </div>
@@ -305,4 +305,4 @@
         </div>
     </div>
 </div>
-@endsectionm
+@endsection

@@ -8,74 +8,90 @@
   </a>
 </li>
 
+@php
+       $user = Auth::user();
+        $committees = $user->committees;
+@endphp
 {{-- ========== للمحكمين فقط ========== --}}
 @role('judge')
-<!-- اختبار المنهج العلمي -->
-<li class="pc-item">
-  <a href="{{ route('judge.dashboard') }}" class="pc-link">
-    <span class="pc-micon">
-      <i class="ti ti-book"></i>
-    </span>
-    <span class="pc-mtext">المنهج العلمي</span>
-    @php
-      $user = Auth::user();
-      $committees = $user->committees;
-      
-      if ($committees->isNotEmpty()) {
-          $evaluatedExamineeIds = \App\Models\ExamineeEvaluation::where('judge_id', $user->id)
-              ->pluck('examinee_id')
-              ->toArray();
 
-          $writtenWaitingCount = \App\Models\Examinee::where('status', 'attended')
-              ->when(!empty($evaluatedExamineeIds), function($query) use ($evaluatedExamineeIds) {
-                  return $query->whereNotIn('id', $evaluatedExamineeIds);
-              })
-              ->count();
-      } else {
-          $writtenWaitingCount = 0;
-      }
-    @endphp
-    @if($writtenWaitingCount > 0)
-      <span class="badge bg-warning rounded-pill ms-2">{{ $writtenWaitingCount }}</span>
-    @endif
-  </a>
+    {{-- اختبار المنهج العلمي --}}
+    @if(auth()->user()->permissions()->where('name','exam.scientific')->exists())
+      <li class="pc-item">
+        <a href="{{ route('judge.dashboard') }}" class="pc-link">
+            <span class="pc-micon">
+                <i class="ti ti-book"></i>
+            </span>
+            <span class="pc-mtext">المنهج العلمي</span>
+
+            @php
+            
+                if ($committees->isNotEmpty()) {
+                    $evaluatedExamineeIds = \App\Models\ExamineeEvaluation::where('judge_id', $user->id)
+                        ->pluck('examinee_id')
+                        ->toArray();
+
+                    $writtenWaitingCount = \App\Models\Examinee::where('status', 'attended')
+                        ->when(!empty($evaluatedExamineeIds), function($query) use ($evaluatedExamineeIds) {
+                            return $query->whereNotIn('id', $evaluatedExamineeIds);
+                        })
+                        ->count();
+                } else {
+                    $writtenWaitingCount = 0;
+                }
+            @endphp
+
+            @if($writtenWaitingCount > 0)
+                <span class="badge bg-warning rounded-pill ms-2">{{ $writtenWaitingCount }}</span>
+            @endif
+        </a>
+    </li>
+
+    @endcan
+
+    {{-- الاختبار الشفوي --}}
+
+  @if(auth()->user()->permissions()->where('name','exam.oral')->exists())
+  <li class="pc-item">
+    <a href="{{ route('judge.oral.dashboard') }}" class="pc-link">
+        <span class="pc-micon">
+            <i class="ti ti-microphone"></i>
+        </span>
+        <span class="pc-mtext">الاختبار الشفهي</span>
+
+        @php
+            if ($committees->isNotEmpty()) {
+                $oralEvaluatedIds = \App\Models\OralEvaluation::where('judge_id', $user->id)
+                    ->pluck('examinee_id')
+                    ->toArray();
+
+                $oralWaitingCount = \App\Models\Examinee::where('status', 'attended')
+                    ->whereHas('evaluations', function($q) {
+                        $q->where('status', 'completed')
+                          ->where('score', '>=', 28);
+                    })
+                    ->when(!empty($oralEvaluatedIds), function($query) use ($oralEvaluatedIds) {
+                        return $query->whereNotIn('id', $oralEvaluatedIds);
+                    })
+                    ->count();
+            } else {
+                $oralWaitingCount = 0;
+            }
+        @endphp
+
+        @if($oralWaitingCount > 0)
+            <span class="badge bg-info rounded-pill ms-2">{{ $oralWaitingCount }}</span>
+        @endif
+    </a>
 </li>
 
-<!-- الاختبار الشفهي -->
-<li class="pc-item">
-  <a href="{{ route('judge.oral.dashboard') }}" class="pc-link">
-    <span class="pc-micon">
-      <i class="ti ti-microphone"></i>
-    </span>
-    <span class="pc-mtext">الاختبار الشفهي</span>
-    @php
-      if ($committees->isNotEmpty()) {
-          $oralEvaluatedIds = \App\Models\OralEvaluation::where('judge_id', $user->id)
-              ->pluck('examinee_id')
-              ->toArray();
-
-          $oralWaitingCount = \App\Models\Examinee::where('status', 'attended')
-              ->whereHas('evaluations', function($q) {
-                  $q->where('status', 'completed')
-                    ->where('score', '>=', 28);
-              })
-              ->when(!empty($oralEvaluatedIds), function($query) use ($oralEvaluatedIds) {
-                  return $query->whereNotIn('id', $oralEvaluatedIds);
-              })
-              ->count();
-      } else {
-          $oralWaitingCount = 0;
-      }
-    @endphp
-    @if($oralWaitingCount > 0)
-      <span class="badge bg-info rounded-pill ms-2">{{ $oralWaitingCount }}</span>
-    @endif
-  </a>
-</li>
+  @endif
 @endrole
 
+
 {{-- ========== لإدارة الممتحنين (Admin, Manager, Office) ========== --}}
-@can('examinees.view')
+{{-- check if auth user has role admin or committee_supervisor or committe_control --}}
+@if(auth()->user()->hasAnyRole(['admin', 'committee_supervisor', 'committe_control']))
 <li class="pc-item pc-hasmenu">
   <a href="#!" class="pc-link">
     <span class="pc-micon">
@@ -147,7 +163,8 @@
     </li>
   </ul>
 </li>
-@endcan
+@endif
+
 
 {{-- ========== تسجيل الحضور ========== --}}
 @can('attendance.mark')

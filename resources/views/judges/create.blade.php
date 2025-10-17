@@ -128,6 +128,35 @@
                                 </ul>
                             </div>
                         </div>
+                        <!-- الصلاحيات -->
+                        <div class="col-md-12 mb-4">
+                           <label class="form-label">
+                              <i class="ti ti-key me-1"></i>
+                              الصلاحيات الممنوحة للمحكم
+                           </label>
+
+                           <div class="row">
+                              @foreach($permissions as $permission)
+                                 <div class="col-md-6 mb-2">
+                                       <div class="form-check">
+                                          <input class="form-check-input"
+                                                type="checkbox"
+                                                name="permissions[]"
+                                                value="{{ $permission->name }}"
+                                                id="perm_{{ $permission->id }}"
+                                                checked>
+                                          <label class="form-check-label" for="perm_{{ $permission->id }}">
+                                             {{ $permission->name === 'exam.scientific' ? 'امتحان المنهج العلمي' : 'امتحان الشفوي' }}
+                                          </label>
+                                       </div>
+                                 </div>
+                              @endforeach
+                           </div>
+                           <small class="text-muted">
+                              <i class="ti ti-info-circle me-1"></i>
+                              يتم منح هذه الصلاحيات للمحكم مباشرة بعد إضافته.
+                           </small>
+                        </div>
 
                         <!-- أزرار الحفظ -->
                         <div class="col-md-12">

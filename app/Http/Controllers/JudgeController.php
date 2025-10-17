@@ -6,10 +6,11 @@ use App\Models\User;
 use App\Models\Cluster;
 use App\Models\SystemLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 
 class JudgeController extends Controller
 {
@@ -92,12 +93,10 @@ class JudgeController extends Controller
                            ->with('error', 'لا يمكنك إضافة محكم. يجب أن يكون لديك تجمع مخصص على الأقل.');
         }
 
-        return view('judges.create', compact('clusters'));
+        $permissions = Permission::whereIn('name', ['exam.scientific', 'exam.oral'])->get();
+        return view('judges.create', compact('clusters','permissions'));
     }
 
-    /**
-     * حفظ محكم جديد
-     */
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -110,42 +109,45 @@ class JudgeController extends Controller
                 'required',
                 'array',
                 function ($attribute, $value, $fail) use ($user) {
-                    // التحقق من أن جميع التجمعات تتبع المستخدم
                     $userClusterIds = $user->clusters->pluck('id')->toArray();
                     $invalidClusters = array_diff($value, $userClusterIds);
-                    
                     if (!empty($invalidClusters)) {
                         $fail('بعض التجمعات المحددة غير مخصصة لك.');
                     }
                 },
             ],
             'clusters.*' => 'exists:clusters,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name',
         ]);
-
-        // إنشاء المحكم
+    
         $judge = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_active' => true,
         ]);
-
-        // إعطاء دور المحكم
+    
+        // إضافة الدور
         $judge->assignRole('judge');
-
+    
         // ربط التجمعات
         $judge->clusters()->sync($request->clusters);
-
-        // Log
+    
+        // ربط الصلاحيات (لو تم تمريرها)
+        if ($request->filled('permissions')) {
+            $judge->givePermissionTo($request->permissions);
+        }
+    
         SystemLog::create([
             'description' => "تم إضافة محكم جديد: {$judge->name} ({$judge->email})",
             'user_id' => Auth::id(),
         ]);
-
+    
         return redirect()->route('judges.index')
                         ->with('success', 'تم إضافة المحكم بنجاح');
     }
-
+    
     /**
      * عرض تفاصيل المحكم
      */

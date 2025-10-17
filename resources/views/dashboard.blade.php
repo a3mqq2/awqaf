@@ -273,7 +273,7 @@
         <div class="card stats-card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-start justify-content-between mb-3">
-                    <div class="stats-icon bg-primary bg-opacity-10 text-white">
+                    <div class="stats-icon bg-primary bg-opacity-10">
                         <i class="ti ti-users text-primary"></i>
                     </div>
                     <span class="stats-trend bg-success bg-opacity-10 text-success">
@@ -359,7 +359,7 @@
     <div class="col-xl-2 col-md-4 col-6">
         <div class="mini-card card">
             <div class="card-body text-center py-3">
-                <div class="stats-icon bg-primary bg-opacity-10 text-white mx-auto mb-2" style="width: 50px; height: 50px; font-size: 22px;">
+                <div class="stats-icon bg-primary bg-opacity-10 mx-auto mb-2" style="width: 50px; height: 50px; font-size: 22px;">
                     <i class="ti ti-gender-male text-primary"></i>
                 </div>
                 <div class="stats-number text-primary" style="font-size: 22px;">{{ number_format($maleExaminees) }}</div>
