@@ -144,13 +144,10 @@ class JudgeDashboardController extends Controller
         $evaluation = ExamineeEvaluation::with(['examinee.narration.pdfs', 'committee.cluster'])->findOrFail($evaluationId);
         $user = Auth::user();
 
-        // التحقق من أن التقييم للمحكم الحالي
-        if ($evaluation->judge_id !== $user->id) {
-            abort(403, 'غير مصرح لك بهذا التقييم');
-        }
+      
 
         // تحديث حالة التقييم
-        if ($evaluation->status === 'pending') {
+        if ($evaluation->status == 'pending') {
             $evaluation->status = 'in_progress';
             $evaluation->save();
         }
@@ -172,7 +169,7 @@ class JudgeDashboardController extends Controller
         $user = Auth::user();
 
         // التحقق من أن التقييم للمحكم الحالي
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مصرح لك بهذا التقييم'
@@ -180,7 +177,7 @@ class JudgeDashboardController extends Controller
         }
 
         // التحقق من عدم حفظ التقييم مسبقاً
-        if ($evaluation->status === 'completed') {
+        if ($evaluation->status == 'completed') {
             return response()->json([
                 'success' => false,
                 'message' => 'تم حفظ هذا التقييم مسبقاً'

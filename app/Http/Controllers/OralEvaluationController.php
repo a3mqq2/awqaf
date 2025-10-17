@@ -145,7 +145,7 @@ class OralEvaluationController extends Controller
         $evaluation = OralEvaluation::with(['examinee.narration.pdfs', 'committee.cluster'])->findOrFail($evaluationId);
         $user = Auth::user();
 
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             abort(403, 'غير مصرح لك بهذا التقييم');
         }
 
@@ -175,7 +175,7 @@ class OralEvaluationController extends Controller
         $evaluation = OralEvaluation::findOrFail($evaluationId);
         $user = Auth::user();
 
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مصرح لك بهذا التقييم'
@@ -220,7 +220,7 @@ class OralEvaluationController extends Controller
         $evaluation = OralEvaluation::findOrFail($evaluationId);
         $user = Auth::user();
 
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مصرح لك بهذا التقييم'
@@ -283,7 +283,7 @@ class OralEvaluationController extends Controller
         $evaluation = OralEvaluation::findOrFail($evaluationId);
         $user = Auth::user();
 
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مصرح لك بهذا التقييم'
@@ -323,7 +323,7 @@ class OralEvaluationController extends Controller
         $evaluation = OralEvaluation::with('examinee')->findOrFail($evaluationId);
         $user = Auth::user();
 
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مصرح لك بهذا التقييم'
@@ -378,7 +378,7 @@ class OralEvaluationController extends Controller
         $evaluation = OralEvaluation::with('examinee')->findOrFail($evaluationId);
         $user = Auth::user();
 
-        if ($evaluation->judge_id !== $user->id) {
+        if ($evaluation->judge_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'غير مصرح لك بهذا التقييم'
