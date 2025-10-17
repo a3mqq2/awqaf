@@ -46,6 +46,7 @@ class JudgeDashboardController extends Controller
                 $q->where('judge_id', $user->id)->where('status',  'completed');
             })
             ->with(['narration', 'cluster'])
+            ->where('cluster_id', $user->clusters->pluck('id'))
             ->orderBy('attended_at', 'asc')
             ->get();
 

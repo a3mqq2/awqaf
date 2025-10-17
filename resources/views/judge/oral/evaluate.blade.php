@@ -87,41 +87,67 @@
     .question-progress {
         background: linear-gradient(135deg, #003a4c 0%, #004a5c 100%);
         color: white;
-        padding: 20px;
-        border-radius: 12px;
+        padding: 10px 15px;
+        border-radius: 10px;
         text-align: center;
-        margin-bottom: 15px;
-        box-shadow: 0 4px 15px rgba(0,58,76,0.3);
+        margin-bottom: 10px;
+        box-shadow: 0 3px 10px rgba(0,58,76,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .question-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
     .question-progress h2 {
-        font-size: 18px;
-        margin-bottom: 10px;
-        font-weight: 700;
+        font-size: 14px;
+        margin: 0;
+        font-weight: 600;
+        white-space: nowrap;
     }
 
     .question-number {
-        font-size: 48px;
+        font-size: 32px;
         font-weight: 700;
-        margin: 10px 0;
+        margin: 0;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        line-height: 1;
+    }
+
+    .question-total {
+        font-size: 12px;
+        opacity: 0.9;
     }
 
     .question-score-display {
         background: rgba(255,255,255,0.2);
-        padding: 12px;
+        padding: 8px 15px;
         border-radius: 8px;
-        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .question-score-display .label {
-        font-size: 12px;
-        margin-bottom: 5px;
+        font-size: 11px;
+        margin: 0;
+        white-space: nowrap;
     }
 
     .question-score-display .value {
-        font-size: 32px;
+        font-size: 24px;
         font-weight: 700;
+        line-height: 1;
+    }
+
+    .question-score-display small {
+        font-size: 10px;
+        opacity: 0.8;
     }
 
     /* Scoring Panel */
@@ -129,8 +155,8 @@
         grid-area: scoring;
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        height: calc(100vh - 280px);
+        gap: 8px;
+        height: calc(100vh - 240px);
         overflow-y: auto;
         padding: 0 10px;
     }
@@ -148,7 +174,7 @@
     .scoring-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+        gap: 6px;
         transition: all 0.3s ease;
     }
 
@@ -168,7 +194,7 @@
 
     /* Rules section spans 2 columns */
     .rules-section {
-        grid-column: span 2;
+        grid-column: span 1;
     }
 
     .pdf-collapsed .rules-section {
@@ -179,7 +205,7 @@
     .memory-items {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        gap: 5px;
     }
 
     .pdf-collapsed .memory-items {
@@ -189,8 +215,8 @@
     /* Individual rules items in a column */
     .rules-items {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
     }
 
     .pdf-collapsed .rules-items {
@@ -468,8 +494,8 @@
     .eval-card {
         background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
         border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 12px;
+        border-radius: 8px;
+        padding: 6px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         transition: all 0.3s ease;
     }
@@ -480,15 +506,15 @@
     }
 
     .eval-card h3 {
-        margin-bottom: 12px;
-        font-size: 15px;
+        margin-bottom: 6px;
+        font-size: 12px;
         font-weight: 700;
         color: #003a4c;
         border-bottom: 2px solid #003a4c;
-        padding-bottom: 6px;
+        padding-bottom: 3px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 3px;
     }
 
     /* Counter Styles */
@@ -496,9 +522,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 12px 8px;
+        padding: 6px 4px;
         background: white;
-        border-radius: 8px;
+        border-radius: 6px;
         border: 1px solid #e9ecef;
         transition: all 0.3s ease;
         text-align: center;
@@ -511,33 +537,33 @@
     }
 
     .counter-label {
-        font-size: 13px;
+        font-size: 10px;
         font-weight: 600;
         color: #495057;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
 
     .counter-label small {
         display: block;
-        font-size: 11px;
+        font-size: 8px;
         color: #dc3545;
-        margin-top: 2px;
+        margin-top: 1px;
         font-weight: 500;
     }
 
     .counter-controls {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 5px;
     }
 
     .counter-btn {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
         border: none;
         border-radius: 50%;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 13px;
         cursor: pointer;
         transition: all 0.3s ease;
         display: flex;
@@ -574,19 +600,17 @@
     }
 
     .counter-value {
-        min-width: 40px;
+        min-width: 28px;
         text-align: center;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 12px;
         color: #003a4c;
         background: #f8f9fa;
-        padding: 6px 12px;
-        border-radius: 5px;
-        border: 2px solid #dee2e6;
+        padding: 3px 6px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
         transition: all 0.2s ease;
     }
-
-
 
     /* Footer */
     .footer-section {
@@ -676,36 +700,476 @@
         color: #856404;
     }
 
+    /* تحسينات خاصة بالآيباد */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .evaluation-container {
+            gap: 5px;
+            padding: 5px;
+            min-height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+        }
 
+        /* تقليص Header */
+        .header-section {
+            padding: 5px 8px;
+            border-radius: 6px;
+        }
 
-    /* Responsive Design */
-    @media (max-width: 1600px) {
+        .header-section h1 {
+            font-size: 13px !important;
+            margin-bottom: 2px !important;
+        }
+
+        .header-grid {
+            gap: 5px;
+            margin-top: 2px;
+        }
+
+        .header-label {
+            font-size: 8px;
+        }
+
+        .header-value {
+            font-size: 10px;
+        }
+
+        /* تقليص Question Progress */
+        .question-progress {
+            padding: 5px 8px;
+            border-radius: 5px;
+            margin-bottom: 4px;
+        }
+
+        .question-progress h2 {
+            font-size: 10px;
+            margin: 0;
+        }
+
+        .question-number {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .question-total {
+            font-size: 8px;
+        }
+
+        .question-score-display {
+            padding: 4px 6px;
+            border-radius: 4px;
+            gap: 4px;
+        }
+
+        .question-score-display .label {
+            font-size: 8px;
+        }
+
+        .question-score-display .value {
+            font-size: 14px;
+        }
+
+        .question-score-display small {
+            font-size: 7px;
+        }
+
+        /* تقليص Scoring Panel - إزالة السكرول */
+        .scoring-panel {
+            gap: 4px;
+            height: auto;
+            max-height: calc(100vh - 320px);
+            padding: 0 3px;
+            overflow-y: hidden !important;
+            overflow-x: hidden !important;
+        }
+
+        .scoring-grid {
+            gap: 4px;
+        }
+
+        /* تقليص Cards */
+        .eval-card {
+            padding: 4px;
+            border-radius: 5px;
+        }
+
+        .eval-card h3 {
+            margin-bottom: 4px;
+            font-size: 10px;
+            padding-bottom: 2px;
+            gap: 2px;
+        }
+
+        .eval-card h3 i {
+            font-size: 11px;
+        }
+
+        /* تقليص Counters */
+        .counter-row {
+            padding: 4px 3px;
+            border-radius: 4px;
+        }
+
+        .counter-label {
+            font-size: 9px;
+            margin-bottom: 3px;
+        }
+
+        .counter-label small {
+            font-size: 7px;
+            margin-top: 0;
+        }
+
+        .counter-controls {
+            gap: 3px;
+        }
+
+        .counter-btn {
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+        }
+
+        .counter-value {
+            min-width: 22px;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-width: 1px;
+        }
+
+        /* تقليص Memory Items */
+        .memory-items {
+            gap: 3px;
+        }
+
+        .rules-items {
+            gap: 3px;
+        }
+
+        /* تقليص Summary Section */
+        .summary-section {
+            padding: 6px;
+            gap: 6px;
+            border-radius: 5px;
+        }
+
+        .total-score-container {
+            padding: 6px;
+            border-radius: 5px;
+        }
+
+        .total-score-container h3 {
+            margin: 0 0 4px 0;
+            font-size: 11px;
+        }
+
+        .total-score-value {
+            font-size: 1.3rem !important;
+            margin: 2px 0;
+        }
+
+        .total-score-container small {
+            font-size: 9px;
+        }
+
+        .notes-container {
+            padding: 6px;
+            border-radius: 5px;
+        }
+
+        .notes-container h3 {
+            margin: 0 0 5px 0;
+            font-size: 10px;
+            padding-bottom: 3px;
+            gap: 3px;
+        }
+
+        .notes-container textarea {
+            min-height: 45px;
+            padding: 5px;
+            font-size: 10px;
+        }
+
+        /* تقليص Footer */
+        .footer-section {
+            padding: 6px;
+            gap: 6px;
+            border-radius: 5px;
+        }
+
+        .footer-section button {
+            padding: 5px 10px;
+            font-size: 10px;
+            gap: 3px;
+            border-radius: 4px;
+        }
+
+        .footer-section button i {
+            font-size: 12px;
+        }
+
+        .question-status {
+            padding: 5px 8px;
+            font-size: 10px;
+            gap: 3px;
+            border-radius: 4px;
+        }
+
+        /* تقليص PDFs Panel */
+        .pdfs-panel {
+            height: calc(100vh - 320px);
+            width: 280px;
+        }
+
+        .pdfs-header {
+            margin-bottom: 6px;
+            padding-bottom: 5px;
+            margin-top: 18px;
+        }
+
+        .pdfs-header h3 {
+            font-size: 11px;
+        }
+
+        .pdf-list {
+            max-height: 100px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .pdf-item {
+            padding: 5px;
+            margin-bottom: 3px;
+            font-size: 9px;
+            border-radius: 4px;
+            gap: 4px;
+        }
+
+        .pdf-item i {
+            font-size: 11px;
+        }
+
+        .pdf-toggle-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        .pdf-toggle-btn i {
+            font-size: 14px;
+        }
+
+        .pdfs-content {
+            padding: 8px;
+        }
+    }
+
+    /* تحسينات إضافية للآيباد بوضع Portrait */
+    @media (min-width: 768px) and (max-width: 834px) and (orientation: portrait) {
         .scoring-grid {
             grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .pdf-collapsed .scoring-grid {
-            grid-template-columns: repeat(3, 1fr);
         }
 
         .memory-section {
             grid-column: span 2;
         }
 
-        .pdf-collapsed .memory-section {
-            grid-column: span 3;
-        }
-
         .memory-items {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .pdf-collapsed .memory-items {
             grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
         }
 
         .rules-section {
             grid-column: span 1;
+        }
+
+        .summary-section {
+            grid-template-columns: 160px 1fr;
+        }
+
+        .total-score-value {
+            font-size: 1.2rem !important;
+        }
+        
+        .pdfs-panel {
+            width: 250px;
+        }
+        
+        .scoring-panel {
+            max-height: calc(100vh - 300px);
+        }
+    }
+
+    /* تحسينات للآيباد بوضع Landscape */
+    @media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+        .scoring-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+
+        .memory-section {
+            grid-column: span 3;
+        }
+
+        .memory-items {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .rules-section {
+            grid-column: span 2;
+        }
+
+        .rules-items {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+        }
+
+        .summary-section {
+            grid-template-columns: 200px 1fr;
+        }
+        
+        .total-score-value {
+            font-size: 1.5rem !important;
+        }
+        
+        .pdfs-panel {
+            width: 320px;
+        }
+    }
+
+    /* إزالة Scrollbar في الآيباد */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .scoring-panel {
+            overflow: hidden !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        .scoring-panel::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        /* جعل المحتوى يتناسب مع الشاشة */
+        body {
+            overflow: hidden !important;
+        }
+        
+        html {
+            overflow: hidden !important;
+        }
+        
+        .pdf-list {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            max-height: 80px;
+        }
+        
+        .pdf-list::-webkit-scrollbar {
+            width: 2px;
+        }
+        
+        /* إخفاء scroll من PDF viewer */
+        .pdfs-panel,
+        .pdfs-content,
+        .pdfs-viewer-container {
+            overflow: hidden !important;
+        }
+    }
+
+    /* تحسين الأزرار للمس في الآيباد */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .counter-btn,
+        .pdf-toggle-btn,
+        .footer-section button {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .counter-btn:active {
+            transform: scale(0.9);
+        }
+
+        .footer-section button:active {
+            transform: translateY(0) scale(0.98);
+        }
+    }
+
+    /* ضبط ارتفاعات ديناميكية للآيباد */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .evaluation-container {
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden !important;
+        }
+
+        .scoring-panel {
+            min-height: auto;
+            max-height: calc(100vh - 320px);
+            overflow: hidden !important;
+        }
+
+        .pdfs-panel {
+            min-height: auto;
+            max-height: calc(100vh - 320px);
+            overflow: hidden;
+        }
+        
+        .pdfs-viewer-container {
+            overflow: hidden;
+        }
+        
+        .pdf-viewer-main {
+            overflow: hidden;
+        }
+        
+        /* إخفاء scrollbar بالكامل */
+        body {
+            overflow: hidden !important;
+        }
+        
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        
+        *::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1600px) {
+        .scoring-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .pdf-collapsed .scoring-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .memory-section {
+            grid-column: span 3;
+        }
+
+        .pdf-collapsed .memory-section {
+            grid-column: span 4;
+        }
+
+        .memory-items {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .pdf-collapsed .memory-items {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .rules-section {
+            grid-column: span 2;
         }
 
         .pdf-collapsed .rules-section {
@@ -770,12 +1234,20 @@
         }
 
         .rules-section,
-        .pdf-collapsed .rules-section {
+        .pdf-collapsed         .rules-section {
             grid-column: span 1;
         }
 
         .rules-items {
-            grid-template-columns: 1fr;
+            gap: 4px;
+        }
+        
+        .rules-section {
+            grid-column: span 2;
+        }
+        
+        .rules-items {
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .summary-section {
@@ -975,14 +1447,16 @@
     <div class="scoring-panel">
         <!-- Question Progress -->
         <div class="question-progress">
-            <h2 class="text-white">السؤال الحالي</h2>
-            <div class="question-number" id="currentQuestionNumber">{{ $evaluation->current_question }}</div>
-            <small>من 12 سؤال</small>
+            <div class="question-info">
+                <h2 class="text-white">السؤال</h2>
+                <div class="question-number" id="currentQuestionNumber">{{ $evaluation->current_question }}</div>
+                <span class="question-total">/ 12</span>
+            </div>
             
             <div class="question-score-display">
-                <div class="label">درجة السؤال</div>
+                <div class="label">الدرجة:</div>
                 <div class="value" id="questionScore">8.33</div>
-                <small>من 8.33</small>
+                <small>/ 8.33</small>
             </div>
         </div>
 
@@ -1068,7 +1542,7 @@
                 <div class="rules-items">
                     <div class="counter-row">
                         <span class="counter-label">
-                            الأحكام الفرعية
+                            فرعية
                             <small>-0.125</small>
                         </span>
                         <div class="counter-controls">
@@ -1080,7 +1554,7 @@
 
                     <div class="counter-row">
                         <span class="counter-label">
-                            الأحكام الأصلية
+                            أصلية
                             <small>-0.5</small>
                         </span>
                         <div class="counter-controls">
@@ -1092,7 +1566,7 @@
 
                     <div class="counter-row">
                         <span class="counter-label">
-                            عدم إتقان أصل
+                            عدم إتقان
                             <small>-0.5</small>
                         </span>
                         <div class="counter-controls">
@@ -1123,27 +1597,29 @@
                     الوقف
                 </h3>
 
-                <div class="counter-row">
-                    <span class="counter-label">
-                        وقف لا يتم به معنى
-                        <small>-0.25</small>
-                    </span>
-                    <div class="counter-controls">
-                        <button class="counter-btn btn-minus" onclick="updateDeduction('incomplete_stop', 'decrement')">-</button>
-                        <span class="counter-value" id="incomplete_stop">0</span>
-                        <button class="counter-btn btn-plus" onclick="updateDeduction('incomplete_stop', 'increment')">+</button>
+                <div class="rules-items">
+                    <div class="counter-row">
+                        <span class="counter-label">
+                            لا يتم معنى
+                            <small>-0.25</small>
+                        </span>
+                        <div class="counter-controls">
+                            <button class="counter-btn btn-minus" onclick="updateDeduction('incomplete_stop', 'decrement')">-</button>
+                            <span class="counter-value" id="incomplete_stop">0</span>
+                            <button class="counter-btn btn-plus" onclick="updateDeduction('incomplete_stop', 'increment')">+</button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="counter-row">
-                    <span class="counter-label">
-                        وقف قبيح
-                        <small>-0.25</small>
-                    </span>
-                    <div class="counter-controls">
-                        <button class="counter-btn btn-minus" onclick="updateDeduction('bad_stop', 'decrement')">-</button>
-                        <span class="counter-value" id="bad_stop">0</span>
-                        <button class="counter-btn btn-plus" onclick="updateDeduction('bad_stop', 'increment')">+</button>
+                    <div class="counter-row">
+                        <span class="counter-label">
+                            قبيح
+                            <small>-0.25</small>
+                        </span>
+                        <div class="counter-controls">
+                            <button class="counter-btn btn-minus" onclick="updateDeduction('bad_stop', 'decrement')">-</button>
+                            <span class="counter-value" id="bad_stop">0</span>
+                            <button class="counter-btn btn-plus" onclick="updateDeduction('bad_stop', 'increment')">+</button>
+                        </div>
                     </div>
                 </div>
             </div>

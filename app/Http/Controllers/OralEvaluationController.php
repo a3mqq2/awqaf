@@ -51,6 +51,7 @@ class OralEvaluationController extends Controller
                 return $query->whereNotIn('id', $evaluatedExamineeIds);
             })
             ->with(['narration', 'cluster'])
+            ->where('cluster_id', $user->clusters->pluck('id'))
             ->orderBy('attended_at', 'asc')
             ->get();
 
