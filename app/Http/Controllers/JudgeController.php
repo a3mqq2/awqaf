@@ -173,42 +173,34 @@ class JudgeController extends Controller
         return view('judges.show', compact('judge'));
     }
 
-    /**
-     * عرض نموذج تعديل المحكم
-     */
     public function edit(User $judge)
     {
         $user = Auth::user();
-        
-        // التحقق من أن المستخدم محكم
+    
         if (!$judge->hasRole('judge')) {
             abort(404, 'المستخدم ليس محكماً');
         }
-        
-        // التحقق من الصلاحية
+    
         if ($user->hasRole('committee_supervisor')) {
             $hasAccess = $judge->clusters->pluck('id')->intersect($user->clusters->pluck('id'))->isNotEmpty();
             if (!$hasAccess) {
                 abort(403, 'غير مصرح لك بتعديل هذا المحكم');
             }
         }
-        
-        // التجمعات المخصصة للمستخدم فقط
+    
         $clusters = $user->clusters;
-        
         $judge->load(['clusters']);
-
-        return view('judges.edit', compact('judge', 'clusters'));
+    
+        // 👇 جلب الصلاحيات الخاصة بالمحكمين
+        $permissions = Permission::whereIn('name', ['exam.scientific', 'exam.oral'])->get();
+        $judgePermissions = $judge->permissions->pluck('name')->toArray();
+    
+        return view('judges.edit', compact('judge', 'clusters', 'permissions', 'judgePermissions'));
     }
-
-    /**
-     * تحديث بيانات المحكم
-     */
     public function update(Request $request, User $judge)
     {
         $user = Auth::user();
         
-        // التحقق من أن المستخدم محكم
         if (!$judge->hasRole('judge')) {
             abort(404, 'المستخدم ليس محكماً');
         }
@@ -228,43 +220,49 @@ class JudgeController extends Controller
                 'required',
                 'array',
                 function ($attribute, $value, $fail) use ($user) {
-                    // التحقق من أن جميع التجمعات تتبع المستخدم
                     $userClusterIds = $user->clusters->pluck('id')->toArray();
                     $invalidClusters = array_diff($value, $userClusterIds);
-                    
                     if (!empty($invalidClusters)) {
                         $fail('بعض التجمعات المحددة غير مخصصة لك.');
                     }
                 },
             ],
             'clusters.*' => 'exists:clusters,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name',
         ]);
-
+    
         $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'is_active' => $request->boolean('is_active', true),
         ];
-
+    
         if ($request->filled('password')) {
             $userData['password'] = Hash::make($request->password);
         }
-
+    
         $judge->update($userData);
-
+    
         // تحديث التجمعات
         $judge->clusters()->sync($request->clusters);
-
-        // Log
+    
+        // ✅ تحديث الصلاحيات
+        if ($request->filled('permissions')) {
+            $judge->syncPermissions($request->permissions);
+        } else {
+            $judge->syncPermissions([]);
+        }
+    
         SystemLog::create([
             'description' => "تم تعديل المحكم: {$judge->name} ({$judge->email})",
             'user_id' => Auth::id(),
         ]);
-
+    
         return redirect()->route('judges.index')
                         ->with('success', 'تم تحديث المحكم بنجاح');
     }
-
+    
     /**
      * حذف المحكم
      */
