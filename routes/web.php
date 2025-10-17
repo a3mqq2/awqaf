@@ -73,7 +73,7 @@ Route::middleware(['auth'])->prefix('judge/oral')->name('judge.oral.')->group(fu
 
 
 
-// ========== Judge Routes (Written Test - المنهج العلمي) ==========
+// ======= Judge Routes (Written Test - المنهج العلمي) =======
 Route::middleware(['auth', 'role:judge'])->prefix('judge')->name('judge.')->group(function () {
     Route::get('/dashboard', [JudgeDashboardController::class, 'index'])->name('dashboard');
     Route::post('/receive-examinee', [JudgeDashboardController::class, 'receiveExaminee'])->name('receive');
@@ -82,7 +82,7 @@ Route::middleware(['auth', 'role:judge'])->prefix('judge')->name('judge.')->grou
     Route::get('/completed', [JudgeDashboardController::class, 'completedEvaluations'])->name('completed');
 });
 
-// ========== Oral Evaluation Routes (الاختبار الشفهي) ==========
+// ======= Oral Evaluation Routes (الاختبار الشفهي) =======
 Route::middleware(['auth', 'role:judge'])->prefix('judge/oral')->name('judge.oral.')->group(function () {
     // Dashboard
     Route::get('/', [OralEvaluationController::class, 'index'])->name('dashboard');

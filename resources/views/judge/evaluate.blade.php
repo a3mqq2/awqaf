@@ -151,7 +151,7 @@
                         @if($evaluation->examinee->narration->pdfs->count() > 1)
                         <div class="pdf-tabs d-flex">
                             @foreach($evaluation->examinee->narration->pdfs as $index => $pdf)
-                                <button class="pdf-tab {{ $index === 0 ? 'active' : '' }}" 
+                                <button class="pdf-tab {{ $index == 0 ? 'active' : '' }}" 
                                         onclick="loadPdf('{{ $pdf->file_url }}', this)">
                                     <i class="ti ti-file-text me-2"></i>
                                     {{ $pdf->title }}
@@ -353,7 +353,7 @@ $(document).ready(function() {
     });
 });
 
-// ============ PDF Functions ============
+// ======== PDF Functions ========
 function loadPdf(url, button) {
     // Update active tab
     $('.pdf-tab').removeClass('active');

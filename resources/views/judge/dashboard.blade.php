@@ -189,13 +189,13 @@
                                         </div>
 
                                         @if($myEvaluation)
-                                            @if($myEvaluation->status === 'pending')
+                                            @if($myEvaluation->status == 'pending')
                                                 <a href="{{ route('judge.evaluate', $myEvaluation->id) }}" 
                                                    class="btn btn-info w-100">
                                                     <i class="ti ti-pencil me-1"></i>
                                                     بدء الاختبار
                                                 </a>
-                                            @elseif($myEvaluation->status === 'in_progress')
+                                            @elseif($myEvaluation->status == 'in_progress')
                                                 <a href="{{ route('judge.evaluate', $myEvaluation->id) }}" 
                                                    class="btn btn-warning w-100">
                                                     <i class="ti ti-reload me-1"></i>

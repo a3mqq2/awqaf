@@ -943,7 +943,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ============ Checkbox Selection System ============
+    // ======== Checkbox Selection System ========
     const selectAllCheckbox = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.examinee-checkbox');
     const printSelectedBtn = document.getElementById('printSelectedCards');
@@ -972,7 +972,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const checkedCheckboxes = document.querySelectorAll('.examinee-checkbox:checked').length;
         
         if (selectAllCheckbox) {
-            selectAllCheckbox.checked = totalCheckboxes === checkedCheckboxes && totalCheckboxes > 0;
+            selectAllCheckbox.checked = totalCheckboxes == checkedCheckboxes && totalCheckboxes > 0;
             selectAllCheckbox.indeterminate = checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes;
         }
     }
@@ -995,7 +995,7 @@ document.addEventListener('DOMContentLoaded', function() {
         printSelectedBtn.addEventListener('click', function() {
             const checkedCheckboxes = document.querySelectorAll('.examinee-checkbox:checked');
             
-            if (checkedCheckboxes.length === 0) {
+            if (checkedCheckboxes.length == 0) {
                 alert('الرجاء تحديد ممتحن واحد على الأقل');
                 return;
             }

@@ -303,7 +303,7 @@ $(document).ready(function() {
 
     // السماح بالبحث بالضغط على Enter
     $('#searchInput').on('keypress', function(e) {
-        if (e.which === 13) {
+        if (e.which == 13) {
             e.preventDefault();
             $('#searchForm').submit();
         }

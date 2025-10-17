@@ -12,28 +12,28 @@
       if (predicate(v, constructor.prototype)) {
         return true;
       } else {
-        return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+        return ((_a = v.constructor) == null || _a == void 0 ? void 0 : _a.name) == constructor.name;
       }
     };
     const typeOf = x => {
       const t = typeof x;
-      if (x === null) {
+      if (x == null) {
         return 'null';
-      } else if (t === 'object' && Array.isArray(x)) {
+      } else if (t == 'object' && Array.isArray(x)) {
         return 'array';
-      } else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
+      } else if (t == 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
         return 'string';
       } else {
         return t;
       }
     };
-    const isType$1 = type => value => typeOf(value) === type;
-    const isSimpleType = type => value => typeof value === type;
+    const isType$1 = type => value => typeOf(value) == type;
+    const isSimpleType = type => value => typeof value == type;
     const isString = isType$1('string');
     const isObject = isType$1('object');
     const isArray = isType$1('array');
     const isBoolean = isSimpleType('boolean');
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
     const isFunction = isSimpleType('function');
     const isNumber = isSimpleType('number');
@@ -47,7 +47,7 @@
       };
     };
     const tripleEquals = (a, b) => {
-      return a === b;
+      return a == b;
     };
     function curry(fn, ...initialArgs) {
       return (...restArgs) => {
@@ -191,7 +191,7 @@
       return r;
     };
     const groupBy = (xs, f) => {
-      if (xs.length === 0) {
+      if (xs.length == 0) {
         return [];
       } else {
         let wasType = f(xs[0]);
@@ -296,7 +296,7 @@
       return fromDom$1(node);
     };
     const fromDom$1 = node => {
-      if (node === null || node === undefined) {
+      if (node == null || node == undefined) {
         throw new Error('Node cannot be null or undefined');
       }
       return { dom: node };
@@ -330,11 +330,11 @@
       }
     };
 
-    const eq = (e1, e2) => e1.dom === e2.dom;
+    const eq = (e1, e2) => e1.dom == e2.dom;
     const contains = (e1, e2) => {
       const d1 = e1.dom;
       const d2 = e2.dom;
-      return d1 === d2 ? false : d1.contains(d2);
+      return d1 == d2 ? false : d1.contains(d2);
     };
     const is = is$1;
 
@@ -357,7 +357,7 @@
     };
     const getOrDie = (name, scope) => {
       const actual = unsafe(name, scope);
-      if (actual === undefined || actual === null) {
+      if (actual == undefined || actual == null) {
         throw new Error(name + ' not available on this browser');
       }
       return actual;
@@ -377,14 +377,14 @@
       return r.toLowerCase();
     };
     const type = element => element.dom.nodeType;
-    const isType = t => element => type(element) === t;
-    const isComment = element => type(element) === COMMENT || name(element) === '#comment';
+    const isType = t => element => type(element) == t;
+    const isComment = element => type(element) == COMMENT || name(element) == '#comment';
     const isHTMLElement = element => isElement$1(element) && isPrototypeOf(element.dom);
     const isElement$1 = isType(ELEMENT);
     const isText = isType(TEXT);
     const isDocument = isType(DOCUMENT);
     const isDocumentFragment = isType(DOCUMENT_FRAGMENT);
-    const isTag = tag => e => isElement$1(e) && name(e) === tag;
+    const isTag = tag => e => isElement$1(e) && name(e) == tag;
 
     const owner = element => SugarElement.fromDom(element.dom.ownerDocument);
     const documentOrOwner = dos => isDocument(dos) ? dos : owner(dos);
@@ -410,7 +410,7 @@
 
     const inBody = element => {
       const dom = isText(element) ? element.dom.parentNode : element.dom;
-      if (dom === undefined || dom === null || dom.ownerDocument === null) {
+      if (dom == undefined || dom == null || dom.ownerDocument == null) {
         return false;
       }
       const doc = dom.ownerDocument;
@@ -457,7 +457,7 @@
       if (inBody(element)) {
         return element.dom.isContentEditable;
       } else {
-        return closest(element).fold(constant(assumeEditable), editable => getRaw(editable) === 'true');
+        return closest(element).fold(constant(assumeEditable), editable => getRaw(editable) == 'true');
       }
     };
     const getRaw = element => element.dom.contentEditable;
@@ -586,10 +586,10 @@
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    const matchNodeName = name => node => isNonNullable(node) && node.nodeName.toLowerCase() === name;
+    const matchNodeName = name => node => isNonNullable(node) && node.nodeName.toLowerCase() == name;
     const matchNodeNames = regex => node => isNonNullable(node) && regex.test(node.nodeName);
-    const isTextNode$1 = node => isNonNullable(node) && node.nodeType === 3;
-    const isElement = node => isNonNullable(node) && node.nodeType === 1;
+    const isTextNode$1 = node => isNonNullable(node) && node.nodeType == 3;
+    const isElement = node => isNonNullable(node) && node.nodeType == 1;
     const isListNode = matchNodeNames(/^(OL|UL|DL)$/);
     const isOlUlNode = matchNodeNames(/^(OL|UL)$/);
     const isOlNode = matchNodeName('ol');
@@ -599,7 +599,7 @@
     const isBr = matchNodeName('br');
     const isFirstChild = node => {
       var _a;
-      return ((_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.firstChild) === node;
+      return ((_a = node.parentNode) == null || _a == void 0 ? void 0 : _a.firstChild) == node;
     };
     const isTextBlock = (editor, node) => isNonNullable(node) && node.nodeName in editor.schema.getTextBlockElements();
     const isBlock = (node, blockElements) => isNonNullable(node) && node.nodeName in blockElements;
@@ -684,7 +684,7 @@
       tmpRng.setEndAfter(list);
       const fragment = tmpRng.extractContents();
       for (let node = fragment.firstChild; node; node = node.firstChild) {
-        if (node.nodeName === 'LI' && editor.dom.isEmpty(node)) {
+        if (node.nodeName == 'LI' && editor.dom.isEmpty(node)) {
           DOM$2.remove(node);
           break;
         }
@@ -718,7 +718,7 @@
       }
     };
     const dlIndentation = (editor, indentation, dlItems) => {
-      if (indentation === 'Indent') {
+      if (indentation == 'Indent') {
         each$1(dlItems, indentDlItem);
       } else {
         each$1(dlItems, item => outdentDlItem(editor, item));
@@ -773,7 +773,7 @@
       const selectionStart = node || editor.selection.getStart(true);
       return editor.dom.getParent(selectionStart, listSelector, getClosestListHost(editor, selectionStart));
     };
-    const isParentListSelected = (parentList, selectedBlocks) => isNonNullable(parentList) && selectedBlocks.length === 1 && selectedBlocks[0] === parentList;
+    const isParentListSelected = (parentList, selectedBlocks) => isNonNullable(parentList) && selectedBlocks.length == 1 && selectedBlocks[0] == parentList;
     const findSubLists = parentList => filter$1(parentList.querySelectorAll(listSelector), isListNode);
     const getSelectedSubLists = editor => {
       const parentList = getParentList(editor);
@@ -833,7 +833,7 @@
     };
 
     const isCustomList = list => /\btox\-/.test(list.className);
-    const inList = (parents, listName) => findUntil(parents, isListNode, isTableCellNode).exists(list => list.nodeName === listName && !isCustomList(list));
+    const inList = (parents, listName) => findUntil(parents, isListNode, isTableCellNode).exists(list => list.nodeName == listName && !isCustomList(list));
     const isWithinNonEditable = (editor, element) => element != null && !editor.dom.isEditable(element);
     const selectionIsWithinNonEditableList = editor => {
       const parentList = getParentList(editor);
@@ -997,7 +997,7 @@
         if (!isEntryComment(entry)) {
           return entry.depth > cast.length ? writeDeep(scope, cast, entry) : writeShallow(scope, cast, entry);
         } else {
-          if (i === 0) {
+          if (i == 0) {
             firstCommentEntryOpt = Optional.some(entry);
             return cast;
           }
@@ -1038,7 +1038,7 @@
     };
     const closestSiblingEntry = (entries, start) => {
       const depth = entries[start].depth;
-      const matches = entry => entry.depth === depth && !entry.dirty;
+      const matches = entry => entry.depth == depth && !entry.dirty;
       const until = entry => entry.depth < depth;
       return findUntil(reverse(entries.slice(0, start)), matches, until).orThunk(() => findUntil(entries.slice(start + 1), matches, until));
     };
@@ -1094,7 +1094,7 @@
     };
     const parseItem = (depth, itemSelection, selectionState, item) => firstChild(item).filter(isList).fold(() => parseSingleItem(depth, itemSelection, selectionState, item), list => {
       const parsedSiblings = foldl(children(item), (acc, liChild, i) => {
-        if (i === 0) {
+        if (i == 0) {
           return acc;
         } else {
           if (isListItem(liChild)) {
@@ -1159,7 +1159,7 @@
         indentSelectedEntries(entrySet.entries, indentation);
         const composedLists = composeEntries(editor, entrySet.entries);
         each$1(composedLists, composedList => {
-          fireListEvent(editor, indentation === 'Indent' ? 'IndentList' : 'OutdentList', composedList.dom);
+          fireListEvent(editor, indentation == 'Indent' ? 'IndentList' : 'OutdentList', composedList.dom);
         });
         before(entrySet.sourceList, composedLists);
         remove(entrySet.sourceList);
@@ -1187,7 +1187,7 @@
     const flattenListSelection = editor => handleIndentation(editor, 'Flatten');
 
     const zeroWidth = '\uFEFF';
-    const isZwsp = char => char === zeroWidth;
+    const isZwsp = char => char == zeroWidth;
 
     const ancestor$1 = (scope, predicate, isRoot) => ancestor$3(scope, predicate, isRoot).isSome();
 
@@ -1229,10 +1229,10 @@
       const restoreEndPoint = start => {
         const nodeIndex = container => {
           var _a;
-          let node = (_a = container.parentNode) === null || _a === void 0 ? void 0 : _a.firstChild;
+          let node = (_a = container.parentNode) == null || _a == void 0 ? void 0 : _a.firstChild;
           let idx = 0;
           while (node) {
-            if (node === container) {
+            if (node == container) {
               return idx;
             }
             if (!isElement(node) || node.getAttribute('data-mce-type') != 'bookmark') {
@@ -1324,7 +1324,7 @@
         const dir = forward ? 'next' : 'prev';
         let node;
         while (node = walker[dir]()) {
-          if (!(isVoid(editor, node) || isZwsp(node.textContent) || ((_a = node.textContent) === null || _a === void 0 ? void 0 : _a.length) === 0)) {
+          if (!(isVoid(editor, node) || isZwsp(node.textContent) || ((_a = node.textContent) == null || _a == void 0 ? void 0 : _a.length) == 0)) {
             return Optional.some(node);
           }
         }
@@ -1375,7 +1375,7 @@
       const siblings = [];
       for (let node = startNode; node; node = node.nextSibling) {
         siblings.push(node);
-        if (node === endNode) {
+        if (node == endNode) {
           break;
         }
       }
@@ -1395,14 +1395,14 @@
         }
         const nextSibling = node.nextSibling;
         if (global$1.isBookmarkNode(node)) {
-          if (isListNode(nextSibling) || isTextBlock(editor, nextSibling) || !nextSibling && node.parentNode === root) {
+          if (isListNode(nextSibling) || isTextBlock(editor, nextSibling) || !nextSibling && node.parentNode == root) {
             block = null;
             return;
           }
         }
         if (!block) {
           block = dom.create('p');
-          (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(block, node);
+          (_a = node.parentNode) == null || _a == void 0 ? void 0 : _a.insertBefore(block, node);
           textBlocks.push(block);
         }
         block.appendChild(node);
@@ -1412,8 +1412,8 @@
     const hasCompatibleStyle = (dom, sib, detail) => {
       const sibStyle = dom.getStyle(sib, 'list-style-type');
       let detailStyle = detail ? detail['list-style-type'] : '';
-      detailStyle = detailStyle === null ? '' : detailStyle;
-      return sibStyle === detailStyle;
+      detailStyle = detailStyle == null ? '' : detailStyle;
+      return sibStyle == detailStyle;
     };
     const getRootSearchStart = (editor, range) => {
       const start = editor.selection.getStart(true);
@@ -1429,11 +1429,11 @@
       let listItemName = 'LI';
       const root = getClosestListHost(editor, getRootSearchStart(editor, rng));
       const dom = editor.dom;
-      if (dom.getContentEditable(editor.selection.getNode()) === 'false') {
+      if (dom.getContentEditable(editor.selection.getNode()) == 'false') {
         return;
       }
       listName = listName.toUpperCase();
-      if (listName === 'DL') {
+      if (listName == 'DL') {
         listItemName = 'DT';
       }
       const bookmark = createBookmark(rng);
@@ -1443,7 +1443,7 @@
         const sibling = block.previousSibling;
         const parent = block.parentNode;
         if (!isListItemNode(parent)) {
-          if (sibling && isListNode(sibling) && sibling.nodeName === listName && hasCompatibleStyle(dom, sibling, detail)) {
+          if (sibling && isListNode(sibling) && sibling.nodeName == listName && hasCompatibleStyle(dom, sibling, detail)) {
             listBlock = sibling;
             block = dom.rename(block, listItemName);
             sibling.appendChild(block);
@@ -1472,15 +1472,15 @@
       editor.selection.setRng(resolveBookmark(bookmark));
     };
     const isValidLists = (list1, list2) => {
-      return isListNode(list1) && list1.nodeName === (list2 === null || list2 === void 0 ? void 0 : list2.nodeName);
+      return isListNode(list1) && list1.nodeName == (list2 == null || list2 == void 0 ? void 0 : list2.nodeName);
     };
     const hasSameListStyle = (dom, list1, list2) => {
       const targetStyle = dom.getStyle(list1, 'list-style-type', true);
       const style = dom.getStyle(list2, 'list-style-type', true);
-      return targetStyle === style;
+      return targetStyle == style;
     };
     const hasSameClasses = (elm1, elm2) => {
-      return elm1.className === elm2.className;
+      return elm1.className == elm2.className;
     };
     const shouldMerge = (dom, list1, list2) => {
       return isValidLists(list1, list2) && hasSameListStyle(dom, list1, list2) && hasSameClasses(list1, list2);
@@ -1518,7 +1518,7 @@
       list.classList.forEach((cls, _, classList) => {
         if (cls.startsWith('tox-')) {
           classList.remove(cls);
-          if (classList.length === 0) {
+          if (classList.length == 0) {
             list.removeAttribute('class');
           }
         }
@@ -1534,7 +1534,7 @@
     };
     const toggleMultipleLists = (editor, parentList, lists, listName, detail) => {
       const parentIsList = isListNode(parentList);
-      if (parentIsList && parentList.nodeName === listName && !hasListStyleDetail(detail) && !isCustomList(parentList)) {
+      if (parentIsList && parentList.nodeName == listName && !hasListStyleDetail(detail) && !isCustomList(parentList)) {
         flattenListSelection(editor);
       } else {
         applyList(editor, listName, detail);
@@ -1554,11 +1554,11 @@
       return 'list-style-type' in detail;
     };
     const toggleSingleList = (editor, parentList, listName, detail) => {
-      if (parentList === editor.getBody()) {
+      if (parentList == editor.getBody()) {
         return;
       }
       if (parentList) {
-        if (parentList.nodeName === listName && !hasListStyleDetail(detail) && !isCustomList(parentList)) {
+        if (parentList.nodeName == listName && !hasListStyleDetail(detail) && !isCustomList(parentList)) {
           flattenListSelection(editor);
         } else {
           const bookmark = createBookmark(editor.selection.getRng());
@@ -1566,7 +1566,7 @@
             parentList.classList.forEach((cls, _, classList) => {
               if (cls.startsWith('tox-')) {
                 classList.remove(cls);
-                if (classList.length === 0) {
+                if (classList.length == 0) {
                   parentList.removeAttribute('class');
                 }
               }
@@ -1601,9 +1601,9 @@
     const DOM = global$3.DOM;
     const normalizeList = (dom, list) => {
       const parentNode = list.parentElement;
-      if (parentNode && parentNode.nodeName === 'LI' && parentNode.firstChild === list) {
+      if (parentNode && parentNode.nodeName == 'LI' && parentNode.firstChild == list) {
         const sibling = parentNode.previousSibling;
-        if (sibling && sibling.nodeName === 'LI') {
+        if (sibling && sibling.nodeName == 'LI') {
           sibling.appendChild(list);
           if (isEmpty$2(dom, parentNode)) {
             DOM.remove(parentNode);
@@ -1614,7 +1614,7 @@
       }
       if (isListNode(parentNode)) {
         const sibling = parentNode.previousSibling;
-        if (sibling && sibling.nodeName === 'LI') {
+        if (sibling && sibling.nodeName == 'LI') {
           sibling.appendChild(list);
         }
       }
@@ -1644,7 +1644,7 @@
       }
       const walkFn = isForward ? walker.next.bind(walker) : walker.prev2.bind(walker);
       while (node = walkFn()) {
-        if (node.nodeName === 'LI' && !node.hasChildNodes()) {
+        if (node.nodeName == 'LI' && !node.hasChildNodes()) {
           return node;
         }
         if (nonEmptyBlocks[node.nodeName]) {
@@ -1658,7 +1658,7 @@
     };
     const hasOnlyOneBlockChild = (dom, elm) => {
       const childNodes = elm.childNodes;
-      return childNodes.length === 1 && !isListNode(childNodes[0]) && dom.isBlock(childNodes[0]);
+      return childNodes.length == 1 && !isListNode(childNodes[0]) && dom.isBlock(childNodes[0]);
     };
     const isUnwrappable = node => Optional.from(node).map(SugarElement.fromDom).filter(isHTMLElement).exists(el => isEditable(el) && !contains$1(['details'], name(el)));
     const unwrapSingleBlockChild = (dom, elm) => {
@@ -1685,7 +1685,7 @@
       if (isListNode(toElm.lastChild)) {
         listNode = toElm.lastChild;
       }
-      if (ul === toElm.lastChild) {
+      if (ul == toElm.lastChild) {
         if (isBr(ul.previousSibling)) {
           dom.remove(ul.previousSibling);
         }
@@ -1738,7 +1738,7 @@
       const li = dom.getParent(selection.getStart(), 'LI', root);
       if (li) {
         const ul = li.parentElement;
-        if (ul === editor.getBody() && isEmpty$2(dom, ul)) {
+        if (ul == editor.getBody() && isEmpty$2(dom, ul)) {
           return true;
         }
         const rng = normalizeRange(selection.getRng());
@@ -1770,7 +1770,7 @@
           });
           return true;
         } else if (!otherLi) {
-          if (!isForward && rng.startOffset === 0 && rng.endOffset === 0) {
+          if (!isForward && rng.startOffset == 0 && rng.endOffset == 0) {
             editor.undoManager.transact(() => {
               flattenListSelection(editor);
             });
@@ -1801,7 +1801,7 @@
             'th',
             'caption'
           ], name(element));
-          const findRoot = node => node.dom === root;
+          const findRoot = node => node.dom == root;
           const otherLiCell = closest$2(SugarElement.fromDom(otherLi), findValidElement, findRoot);
           const caretCell = closest$2(SugarElement.fromDom(rng.startContainer), findValidElement, findRoot);
           if (!equals(otherLiCell, caretCell, eq)) {
@@ -1845,16 +1845,16 @@
     const setup$2 = editor => {
       editor.on('ExecCommand', e => {
         const cmd = e.command.toLowerCase();
-        if ((cmd === 'delete' || cmd === 'forwarddelete') && hasListSelection(editor)) {
+        if ((cmd == 'delete' || cmd == 'forwarddelete') && hasListSelection(editor)) {
           normalizeLists(editor.dom, editor.getBody());
         }
       });
       editor.on('keydown', e => {
-        if (e.keyCode === global$4.BACKSPACE) {
+        if (e.keyCode == global$4.BACKSPACE) {
           if (backspaceDelete(editor, false)) {
             e.preventDefault();
           }
-        } else if (e.keyCode === global$4.DELETE) {
+        } else if (e.keyCode == global$4.DELETE) {
           if (backspaceDelete(editor, true)) {
             e.preventDefault();
           }
@@ -1870,7 +1870,7 @@
 
     const updateList = (editor, update) => {
       const parentList = getParentList(editor);
-      if (parentList === null || isWithinNonEditableList(editor, parentList)) {
+      if (parentList == null || isWithinNonEditableList(editor, parentList)) {
         return;
       }
       editor.undoManager.transact(() => {
@@ -1995,7 +1995,7 @@
           const data = api.getData();
           parseStartValue(data.start).each(detail => {
             editor.execCommand('mceListUpdate', false, {
-              attrs: { start: detail.start === '1' ? '' : detail.start },
+              attrs: { start: detail.start == '1' ? '' : detail.start },
               styles: { 'list-style-type': detail.listStyleType.getOr('') }
             });
           });
@@ -2006,7 +2006,7 @@
 
     const queryListCommandState = (editor, listName) => () => {
       const parentList = getParentList(editor);
-      return isNonNullable(parentList) && parentList.nodeName === listName;
+      return isNonNullable(parentList) && parentList.nodeName == listName;
     };
     const registerDialog = editor => {
       editor.addCommand('mceListProps', () => {
@@ -2016,9 +2016,9 @@
     const register$2 = editor => {
       editor.on('BeforeExecCommand', e => {
         const cmd = e.command.toLowerCase();
-        if (cmd === 'indent') {
+        if (cmd == 'indent') {
           indentListSelection(editor);
-        } else if (cmd === 'outdent') {
+        } else if (cmd == 'outdent') {
           outdentListSelection(editor);
         }
       });
@@ -2047,8 +2047,8 @@
 
     var global = tinymce.util.Tools.resolve('tinymce.html.Node');
 
-    const isTextNode = node => node.type === 3;
-    const isEmpty = nodeBuffer => nodeBuffer.length === 0;
+    const isTextNode = node => node.type == 3;
+    const isEmpty = nodeBuffer => nodeBuffer.length == 0;
     const wrapInvalidChildren = list => {
       const insertListItem = (buffer, refNode) => {
         const li = global.create('li');

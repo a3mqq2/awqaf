@@ -18,9 +18,9 @@ class DrawingController extends Controller
         }
 
         if ($request->filled('status')) {
-            if ($request->status === 'active') {
+            if ($request->status == 'active') {
                 $query->where('is_active', true);
-            } elseif ($request->status === 'inactive') {
+            } elseif ($request->status == 'inactive') {
                 $query->where('is_active', false);
             }
         }

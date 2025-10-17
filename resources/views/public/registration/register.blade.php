@@ -1115,7 +1115,7 @@ textarea.form-control {
             }
             
             displayResults(data) {
-                if (data.length === 0) {
+                if (data.length == 0) {
                     this.results.innerHTML = '<div class="autocomplete-empty">لا توجد نتائج</div>';
                     return;
                 }
@@ -1141,7 +1141,7 @@ textarea.form-control {
             
             selectNext() {
                 const items = this.results.querySelectorAll('.autocomplete-item');
-                if (items.length === 0) return;
+                if (items.length == 0) return;
                 
                 if (this.selectedIndex < items.length - 1) {
                     this.selectedIndex++;
@@ -1151,7 +1151,7 @@ textarea.form-control {
             
             selectPrev() {
                 const items = this.results.querySelectorAll('.autocomplete-item');
-                if (items.length === 0) return;
+                if (items.length == 0) return;
                 
                 if (this.selectedIndex > 0) {
                     this.selectedIndex--;
@@ -1263,7 +1263,7 @@ textarea.form-control {
                     return false;
                 }
                 
-                if (input.id === 'birth_date') {
+                if (input.id == 'birth_date') {
                     const birthDate = new Date(input.value);
                     const maxDate = new Date('2009-12-31');
                     if (birthDate > maxDate) {
@@ -1283,12 +1283,12 @@ textarea.form-control {
                     }
                 }
                 
-                if (input.id === 'national_id' && input.required) {
+                if (input.id == 'national_id' && input.required) {
                     // No validation - field is open
                 }
                 
-                if (input.id === 'phone') {
-                    if (input.value.length !== 9) {
+                if (input.id == 'phone') {
+                    if (input.value.length != 9) {
                         Swal.fire({
                             icon: 'error',
                             title: '<span style="font-family: Cairo; color: #3c5e7f;">رقم هاتف غير صحيح</span>',
@@ -1321,7 +1321,7 @@ textarea.form-control {
         }
 
         function goToStep(step) {
-            if (step === 5) {
+            if (step == 5) {
                 updateReviewSection();
             }
             
@@ -1344,7 +1344,7 @@ textarea.form-control {
                 
                 if (stepNum < activeStep) {
                     item.classList.add('completed');
-                } else if (stepNum === activeStep) {
+                } else if (stepNum == activeStep) {
                     item.classList.add('active');
                 }
             });
@@ -1353,7 +1353,7 @@ textarea.form-control {
         function updateReviewSection() {
             const identityType = document.querySelector('input[name="identity_type"]:checked').value;
             document.getElementById('review_identity_type').textContent = 
-                identityType === 'national_id' ? 'ليبي الجنسية' : 'جنسية أخرى';
+                identityType == 'national_id' ? 'ليبي الجنسية' : 'جنسية أخرى';
             
             const firstName = document.getElementById('first_name').value;
             const fatherName = document.getElementById('father_name').value;
@@ -1362,7 +1362,7 @@ textarea.form-control {
             document.getElementById('review_full_name').textContent = 
                 `${firstName} ${fatherName} ${grandfatherName} ${lastName}`.trim();
             
-            if (identityType === 'national_id') {
+            if (identityType == 'national_id') {
                 document.getElementById('review_national_id_row').style.display = 'flex';
                 document.getElementById('review_passport_row').style.display = 'none';
                 document.getElementById('review_national_id').textContent = 
@@ -1379,7 +1379,7 @@ textarea.form-control {
             
             const gender = document.getElementById('gender').value;
             document.getElementById('review_gender').textContent = 
-                gender === 'male' ? 'ذكر' : 'أنثى';
+                gender == 'male' ? 'ذكر' : 'أنثى';
             
             document.getElementById('review_phone').textContent = 
                 '+218' + document.getElementById('phone').value;

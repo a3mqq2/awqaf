@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const judgeName = button.getAttribute('data-judge-name');
             const currentStatus = button.getAttribute('data-current-status');
             
-            const isActive = currentStatus === 'active';
+            const isActive = currentStatus == 'active';
             const actionText = isActive ? 'إلغاء تفعيل' : 'تفعيل';
             const btnClass = isActive ? 'btn-warning' : 'btn-success';
             const icon = isActive ? 'ti-user-x' : 'ti-user-check';

@@ -44,13 +44,13 @@ class ExamineeReportController extends Controller
 
         // فلترة حسب النتيجة
         if ($request->filled('result')) {
-            if ($request->result === 'passed') {
+            if ($request->result == 'passed') {
                 $query->whereHas('evaluations', function($q) {
                     $q->where('status', 'completed');
                 })->whereHas('oralEvaluations', function($q) {
                     $q->where('status', 'completed');
                 });
-            } elseif ($request->result === 'failed') {
+            } elseif ($request->result == 'failed') {
                 $query->whereDoesntHave('oralEvaluations', function($q) {
                     $q->where('status', 'completed');
                 });

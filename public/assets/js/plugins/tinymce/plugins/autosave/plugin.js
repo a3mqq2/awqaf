@@ -12,23 +12,23 @@
       if (predicate(v, constructor.prototype)) {
         return true;
       } else {
-        return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+        return ((_a = v.constructor) == null || _a == void 0 ? void 0 : _a.name) == constructor.name;
       }
     };
     const typeOf = x => {
       const t = typeof x;
-      if (x === null) {
+      if (x == null) {
         return 'null';
-      } else if (t === 'object' && Array.isArray(x)) {
+      } else if (t == 'object' && Array.isArray(x)) {
         return 'array';
-      } else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
+      } else if (t == 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
         return 'string';
       } else {
         return t;
       }
     };
-    const isType = type => value => typeOf(value) === type;
-    const eq = t => a => t === a;
+    const isType = type => value => typeOf(value) == type;
+    const eq = t => a => t == a;
     const isString = isType('string');
     const isUndefined = eq(undefined);
 
@@ -103,7 +103,7 @@
         return editor.dom.isEmpty(editor.getBody());
       } else {
         const trimmedHtml = global$1.trim(html);
-        if (trimmedHtml === '') {
+        if (trimmedHtml == '') {
           return true;
         } else {
           const fragment = new DOMParser().parseFromString(trimmedHtml, 'text/html');

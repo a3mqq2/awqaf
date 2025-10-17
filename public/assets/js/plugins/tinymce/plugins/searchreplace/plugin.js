@@ -26,27 +26,27 @@
       if (predicate(v, constructor.prototype)) {
         return true;
       } else {
-        return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+        return ((_a = v.constructor) == null || _a == void 0 ? void 0 : _a.name) == constructor.name;
       }
     };
     const typeOf = x => {
       const t = typeof x;
-      if (x === null) {
+      if (x == null) {
         return 'null';
-      } else if (t === 'object' && Array.isArray(x)) {
+      } else if (t == 'object' && Array.isArray(x)) {
         return 'array';
-      } else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
+      } else if (t == 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
         return 'string';
       } else {
         return t;
       }
     };
-    const isType$1 = type => value => typeOf(value) === type;
-    const isSimpleType = type => value => typeof value === type;
+    const isType$1 = type => value => typeOf(value) == type;
+    const isSimpleType = type => value => typeof value == type;
     const isString = isType$1('string');
     const isArray = isType$1('array');
     const isBoolean = isSimpleType('boolean');
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
     const isNumber = isSimpleType('number');
 
@@ -186,7 +186,7 @@
       }
     };
     const groupBy = (xs, f) => {
-      if (xs.length === 0) {
+      if (xs.length == 0) {
         return [];
       } else {
         let wasType = f(xs[0]);
@@ -242,7 +242,7 @@
     const TEXT = 3;
 
     const type = element => element.dom.nodeType;
-    const isType = t => element => type(element) === t;
+    const isType = t => element => type(element) == t;
     const isText$1 = isType(TEXT);
 
     const rawSet = (dom, key, value) => {
@@ -279,7 +279,7 @@
       return fromDom(node);
     };
     const fromDom = node => {
-      if (node === null || node === undefined) {
+      if (node == null || node == undefined) {
         throw new Error('Node cannot be null or undefined');
       }
       return { dom: node };
@@ -293,9 +293,9 @@
       fromPoint
     };
 
-    const bypassSelector = dom => dom.nodeType != ELEMENT && dom.nodeType != DOCUMENT && dom.nodeType != DOCUMENT_FRAGMENT || dom.childElementCount === 0;
+    const bypassSelector = dom => dom.nodeType != ELEMENT && dom.nodeType != DOCUMENT && dom.nodeType != DOCUMENT_FRAGMENT || dom.childElementCount == 0;
     const all = (selector, scope) => {
-      const base = scope === undefined ? document : scope.dom;
+      const base = scope == undefined ? document : scope.dom;
       return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), SugarElement.fromDom);
     };
 
@@ -361,10 +361,10 @@
 
     const isSimpleBoundary = (dom, node) => dom.isBlock(node) || has(dom.schema.getVoidElements(), node.nodeName);
     const isContentEditableFalse = (dom, node) => !dom.isEditable(node);
-    const isContentEditableTrueInCef = (dom, node) => dom.getContentEditable(node) === 'true' && node.parentNode && !dom.isEditable(node.parentNode);
+    const isContentEditableTrueInCef = (dom, node) => dom.getContentEditable(node) == 'true' && node.parentNode && !dom.isEditable(node.parentNode);
     const isHidden = (dom, node) => !dom.isBlock(node) && has(dom.schema.getWhitespaceElements(), node.nodeName);
     const isBoundary = (dom, node) => isSimpleBoundary(dom, node) || isContentEditableFalse(dom, node) || isHidden(dom, node) || isContentEditableTrueInCef(dom, node);
-    const isText = node => node.nodeType === 3;
+    const isText = node => node.nodeType == 3;
     const nuSection = () => ({
       sOffset: 0,
       fOffset: 0,
@@ -390,7 +390,7 @@
         } else if (isText(next)) {
           callbacks.text(next);
         }
-        if (next === endNode) {
+        if (next == endNode) {
           break;
         } else {
           next = walkerFn(false);
@@ -459,9 +459,9 @@
       const endNode = end.element.dom;
       return collect(dom, rng.commonAncestorContainer, startNode, endNode, {
         text: (node, section) => {
-          if (node === endNode) {
+          if (node == endNode) {
             section.fOffset += node.length - end.offset;
-          } else if (node === startNode) {
+          } else if (node == startNode) {
             section.sOffset += start.offset;
           }
         },
@@ -542,7 +542,7 @@
           const wrapper = SugarElement.fromDom(replacementNode.cloneNode(false));
           set(wrapper, 'data-mce-index', idx);
           const textNode = pos.element.dom;
-          if (textNode.length === pos.finish && pos.start === 0) {
+          if (textNode.length == pos.finish && pos.start == 0) {
             wrap(pos.element, wrapper);
           } else {
             if (textNode.length != pos.finish) {
@@ -590,7 +590,7 @@
       if (node.firstChild) {
         parentNode.insertBefore(node.firstChild, node);
       }
-      (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(node);
+      (_a = node.parentNode) == null || _a == void 0 ? void 0 : _a.removeChild(node);
     };
     const findSpansByIndex = (editor, index) => {
       const spans = [];
@@ -598,10 +598,10 @@
       if (nodes.length) {
         for (let i = 0; i < nodes.length; i++) {
           const nodeIndex = getElmIndex(nodes[i]);
-          if (nodeIndex === null || !nodeIndex.length) {
+          if (nodeIndex == null || !nodeIndex.length) {
             continue;
           }
-          if (nodeIndex === index.toString()) {
+          if (nodeIndex == index.toString()) {
             spans.push(nodes[i]);
           }
         }
@@ -613,13 +613,13 @@
       let testIndex = searchState.index;
       const dom = editor.dom;
       if (forward) {
-        if (testIndex + 1 === searchState.count) {
+        if (testIndex + 1 == searchState.count) {
           testIndex = 0;
         } else {
           testIndex++;
         }
       } else {
-        if (testIndex - 1 === -1) {
+        if (testIndex - 1 == -1) {
           testIndex = searchState.count - 1;
         } else {
           testIndex--;
@@ -699,7 +699,7 @@
       for (let i = 0; i < nodes.length; i++) {
         const nodeIndex = getElmIndex(nodes[i]);
         let matchIndex = currentMatchIndex = parseInt(nodeIndex, 10);
-        if (all || matchIndex === searchState.index) {
+        if (all || matchIndex == searchState.index) {
           if (text.length) {
             nodes[i].innerText = text;
             unwrap(nodes[i]);
@@ -708,7 +708,7 @@
           }
           while (nodes[++i]) {
             matchIndex = parseInt(getElmIndex(nodes[i]), 10);
-            if (matchIndex === currentMatchIndex) {
+            if (matchIndex == currentMatchIndex) {
               removeNode(editor.dom, nodes[i]);
             } else {
               i--;
@@ -742,7 +742,7 @@
       for (let i = 0; i < nodes.length; i++) {
         const nodeIndex = getElmIndex(nodes[i]);
         if (nodeIndex != null && nodeIndex.length) {
-          if (nodeIndex === searchState.index.toString()) {
+          if (nodeIndex == searchState.index.toString()) {
             if (!startContainer) {
               startContainer = nodes[i].firstChild;
             }
@@ -858,7 +858,7 @@
         api.redial(getDialogSpec(isVisible, api.getData()));
       };
       const focusButtonIfRequired = (api, name) => {
-        if (global$2.browser.isSafari() && global$2.deviceType.isTouch() && (name === 'find' || name === 'replace' || name === 'replaceall')) {
+        if (global$2.browser.isSafari() && global$2.deviceType.isTouch() && (name == 'find' || name == 'replace' || name == 'replaceall')) {
           api.focus(name);
         }
       };
@@ -874,14 +874,14 @@
           reset(api);
           return;
         }
-        if (last.text === data.findtext && last.matchCase === data.matchcase && last.wholeWord === data.wholewords) {
+        if (last.text == data.findtext && last.matchCase == data.matchcase && last.wholeWord == data.wholewords) {
           next(editor, currentSearchState);
         } else {
           const count = find(editor, currentSearchState, data.findtext, data.matchcase, data.wholewords, data.inselection);
           if (count <= 0) {
             toggleNotFoundAlert(true, api);
           }
-          disableAll(api, count === 0);
+          disableAll(api, count == 0);
         }
         updateButtonStates(api);
       };
@@ -996,7 +996,7 @@
           if (showNoMatchesAlertBanner) {
             toggleNotFoundAlert(false, api);
           }
-          if (details.name === 'findtext' && currentSearchState.get().count > 0) {
+          if (details.name == 'findtext' && currentSearchState.get().count > 0) {
             reset(api);
           }
         },

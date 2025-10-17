@@ -106,7 +106,7 @@ class AttendanceController extends Controller
         }
 
         // التحقق من أن الممتحن مؤكد
-        if ($examinee->status !== 'confirmed') {
+        if ($examinee->status != 'confirmed') {
             return response()->json([
                 'success' => false,
                 'message' => 'لا يمكن تسجيل الحضور. حالة الممتحن غير مؤكدة'

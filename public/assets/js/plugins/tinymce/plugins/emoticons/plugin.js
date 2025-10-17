@@ -7,10 +7,10 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    const eq = t => a => t === a;
+    const eq = t => a => t == a;
     const isNull = eq(null);
     const isUndefined = eq(undefined);
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
 
     const noop = () => {
@@ -210,7 +210,7 @@
     };
     const baseMerge = merger => {
       return (...objects) => {
-        if (objects.length === 0) {
+        if (objects.length == 0) {
           throw new Error(`Can't merge zero objects`);
         }
         const ret = {};
@@ -256,7 +256,7 @@
       };
     };
 
-    const checkRange = (str, substr, start) => substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    const checkRange = (str, substr, start) => substr == '' || str.length >= substr.length && str.substr(start, start + substr.length) == substr;
     const contains = (str, substr, start = 0, end) => {
       const idx = str.indexOf(substr, start);
       if (idx != -1) {
@@ -362,7 +362,7 @@
         });
       });
       const listCategory = category => {
-        if (category === ALL_CATEGORY) {
+        if (category == ALL_CATEGORY) {
           return listAll();
         }
         return categories.get().bind(cats => Optional.from(cats[category])).getOr([]);
@@ -407,7 +407,7 @@
       const lowerCasePattern = pattern.toLowerCase();
       const reachedLimit = maxResults.fold(() => never, max => size => size >= max);
       for (let i = 0; i < list.length; i++) {
-        if (pattern.length === 0 || emojiMatches(list[i], lowerCasePattern)) {
+        if (pattern.length == 0 || emojiMatches(list[i], lowerCasePattern)) {
           matches.push({
             value: list[i].char,
             text: list[i].title,
@@ -432,7 +432,7 @@
         const dialogData = dialogApi.getData();
         const category = currentTab.get();
         const candidates = database.listCategory(category);
-        const results = emojisFrom(candidates, dialogData[patternName], category === ALL_CATEGORY ? Optional.some(300) : Optional.none());
+        const results = emojisFrom(candidates, dialogData[patternName], category == ALL_CATEGORY ? Optional.some(300) : Optional.none());
         dialogApi.setData({ results });
       };
       const updateFilter = last(dialogApi => {
@@ -470,7 +470,7 @@
           },
           onChange: updateFilter.throttle,
           onAction: (dialogApi, actionData) => {
-            if (actionData.name === 'results') {
+            if (actionData.name == 'results') {
               insertEmoticon(editor, actionData.value);
               dialogApi.close();
             }

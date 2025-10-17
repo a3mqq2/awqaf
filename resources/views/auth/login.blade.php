@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (togglePassword && passwordField && eyeIcon) {
         togglePassword.addEventListener('click', function() {
-            if (passwordField.type === 'password') {
+            if (passwordField.type == 'password') {
                 passwordField.type = 'text';
                 eyeIcon.className = 'ph-duotone ph-eye-slash';
             } else {

@@ -125,7 +125,7 @@ public function getClusterIdsAttribute(): array
      */
     public function hasAccessToAllClusters(): bool
     {
-        return $this->clusters()->count() === 0;
+        return $this->clusters()->count() == 0;
     }
 
     /**

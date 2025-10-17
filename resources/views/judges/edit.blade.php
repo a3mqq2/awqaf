@@ -189,7 +189,7 @@
                                                 id="perm_{{ $permission->id }}"
                                                 {{ in_array($permission->name, $judgePermissions) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="perm_{{ $permission->id }}">
-                                                {{ $permission->name === 'exam.scientific' ? 'امتحان المنهج العلمي' : 'امتحان الشفوي' }}
+                                                {{ $permission->name == 'exam.scientific' ? 'امتحان المنهج العلمي' : 'امتحان الشفوي' }}
                                             </label>
                                         </div>
                                     </div>

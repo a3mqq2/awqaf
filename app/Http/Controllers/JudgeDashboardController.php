@@ -95,7 +95,7 @@ class JudgeDashboardController extends Controller
         }
 
         // التحقق من أن الممتحن حضر
-        if ($examinee->status !== 'attended') {
+        if ($examinee->status != 'attended') {
             return response()->json([
                 'success' => false,
                 'message' => 'الممتحن لم يسجل حضوره بعد'

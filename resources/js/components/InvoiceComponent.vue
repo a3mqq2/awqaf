@@ -69,7 +69,7 @@
                           جاري البحث...
                         </div>
 
-                        <div v-else-if="filteredCustomers.length === 0 && customerSearch.length >= 3" class="dropdown-item text-center text-muted py-3">
+                        <div v-else-if="filteredCustomers.length == 0 && customerSearch.length >= 3" class="dropdown-item text-center text-muted py-3">
                           <i class="ti ti-search-off me-2"></i>
                           لم يتم العثور على زبائن
                           <hr class="my-2">
@@ -90,7 +90,7 @@
                           :key="customer.id"
                           @click="selectCustomer(customer)"
                           class="dropdown-item d-flex justify-content-between align-items-center customer-item"
-                          :class="{ 'active': index === selectedCustomerIndex }"
+                          :class="{ 'active': index == selectedCustomerIndex }"
                         >
                           <div class="d-flex align-items-center">
                             <div class="customer-avatar">
@@ -210,7 +210,7 @@
                         </button>
                       </td>
                     </tr>
-                    <tr v-if="invoice.items.length === 0">
+                    <tr v-if="invoice.items.length == 0">
                       <td colspan="5" class="text-center text-muted py-4">لا توجد عناصر، أضف خدمة على الأقل</td>
                     </tr>
                   </tbody>
@@ -367,7 +367,7 @@
                   <div class="card-footer bg-light border-0 p-4">
                     <button
                       type="submit"
-                      :disabled="loading || invoice.items.length === 0 || !invoice.customer_id"
+                      :disabled="loading || invoice.items.length == 0 || !invoice.customer_id"
                       class="btn w-100 elegant-btn btn-lg text-white"
                       style="background-color: #3c5e7f; border-color: #3c5e7f;"
                     >
@@ -467,7 +467,7 @@ export default {
     }
   },
   setup(props) {
-    if (typeof window.axios === 'undefined') {
+    if (typeof window.axios == 'undefined') {
       console.error('axios is not available')
       return
     }
@@ -537,7 +537,7 @@ export default {
     watch(customerSearch, (newValue) => {
       selectedCustomerIndex.value = -1
       customerSearchError.value = ''
-      if (newValue.length === 0 && !isEdit.value) {
+      if (newValue.length == 0 && !isEdit.value) {
         showCustomerDropdown.value = false
         invoice.value.customer_id = ''
         filteredCustomers.value = []
@@ -654,7 +654,7 @@ export default {
 
     const navigateCustomers = (direction) => {
       if (isEdit.value) return
-      if (!showCustomerDropdown.value || filteredCustomers.value.length === 0) return
+      if (!showCustomerDropdown.value || filteredCustomers.value.length == 0) return
       const maxIndex = filteredCustomers.value.length - 1
       selectedCustomerIndex.value += direction
       if (selectedCustomerIndex.value > maxIndex) selectedCustomerIndex.value = 0
@@ -676,7 +676,7 @@ export default {
       const searchTerm = customerSearch.value.trim().toLowerCase()
       const textLower = String(text).toLowerCase()
       const index = textLower.indexOf(searchTerm)
-      if (index === -1) return text
+      if (index == -1) return text
       return text.substring(0, index) +
              '<mark class="bg-warning">' +
              text.substring(index, index + searchTerm.length) +
@@ -778,7 +778,7 @@ export default {
     }
 
     const submitInvoice = async () => {
-      if (invoice.value.items.length === 0) {
+      if (invoice.value.items.length == 0) {
         window.toastr.error('يجب إضافة خدمة واحدة على الأقل')
         return
       }

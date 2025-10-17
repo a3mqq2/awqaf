@@ -70,7 +70,7 @@
 
     const setup = editor => {
       editor.on('ResolveName', e => {
-        if (e.target.nodeName === 'IMG' && editor.dom.hasClass(e.target, pageBreakClass)) {
+        if (e.target.nodeName == 'IMG' && editor.dom.hasClass(e.target, pageBreakClass)) {
           e.name = 'pagebreak';
         }
       });

@@ -148,7 +148,7 @@
     if (isNaN(parseInt(value))) {
       return false;
     }
-    if (value === '') {
+    if (value == '') {
       return false;
     }
     return true;
@@ -182,7 +182,7 @@
 
         // Convert to pixels
       };
-      if (values[2] === '%') {
+      if (values[2] == '%') {
         croppr.options.convertToPixels(croppr.cropperEl);
       }
 

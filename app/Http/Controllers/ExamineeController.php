@@ -141,7 +141,7 @@ class ExamineeController extends Controller
         // Pagination
         $perPage = $request->get('per_page', 15);
         
-        if ($perPage === 'all') {
+        if ($perPage == 'all') {
             $examinees = $query->get();
             // Create a custom pagination-like object for consistency
             $examinees = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -387,7 +387,7 @@ class ExamineeController extends Controller
             $oldValue = $oldValues[$field] ?? null;
     
             // توحيد صيغة التاريخ قبل المقارنة
-            if ($field === 'birth_date') {
+            if ($field == 'birth_date') {
                 $oldValue = $oldValue ? \Carbon\Carbon::parse($oldValue)->format('Y-m-d') : null;
                 $newValue = $newValue ? \Carbon\Carbon::parse($newValue)->format('Y-m-d') : null;
             }
@@ -402,13 +402,13 @@ class ExamineeController extends Controller
             }
     
             // ترجمة الحالة
-            if ($field === 'status') {
+            if ($field == 'status') {
                 $oldValue = $statusLabels[$oldValue] ?? $oldValue;
                 $newValue = $statusLabels[$newValue] ?? $newValue;
             }
     
             // ترجمة الجنس
-            if ($field === 'gender') {
+            if ($field == 'gender') {
                 $oldValue = $genderLabels[$oldValue] ?? $oldValue;
                 $newValue = $genderLabels[$newValue] ?? $newValue;
             }

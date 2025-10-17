@@ -40,7 +40,7 @@ class PublicRegistrationController extends Controller
 
         $query = Examinee::query();
 
-        if ($request->identity_type === 'national_id') {
+        if ($request->identity_type == 'national_id') {
             $query->where('national_id', $request->identity_number);
         } else {
             $query->where('passport_no', $request->identity_number);
@@ -93,7 +93,7 @@ class PublicRegistrationController extends Controller
             'drawing_name' => 'required|string|max:255',
         ];
     
-        if ($request->identity_type === 'national_id') {
+        if ($request->identity_type == 'national_id') {
             $rules['national_id'] = 'required|string|size:12';
         } else {
             $rules['passport_no'] = 'required|string|max:50';
@@ -107,7 +107,7 @@ class PublicRegistrationController extends Controller
         // Check if user is already registered - IMPROVED
         $existingExaminee = null;
         
-        if ($request->identity_type === 'national_id') {
+        if ($request->identity_type == 'national_id') {
             $existingExaminee = Examinee::where('national_id', $data['national_id'])->first();
             
             if ($existingExaminee) {

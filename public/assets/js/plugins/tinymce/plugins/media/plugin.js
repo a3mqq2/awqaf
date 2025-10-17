@@ -12,26 +12,26 @@
       if (predicate(v, constructor.prototype)) {
         return true;
       } else {
-        return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+        return ((_a = v.constructor) == null || _a == void 0 ? void 0 : _a.name) == constructor.name;
       }
     };
     const typeOf = x => {
       const t = typeof x;
-      if (x === null) {
+      if (x == null) {
         return 'null';
-      } else if (t === 'object' && Array.isArray(x)) {
+      } else if (t == 'object' && Array.isArray(x)) {
         return 'array';
-      } else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
+      } else if (t == 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
         return 'string';
       } else {
         return t;
       }
     };
-    const isType = type => value => typeOf(value) === type;
+    const isType = type => value => typeOf(value) == type;
     const isString = isType('string');
     const isObject = isType('object');
     const isArray = isType('array');
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
 
     class Optional {
@@ -240,29 +240,29 @@
       }, schema);
       const rootNode = parser.parse(html);
       for (let node = rootNode; node; node = node.walk()) {
-        if (node.type === 1) {
+        if (node.type == 1) {
           const name = node.name;
           if (node.attr('data-ephox-embed-iri')) {
             data = getEphoxEmbedData(node);
             break;
           } else {
-            if (!data.source && name === 'param') {
+            if (!data.source && name == 'param') {
               data.source = node.attr('movie');
             }
-            if (name === 'iframe' || name === 'object' || name === 'embed' || name === 'video' || name === 'audio') {
+            if (name == 'iframe' || name == 'object' || name == 'embed' || name == 'video' || name == 'audio') {
               if (!data.type) {
                 data.type = name;
               }
               data = global$5.extend(node.attributes.map, data);
             }
-            if (name === 'source') {
+            if (name == 'source') {
               if (!data.source) {
                 data.source = node.attr('src');
               } else if (!data.altsource) {
                 data.altsource = node.attr('src');
               }
             }
-            if (name === 'img' && !data.poster) {
+            if (name == 'img' && !data.poster) {
               data.poster = node.attr('src');
             }
           }
@@ -324,7 +324,7 @@
       parser.addNodeFilter('source', nodes => numSources = nodes.length);
       const rootNode = parser.parse(html);
       for (let node = rootNode; node; node = node.walk()) {
-        if (node.type === 1) {
+        if (node.type == 1) {
           const name = node.name;
           if (node.attr('data-ephox-embed-iri')) {
             updateEphoxEmbed(data, node);
@@ -479,7 +479,7 @@
     const getProtocol = url => {
       const protocolMatches = url.match(/^(https?:\/\/|www\.)(.+)$/i);
       if (protocolMatches && protocolMatches.length > 1) {
-        return protocolMatches[1] === 'www.' ? 'https://' : protocolMatches[1];
+        return protocolMatches[1] == 'www.' ? 'https://' : protocolMatches[1];
       } else {
         return 'https://';
       }
@@ -573,9 +573,9 @@
         global$5.each(data, (value, key) => {
           data[key] = editor.dom.encode('' + value);
         });
-        if (data.type === 'iframe') {
+        if (data.type == 'iframe') {
           return getIframeHtml(data, iframeTemplateCallback);
-        } else if (data.sourcemime === 'application/x-shockwave-flash') {
+        } else if (data.sourcemime == 'application/x-shockwave-flash') {
           return getFlashHtml(data);
         } else if (data.sourcemime.indexOf('audio') != -1) {
           return getAudioHtml(data, audioTemplateCallback);
@@ -647,7 +647,7 @@
       const getNonEmptyValue = c => get$1(c, 'value').bind(v => v.length > 0 ? Optional.some(v) : Optional.none());
       const getFromValueFirst = () => getFromData().bind(child => isObject(child) ? getNonEmptyValue(child).orThunk(getFromMetaData) : getFromMetaData().orThunk(() => Optional.from(child)));
       const getFromMetaFirst = () => getFromMetaData().orThunk(() => getFromData().bind(child => isObject(child) ? getNonEmptyValue(child) : Optional.from(child)));
-      return { [prop]: (prop === sourceInput ? getFromValueFirst() : getFromMetaFirst()).getOr('') };
+      return { [prop]: (prop == sourceInput ? getFromValueFirst() : getFromMetaFirst()).getOr('') };
     };
     const getDimensions = (data, metaData) => {
       const dimensions = {};
@@ -736,7 +736,7 @@
       const afterObjects = editor.dom.select('*[data-mce-object]');
       for (let i = 0; i < beforeObjects.length; i++) {
         for (let y = afterObjects.length - 1; y >= 0; y--) {
-          if (beforeObjects[i] === afterObjects[y]) {
+          if (beforeObjects[i] == afterObjects[y]) {
             afterObjects.splice(y, 1);
           }
         }
@@ -749,7 +749,7 @@
       selectPlaceholder(editor, beforeObjects);
       editor.nodeChanged();
     };
-    const isEmbedIframe = (url, mediaDataType) => isNonNullable(mediaDataType) && mediaDataType === 'ephox-embed-iri' && isNonNullable(matchPattern(url));
+    const isEmbedIframe = (url, mediaDataType) => isNonNullable(mediaDataType) && mediaDataType == 'ephox-embed-iri' && isNonNullable(matchPattern(url));
     const shouldInsertAsNewIframe = (prevData, newData) => {
       const hasDimensionsChanged = (prevData, newData) => prevData.width != newData.width || prevData.height != newData.height;
       return hasDimensionsChanged(prevData, newData) && isEmbedIframe(newData.source, prevData.type);
@@ -760,7 +760,7 @@
         ...newData,
         embed: ''
       }) : updateHtml((_a = newData.embed) != null && _a != void 0 ? _a : '', newData, false, editor.schema);
-      if (newData.embed && (prevData.source === newData.source || isCached(newData.source))) {
+      if (newData.embed && (prevData.source == newData.source || isCached(newData.source))) {
         handleInsert(editor, newData.embed);
       } else {
         getEmbedHtml(editor, newData).then(response => {
@@ -919,7 +919,7 @@
       editor.addCommand('mceMedia', showDialog$1);
     };
 
-    const checkRange = (str, substr, start) => substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    const checkRange = (str, substr, start) => substr == '' || str.length >= substr.length && str.substr(start, start + substr.length) == substr;
     const startsWith = (str, prefix) => {
       return checkRange(str, prefix, 0);
     };
@@ -928,7 +928,7 @@
 
     const isLiveEmbedNode = node => {
       const name = node.name;
-      return name === 'iframe' || name === 'video' || name === 'audio';
+      return name == 'iframe' || name == 'video' || name == 'audio';
     };
     const getDimension = (node, styles, dimension, defaultValue = null) => {
       const value = node.attr(dimension);
@@ -941,9 +941,9 @@
       }
     };
     const setDimensions = (node, previewNode, styles) => {
-      const useDefaults = previewNode.name === 'img' || node.name === 'video';
+      const useDefaults = previewNode.name == 'img' || node.name == 'video';
       const defaultWidth = useDefaults ? '300' : null;
-      const fallbackHeight = node.name === 'audio' ? '30' : '150';
+      const fallbackHeight = node.name == 'audio' ? '30' : '150';
       const defaultHeight = useDefaults ? fallbackHeight : null;
       previewNode.attr({
         width: getDimension(node, styles, 'width', defaultWidth),
@@ -988,7 +988,7 @@
         style: node.attr('style'),
         class: node.attr('class')
       });
-      if (name === 'iframe') {
+      if (name == 'iframe') {
         previewNode.attr({
           allowfullscreen: node.attr('allowfullscreen'),
           frameborder: '0',
@@ -1026,7 +1026,7 @@
         const attrName = attribs[ai].name;
         let attrValue = attribs[ai].value;
         if (attrName != 'width' && attrName != 'height' && attrName != 'style' && !startsWith(attrName, 'data-mce-')) {
-          if (attrName === 'data' || attrName === 'src') {
+          if (attrName == 'data' || attrName == 'src') {
             attrValue = editor.convertURL(attrValue, attrName);
           }
           targetNode.attr('data-mce-p-' + attrName, attrValue);
@@ -1133,7 +1133,7 @@
             let ai = attribs.length;
             while (ai--) {
               const attrName = attribs[ai].name;
-              if (attrName.indexOf('data-mce-p-') === 0) {
+              if (attrName.indexOf('data-mce-p-') == 0) {
                 realElm.attr(attrName.substr(11), attribs[ai].value);
               }
             }
@@ -1149,7 +1149,7 @@
       editor.on('SetContent', () => {
         const dom = editor.dom;
         each$1(dom.select('span.mce-preview-object'), elm => {
-          if (dom.select('span.mce-shim', elm).length === 0) {
+          if (dom.select('span.mce-shim', elm).length == 0) {
             dom.add(elm, 'span', { class: 'mce-shim' });
           }
         });
@@ -1159,7 +1159,7 @@
     const setup = editor => {
       editor.on('ResolveName', e => {
         let name;
-        if (e.target.nodeType === 1 && (name = e.target.getAttribute('data-mce-object'))) {
+        if (e.target.nodeType == 1 && (name = e.target.getAttribute('data-mce-object'))) {
           e.name = name;
         }
       });

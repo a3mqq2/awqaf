@@ -64,9 +64,9 @@
       return isNaN(value) ? 0 : value;
     };
     const shouldScrollIntoView = trigger => {
-      if ((trigger === null || trigger === void 0 ? void 0 : trigger.type.toLowerCase()) === 'setcontent') {
+      if ((trigger == null || trigger == void 0 ? void 0 : trigger.type.toLowerCase()) == 'setcontent') {
         const setContentEvent = trigger;
-        return setContentEvent.selection === true || setContentEvent.paste === true;
+        return setContentEvent.selection == true || setContentEvent.paste == true;
       } else {
         return false;
       }
@@ -147,11 +147,11 @@
         resizeCounter += 1;
       });
       editor.on('NodeChange SetContent keyup FullscreenStateChanged ResizeContent', e => {
-        if (resizeCounter === 1) {
+        if (resizeCounter == 1) {
           sizeAfterFirstResize = editor.getContainer().offsetHeight;
           resize(editor, oldSize, e, getExtraMarginBottom);
           resizeCounter += 1;
-        } else if (resizeCounter === 2) {
+        } else if (resizeCounter == 2) {
           const isLooping = sizeAfterFirstResize < editor.getContainer().offsetHeight;
           if (isLooping) {
             const dom = editor.dom;

@@ -939,7 +939,7 @@
                 <div class="pdf-list">
                     @if($evaluation->examinee->narration && $evaluation->examinee->narration->pdfs->count() > 0)
                         @foreach($evaluation->examinee->narration->pdfs as $index => $pdf)
-                            <div class="pdf-item {{ $index === 0 ? 'active' : '' }}" 
+                            <div class="pdf-item {{ $index == 0 ? 'active' : '' }}" 
                                  onclick="loadPdf('{{ $pdf->file_url }}', this)">
                                 <i class="ti ti-file-text"></i>
                                 <span>{{ $pdf->title }}</span>
@@ -1243,8 +1243,8 @@ function updateDeduction(type, action) {
                 // Visual feedback
                 const element = document.getElementById(type);
                 element.style.transform = 'scale(1.2)';
-                element.style.background = action === 'increment' ? '#f8d7da' : '#d4edda';
-                element.style.borderColor = action === 'increment' ? '#dc3545' : '#28a745';
+                element.style.background = action == 'increment' ? '#f8d7da' : '#d4edda';
+                element.style.borderColor = action == 'increment' ? '#dc3545' : '#28a745';
                 
                 setTimeout(() => {
                     element.style.transform = 'scale(1)';

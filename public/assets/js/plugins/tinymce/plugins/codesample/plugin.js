@@ -7,7 +7,7 @@
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
 
     const noop = () => {
@@ -196,7 +196,7 @@
               element.classList.add('language-' + language);
             },
             currentScript: function () {
-              if (typeof document === 'undefined') {
+              if (typeof document == 'undefined') {
                 return null;
               }
               if ('currentScript' in document && 1 < 2) {
@@ -265,7 +265,7 @@
               var old = root[inside];
               root[inside] = ret;
               _.languages.DFS(_.languages, function (key, value) {
-                if (value === old && key != inside) {
+                if (value == old && key != inside) {
                   this[key] = ret;
                 }
               });
@@ -279,10 +279,10 @@
                   callback.call(o, i, o[i], type || i);
                   var property = o[i];
                   var propertyType = _.util.type(property);
-                  if (propertyType === 'Object' && !visited[objId(property)]) {
+                  if (propertyType == 'Object' && !visited[objId(property)]) {
                     visited[objId(property)] = true;
                     DFS(property, callback, null, visited);
-                  } else if (propertyType === 'Array' && !visited[objId(property)]) {
+                  } else if (propertyType == 'Array' && !visited[objId(property)]) {
                     visited[objId(property)] = true;
                     DFS(property, callback, i, visited);
                   }
@@ -304,7 +304,7 @@
             env.elements = Array.prototype.slice.apply(env.container.querySelectorAll(env.selector));
             _.hooks.run('before-all-elements-highlight', env);
             for (var i = 0, element; element = env.elements[i++];) {
-              _.highlightElement(element, async === true, env.callback);
+              _.highlightElement(element, async == true, env.callback);
             }
           },
           highlightElement: function (element, async, callback) {
@@ -312,7 +312,7 @@
             var grammar = _.languages[language];
             _.util.setLanguage(element, language);
             var parent = element.parentElement;
-            if (parent && parent.nodeName.toLowerCase() === 'pre') {
+            if (parent && parent.nodeName.toLowerCase() == 'pre') {
               _.util.setLanguage(parent, language);
             }
             var code = element.textContent;
@@ -332,7 +332,7 @@
             }
             _.hooks.run('before-sanity-check', env);
             parent = env.element.parentElement;
-            if (parent && parent.nodeName.toLowerCase() === 'pre' && !parent.hasAttribute('tabindex')) {
+            if (parent && parent.nodeName.toLowerCase() == 'pre' && !parent.hasAttribute('tabindex')) {
               parent.setAttribute('tabindex', '0');
             }
             if (!env.code) {
@@ -511,7 +511,7 @@
                   if (currentNode.value instanceof Token) {
                     continue;
                   }
-                  for (var k = currentNode; k != tokenList.tail && (p < to || typeof k.value === 'string'); k = k.next) {
+                  for (var k = currentNode; k != tokenList.tail && (p < to || typeof k.value == 'string'); k = k.next) {
                     removeCount++;
                     p += k.value.length;
                   }
@@ -635,7 +635,7 @@
         }
         if (!_.manual) {
           var readyState = document.readyState;
-          if (readyState === 'loading' || readyState === 'interactive' && script && script.defer) {
+          if (readyState == 'loading' || readyState == 'interactive' && script && script.defer) {
             document.addEventListener('DOMContentLoaded', highlightAutomaticallyCallback);
           } else {
             if (window.requestAnimationFrame) {
@@ -694,7 +694,7 @@
               }
               var tokenStack = env.tokenStack = [];
               env.code = env.code.replace(placeholderPattern, function (match) {
-                if (typeof replaceFilter === 'function' && !replaceFilter(match)) {
+                if (typeof replaceFilter == 'function' && !replaceFilter(match)) {
                   return match;
                 }
                 var i = tokenStack.length;
@@ -722,10 +722,10 @@
                     break;
                   }
                   var token = tokens[i];
-                  if (typeof token === 'string' || token.content && typeof token.content === 'string') {
+                  if (typeof token == 'string' || token.content && typeof token.content == 'string') {
                     var k = keys[j];
                     var t = env.tokenStack[k];
-                    var s = typeof token === 'string' ? token : token.content;
+                    var s = typeof token == 'string' ? token : token.content;
                     var placeholder = getPlaceholder(language, k);
                     var index = s.indexOf(placeholder);
                     if (index > -1) {
@@ -741,7 +741,7 @@
                       if (after) {
                         replacement.push.apply(replacement, walkTokens([after]));
                       }
-                      if (typeof token === 'string') {
+                      if (typeof token == 'string') {
                         tokens.splice.apply(tokens, [
                           i,
                           1
@@ -1577,7 +1577,7 @@
       Prism.languages.markup['tag'].inside['attr-value'].inside['entity'] = Prism.languages.markup['entity'];
       Prism.languages.markup['doctype'].inside['internal-subset'].inside = Prism.languages.markup;
       Prism.hooks.add('wrap', function (env) {
-        if (env.type === 'entity') {
+        if (env.type == 'entity') {
           env.attributes['title'] = env.content.replace(/&amp;/, '&');
         }
       });
@@ -2032,7 +2032,7 @@
             inside: { 'punctuation': /[.\\]/ }
           },
           'keyword': /\b(?:BEGIN|END|alias|and|begin|break|case|class|def|define_method|defined|do|each|else|elsif|end|ensure|extend|for|if|in|include|module|new|next|nil|not|or|prepend|private|protected|public|raise|redo|require|rescue|retry|return|self|super|then|throw|undef|unless|until|when|while|yield)\b/,
-          'operator': /\.{2,3}|&\.|===|<?=>|[!=]?~|(?:&&|\|\||<<|>>|\*\*|[+\-*/%<>!^&|=])=?|[?:]/,
+          'operator': /\.{2,3}|&\.|==|<?=>|[!=]?~|(?:&&|\|\||<<|>>|\*\*|[+\-*/%<>!^&|=])=?|[?:]/,
           'punctuation': /[(){}[\].,;]/
         });
         Prism.languages.insertBefore('ruby', 'operator', {
@@ -2210,7 +2210,7 @@
     const get = editor => Global.Prism && useGlobalPrismJS(editor) ? Global.Prism : prismjs;
 
     const isCodeSample = elm => {
-      return isNonNullable(elm) && elm.nodeName === 'PRE' && elm.className.indexOf('language-') != -1;
+      return isNonNullable(elm) && elm.nodeName == 'PRE' && elm.className.indexOf('language-') != -1;
     };
 
     const getSelectedCodeSample = editor => {

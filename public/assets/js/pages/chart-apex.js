@@ -2104,7 +2104,7 @@ setTimeout(function () {
         tickAmount: 7,
         labels: {
           formatter: function (val, i) {
-            if (i % 2 === 0) {
+            if (i % 2 == 0) {
               return val;
             } else {
               return '';

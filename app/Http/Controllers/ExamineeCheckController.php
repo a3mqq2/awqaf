@@ -53,8 +53,8 @@ class ExamineeCheckController extends Controller
         ]);
 
         // Security check: make sure the submitted data matches the examinee
-        if ($examinee->national_id !== $request->national_id || 
-            $examinee->passport_no !== $request->passport_no) {
+        if ($examinee->national_id != $request->national_id || 
+            $examinee->passport_no != $request->passport_no) {
             return redirect()->route('examinee.check.form')
                 ->with('error', 'بيانات غير صحيحة');
         }
@@ -77,8 +77,8 @@ class ExamineeCheckController extends Controller
         ]);
 
         // Security check: make sure the submitted data matches the examinee
-        if ($examinee->national_id !== $request->national_id || 
-            $examinee->passport_no !== $request->passport_no) {
+        if ($examinee->national_id != $request->national_id || 
+            $examinee->passport_no != $request->passport_no) {
             return redirect()->route('examinee.check.form')
                 ->with('error', 'بيانات غير صحيحة');
         }

@@ -33,8 +33,8 @@
                             <label class="form-label">الحالة</label>
                             <select name="status" class="form-select">
                                 <option value="">الكل</option>
-                                <option value="attended" {{ request('status') === 'attended' ? 'selected' : '' }}>حضر</option>
-                                <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>مؤكد</option>
+                                <option value="attended" {{ request('status') == 'attended' ? 'selected' : '' }}>حضر</option>
+                                <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>مؤكد</option>
                             </select>
                         </div>
 
@@ -42,8 +42,8 @@
                             <label class="form-label">النتيجة</label>
                             <select name="result" class="form-select">
                                 <option value="">الكل</option>
-                                <option value="passed" {{ request('result') === 'passed' ? 'selected' : '' }}>ناجح</option>
-                                <option value="failed" {{ request('result') === 'failed' ? 'selected' : '' }}>راسب</option>
+                                <option value="passed" {{ request('result') == 'passed' ? 'selected' : '' }}>ناجح</option>
+                                <option value="failed" {{ request('result') == 'failed' ? 'selected' : '' }}>راسب</option>
                             </select>
                         </div>
 

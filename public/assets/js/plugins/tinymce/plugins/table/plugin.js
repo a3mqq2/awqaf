@@ -12,29 +12,29 @@
       if (predicate(v, constructor.prototype)) {
         return true;
       } else {
-        return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+        return ((_a = v.constructor) == null || _a == void 0 ? void 0 : _a.name) == constructor.name;
       }
     };
     const typeOf = x => {
       const t = typeof x;
-      if (x === null) {
+      if (x == null) {
         return 'null';
-      } else if (t === 'object' && Array.isArray(x)) {
+      } else if (t == 'object' && Array.isArray(x)) {
         return 'array';
-      } else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
+      } else if (t == 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
         return 'string';
       } else {
         return t;
       }
     };
-    const isType$1 = type => value => typeOf(value) === type;
-    const isSimpleType = type => value => typeof value === type;
-    const eq$1 = t => a => t === a;
+    const isType$1 = type => value => typeOf(value) == type;
+    const isSimpleType = type => value => typeof value == type;
+    const eq$1 = t => a => t == a;
     const isString = isType$1('string');
     const isArray = isType$1('array');
     const isBoolean = isSimpleType('boolean');
     const isUndefined = eq$1(undefined);
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
     const isFunction = isSimpleType('function');
     const isNumber = isSimpleType('number');
@@ -51,7 +51,7 @@
       return x;
     };
     const tripleEquals = (a, b) => {
-      return a === b;
+      return a == b;
     };
     function curry(fn, ...initialArgs) {
       return (...restArgs) => {
@@ -367,7 +367,7 @@
       return fromDom$1(node);
     };
     const fromDom$1 = node => {
-      if (node === null || node === undefined) {
+      if (node == null || node == undefined) {
         throw new Error('Node cannot be null or undefined');
       }
       return { dom: node };
@@ -400,17 +400,17 @@
         }
       }
     };
-    const bypassSelector = dom => dom.nodeType != ELEMENT && dom.nodeType != DOCUMENT && dom.nodeType != DOCUMENT_FRAGMENT || dom.childElementCount === 0;
+    const bypassSelector = dom => dom.nodeType != ELEMENT && dom.nodeType != DOCUMENT && dom.nodeType != DOCUMENT_FRAGMENT || dom.childElementCount == 0;
     const all$1 = (selector, scope) => {
-      const base = scope === undefined ? document : scope.dom;
+      const base = scope == undefined ? document : scope.dom;
       return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), SugarElement.fromDom);
     };
     const one = (selector, scope) => {
-      const base = scope === undefined ? document : scope.dom;
+      const base = scope == undefined ? document : scope.dom;
       return bypassSelector(base) ? Optional.none() : Optional.from(base.querySelector(selector)).map(SugarElement.fromDom);
     };
 
-    const eq = (e1, e2) => e1.dom === e2.dom;
+    const eq = (e1, e2) => e1.dom == e2.dom;
     const is$1 = is$2;
 
     typeof window != 'undefined' ? window : Function('return this;')();
@@ -420,13 +420,13 @@
       return r.toLowerCase();
     };
     const type = element => element.dom.nodeType;
-    const isType = t => element => type(element) === t;
-    const isComment = element => type(element) === COMMENT || name(element) === '#comment';
+    const isType = t => element => type(element) == t;
+    const isComment = element => type(element) == COMMENT || name(element) == '#comment';
     const isElement = isType(ELEMENT);
     const isText = isType(TEXT);
     const isDocument = isType(DOCUMENT);
     const isDocumentFragment = isType(DOCUMENT_FRAGMENT);
-    const isTag = tag => e => isElement(e) && name(e) === tag;
+    const isTag = tag => e => isElement(e) && name(e) == tag;
 
     const owner = element => SugarElement.fromDom(element.dom.ownerDocument);
     const documentOrOwner = dos => isDocument(dos) ? dos : owner(dos);
@@ -439,7 +439,7 @@
         const rawParent = dom.parentNode;
         const p = SugarElement.fromDom(rawParent);
         ret.push(p);
-        if (stop(p) === true) {
+        if (stop(p) == true) {
           break;
         } else {
           dom = rawParent;
@@ -467,7 +467,7 @@
 
     const inBody = element => {
       const dom = isText(element) ? element.dom.parentNode : element.dom;
-      if (dom === undefined || dom === null || dom.ownerDocument === null) {
+      if (dom == undefined || dom == null || dom.ownerDocument == null) {
         return false;
       }
       const doc = dom.ownerDocument;
@@ -521,7 +521,7 @@
       if (inBody(element)) {
         return element.dom.isContentEditable;
       } else {
-        return closest(element).fold(constant(assumeEditable), editable => getRaw$1(editable) === 'true');
+        return closest(element).fold(constant(assumeEditable), editable => getRaw$1(editable) == 'true');
       }
     };
     const getRaw$1 = element => element.dom.contentEditable;
@@ -569,7 +569,7 @@
     };
     const get$2 = (element, key) => {
       const v = element.dom.getAttribute(key);
-      return v === null ? undefined : v;
+      return v == null ? undefined : v;
     };
     const getOpt = (element, key) => Optional.from(get$2(element, key));
     const remove$2 = (element, key) => {
@@ -599,7 +599,7 @@
       return str.substring(numChars);
     };
 
-    const checkRange = (str, substr, start) => substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    const checkRange = (str, substr, start) => substr == '' || str.length >= substr.length && str.substr(start, start + substr.length) == substr;
     const removeLeading = (str, prefix) => {
       return startsWith(str, prefix) ? removeFromStart(str, prefix.length) : str;
     };
@@ -643,7 +643,7 @@
       const dom = element.dom;
       const styles = window.getComputedStyle(dom);
       const r = styles.getPropertyValue(property);
-      return r === '' && !inBody(element) ? getUnsafeProperty(dom, property) : r;
+      return r == '' && !inBody(element) ? getUnsafeProperty(dom, property) : r;
     };
     const getUnsafeProperty = (dom, property) => isSupported(dom) ? dom.style.getPropertyValue(property) : '';
     const getRaw = (element, property) => {
@@ -746,7 +746,7 @@
     const columnGroups = ancestor => table(ancestor).fold(constant([]), table => children$1(table, 'colgroup'));
 
     const fromRowsOrColGroups = (elems, getSection) => map(elems, row => {
-      if (name(row) === 'colgroup') {
+      if (name(row) == 'colgroup') {
         const cells = map(columns(row), column => {
           const colspan = getAttrValue(column, 'span', 1);
           return detail(column, 1, colspan);
@@ -818,7 +818,7 @@
       const {
         pass: colgroupRows,
         fail: rows
-      } = partition(list, rowData => rowData.section === 'colgroup');
+      } = partition(list, rowData => rowData.section == 'colgroup');
       each(rows, rowData => {
         const currentRow = [];
         each(rowData.cells, rowCell => {
@@ -939,7 +939,7 @@
     const getCalculatedWidth = (element, boxSizing) => {
       const dom = element.dom;
       const width = dom.getBoundingClientRect().width || dom.offsetWidth;
-      return boxSizing === 'border-box' ? width : calcContentBoxSize(element, width, 'left', 'right');
+      return boxSizing == 'border-box' ? width : calcContentBoxSize(element, width, 'left', 'right');
     };
     const getInnerWidth = element => getCalculatedWidth(element, 'content-box');
 
@@ -1080,8 +1080,8 @@
     const getToolbar = option('table_toolbar');
     const getTableBackgroundColorMap = option('table_background_color_map');
     const getTableBorderColorMap = option('table_border_color_map');
-    const isPixelsForced = editor => getTableSizingMode(editor) === 'fixed';
-    const isResponsiveForced = editor => getTableSizingMode(editor) === 'responsive';
+    const isPixelsForced = editor => getTableSizingMode(editor) == 'fixed';
+    const isResponsiveForced = editor => getTableSizingMode(editor) == 'responsive';
     const getDefaultStyles = editor => {
       const options = editor.options;
       const defaultStyles = options.get('table_default_styles');
@@ -1166,7 +1166,7 @@
 
     const after = (marker, elements) => {
       each(elements, (x, i) => {
-        const e = i === 0 ? marker : elements[i - 1];
+        const e = i == 0 ? marker : elements[i - 1];
         after$1(e, x);
       });
     };
@@ -1258,7 +1258,7 @@
         if (!isElement(element)) {
           return false;
         }
-        if (name(element) === 'body') {
+        if (name(element) == 'body') {
           return true;
         }
         return contains(TagBoundaries, name(element));
@@ -1274,7 +1274,7 @@
           'input'
         ], name(element));
       };
-      const isNonEditable = element => isElement(element) && get$2(element, 'contenteditable') === 'false';
+      const isNonEditable = element => isElement(element) && get$2(element, 'contenteditable') == 'false';
       const comparePosition = (element, other) => {
         return element.dom.compareDocumentPosition(other.dom);
       };
@@ -1457,7 +1457,7 @@
     const getSelectionCellFallback = element => table(element).bind(table => retrieve(table, ephemera.firstSelectedSelector)).fold(constant(element), cells => cells[0]);
     const getSelectionFromSelector = selector => (initCell, isRoot) => {
       const cellName = name(initCell);
-      const cell = cellName === 'col' || cellName === 'colgroup' ? getSelectionCellFallback(initCell) : initCell;
+      const cell = cellName == 'col' || cellName == 'colgroup' ? getSelectionCellFallback(initCell) : initCell;
       return closest$1(cell, selector, isRoot);
     };
     const getSelectionCellOrCaption = getSelectionFromSelector('th,td,caption');
@@ -1466,7 +1466,7 @@
     const getRowsFromSelection = (selected, selector) => {
       const cellOpt = getSelectionCell(selected);
       const rowsOpt = cellOpt.bind(cell => table(cell)).map(table => rows(table));
-      return lift2(cellOpt, rowsOpt, (cell, rows) => filter(rows, row => exists(fromDom(row.dom.cells), rowCell => get$2(rowCell, selector) === '1' || eq(rowCell, cell)))).getOr([]);
+      return lift2(cellOpt, rowsOpt, (cell, rows) => filter(rows, row => exists(fromDom(row.dom.cells), rowCell => get$2(rowCell, selector) == '1' || eq(rowCell, cell)))).getOr([]);
     };
 
     const verticalAlignValues = [
@@ -1496,7 +1496,7 @@
     const fromString$1 = hex => isHexString(hex) ? Optional.some({ value: normalizeHex(hex) }) : Optional.none();
     const toHex = component => {
       const hex = component.toString(16);
-      return (hex.length === 1 ? '0' + hex : hex).toUpperCase();
+      return (hex.length == 1 ? '0' + hex : hex).toUpperCase();
     };
     const fromRgba = rgbaColour => {
       const value = toHex(rgbaColour.red) + toHex(rgbaColour.green) + toHex(rgbaColour.blue);
@@ -1519,7 +1519,7 @@
       return rgbaColour(r, g, b, a);
     };
     const fromString = rgbaString => {
-      if (rgbaString === 'transparent') {
+      if (rgbaString == 'transparent') {
         return Optional.some(rgbaColour(0, 0, 0, 0));
       }
       const rgbMatch = rgbRegex.exec(rgbaString);
@@ -1666,19 +1666,19 @@
             allowCustomColors: false
           },
           onAction: data => {
-            const value = data.value === 'remove' ? '' : data.value;
+            const value = data.value == 'remove' ? '' : data.value;
             editor.execCommand('mceTableApplyCellStyle', false, { [style]: value });
           }
         }];
     };
     const changeRowHeader = editor => () => {
       const currentType = editor.queryCommandValue('mceTableRowType');
-      const newType = currentType === 'header' ? 'body' : 'header';
+      const newType = currentType == 'header' ? 'body' : 'header';
       editor.execCommand('mceTableRowType', false, { type: newType });
     };
     const changeColumnHeader = editor => () => {
       const currentType = editor.queryCommandValue('mceTableColType');
-      const newType = currentType === 'th' ? 'td' : 'th';
+      const newType = currentType == 'th' ? 'td' : 'th';
       editor.execCommand('mceTableColType', false, { type: newType });
     };
 
@@ -1807,7 +1807,7 @@
         type: 'input',
         label: 'Border width'
       };
-      const items = dialogName === 'cell' ? [borderWidth].concat(advTabItems) : advTabItems;
+      const items = dialogName == 'cell' ? [borderWidth].concat(advTabItems) : advTabItems;
       return {
         title: 'Advanced',
         name: 'advanced',
@@ -1824,7 +1824,7 @@
         dom.setStyle(element, prop, value);
       };
       const setFormat = (formatName, value) => {
-        if (value === '') {
+        if (value == '') {
           editor.formatter.remove(formatName, { value: null }, element, true);
         } else {
           editor.formatter.apply(formatName, { value }, element);
@@ -1849,9 +1849,9 @@
       }
     };
     const getRowType$1 = row => {
-      const isHeaderRow = row.section === 'thead';
+      const isHeaderRow = row.section == 'thead';
       const isHeaderCells = is(findCommonCellType(row.cells), 'th');
-      if (row.section === 'tfoot') {
+      if (row.section == 'tfoot') {
         return { type: 'footer' };
       } else if (isHeaderRow || isHeaderCells) {
         return {
@@ -1864,9 +1864,9 @@
     };
     const findCommonCellType = cells => {
       const headerCells = filter(cells, cell => isHeaderCell(cell.element));
-      if (headerCells.length === 0) {
+      if (headerCells.length == 0) {
         return Optional.some('td');
-      } else if (headerCells.length === cells.length) {
+      } else if (headerCells.length == cells.length) {
         return Optional.some('th');
       } else {
         return Optional.none();
@@ -1922,7 +1922,7 @@
       if (!isArray(cases)) {
         throw new Error('cases must be an array');
       }
-      if (cases.length === 0) {
+      if (cases.length == 0) {
         throw new Error('there must be at least one case');
       }
       const constructors = [];
@@ -1936,7 +1936,7 @@
         const value = acase[key];
         if (adt[key] != undefined) {
           throw new Error('duplicate key detected:' + key);
-        } else if (key === 'cata') {
+        } else if (key == 'cata') {
           throw new Error('cannot have a case named cata (sorry)');
         } else if (!isArray(value)) {
           throw new Error('case arguments must be an array');
@@ -2038,7 +2038,7 @@
         each(keys(baseData), key => {
           each$1(items, (itemValue, itemKey) => {
             const comparisonValue = baseData[key];
-            if (comparisonValue != '' && key === itemKey) {
+            if (comparisonValue != '' && key == itemKey) {
               if (comparisonValue != itemValue) {
                 baseData[key] = '';
               }
@@ -2194,7 +2194,7 @@
       }
     };
     const applyStyleData$1 = (editor, cells, data, wasChanged) => {
-      const isSingleCell = cells.length === 1;
+      const isSingleCell = cells.length == 1;
       each(cells, item => {
         const cellElm = item.element;
         const shouldOverrideCurrentValue = isSingleCell ? always : wasChanged;
@@ -2252,7 +2252,7 @@
     };
     const open$2 = editor => {
       const cells = getCellsFromSelection(editor);
-      if (cells.length === 0) {
+      if (cells.length == 0) {
         return;
       }
       const data = getData$1(editor, cells);
@@ -2380,7 +2380,7 @@
       }
     };
     const applyStyleData = (editor, rows, data, wasChanged) => {
-      const isSingleRow = rows.length === 1;
+      const isSingleRow = rows.length == 1;
       const shouldOverrideCurrentValue = isSingleRow ? always : wasChanged;
       each(rows, rowElm => {
         const modifier = DomModifier.normal(editor, rowElm);
@@ -2426,7 +2426,7 @@
     };
     const open$1 = editor => {
       const rows = getRowsFromSelection(getSelectionStart(editor), ephemera.selected);
-      if (rows.length === 0) {
+      if (rows.length == 0) {
         return;
       }
       const rowsData = map(rows, rowElm => extractDataFromRowElement(editor, rowElm.dom, hasAdvancedRowTab(editor)));
@@ -2560,7 +2560,7 @@
     };
 
     const styleTDTH = (dom, elm, name, value) => {
-      if (elm.tagName === 'TD' || elm.tagName === 'TH') {
+      if (elm.tagName == 'TD' || elm.tagName == 'TH') {
         if (isString(name) && isNonNullable(value)) {
           dom.setStyle(elm, name, value);
         } else {
@@ -2634,7 +2634,7 @@
       const data = api.getData();
       const modifiedData = filter$1(data, (value, key) => oldData[key] != value);
       api.close();
-      if (data.class === '') {
+      if (data.class == '') {
         delete data.class;
       }
       editor.undoManager.transact(() => {
@@ -2817,7 +2817,7 @@
           const locked = foldl(selectedCells, (acc, cell) => {
             if (cell.isLocked) {
               acc.onAny = true;
-              if (cell.column === 0) {
+              if (cell.column == 0) {
                 acc.onFirst = true;
               } else if (cell.column + cell.colspan >= warehouse.grid.columns) {
                 acc.onLast = true;
@@ -2875,7 +2875,7 @@
         });
       };
       const onSetupTableHeaders = (command, headerType) => api => {
-        return onSetupWithToggle(api, targets => isCaption(targets.element), () => editor.queryCommandValue(command) === headerType);
+        return onSetupWithToggle(api, targets => isCaption(targets.element), () => editor.queryCommandValue(command) == headerType);
       };
       const onSetupTableRowHeaders = onSetupTableHeaders('mceTableRowType', 'header');
       const onSetupTableColumnHeaders = onSetupTableHeaders('mceTableColType', 'th');
@@ -3365,7 +3365,7 @@
         update: () => {
           selectionTargets.resetTargets();
           return selectionTargets.targets().fold(constant(''), targets => {
-            if (name(targets.element) === 'caption') {
+            if (name(targets.element) == 'caption') {
               return 'tableprops deletetable';
             } else {
               return 'cell row column | advtablesort | tableprops deletetable';

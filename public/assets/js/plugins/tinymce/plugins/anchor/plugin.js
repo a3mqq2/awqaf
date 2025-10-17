@@ -27,7 +27,7 @@
       const id = elm.getAttribute('id') || elm.getAttribute('name');
       return id || '';
     };
-    const isAnchor = elm => elm.nodeName.toLowerCase() === 'a';
+    const isAnchor = elm => elm.nodeName.toLowerCase() == 'a';
     const isNamedAnchor = elm => isAnchor(elm) && !elm.getAttribute('href') && getIdFromAnchor(elm) != '';
     const isEmptyNamedAnchor = elm => isNamedAnchor(elm) && !elm.firstChild;
 

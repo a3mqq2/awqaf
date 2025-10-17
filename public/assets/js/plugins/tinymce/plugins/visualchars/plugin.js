@@ -37,29 +37,29 @@
       if (predicate(v, constructor.prototype)) {
         return true;
       } else {
-        return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+        return ((_a = v.constructor) == null || _a == void 0 ? void 0 : _a.name) == constructor.name;
       }
     };
     const typeOf = x => {
       const t = typeof x;
-      if (x === null) {
+      if (x == null) {
         return 'null';
-      } else if (t === 'object' && Array.isArray(x)) {
+      } else if (t == 'object' && Array.isArray(x)) {
         return 'array';
-      } else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
+      } else if (t == 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
         return 'string';
       } else {
         return t;
       }
     };
-    const isType$1 = type => value => typeOf(value) === type;
-    const isSimpleType = type => value => typeof value === type;
-    const eq = t => a => t === a;
+    const isType$1 = type => value => typeOf(value) == type;
+    const isSimpleType = type => value => typeof value == type;
+    const eq = t => a => t == a;
     const isString = isType$1('string');
     const isObject = isType$1('object');
     const isNull = eq(null);
     const isBoolean = isSimpleType('boolean');
-    const isNullable = a => a === null || a === undefined;
+    const isNullable = a => a == null || a == undefined;
     const isNonNullable = a => !isNullable(a);
     const isNumber = isSimpleType('number');
 
@@ -211,7 +211,7 @@
     };
     const getOrDie = (name, scope) => {
       const actual = unsafe(name, scope);
-      if (actual === undefined || actual === null) {
+      if (actual == undefined || actual == null) {
         throw new Error(name + ' not available on this browser');
       }
       return actual;
@@ -231,7 +231,7 @@
 
     const type = element => element.dom.nodeType;
     const value = element => element.dom.nodeValue;
-    const isType = t => element => type(element) === t;
+    const isType = t => element => type(element) == t;
     const isHTMLElement = element => isElement(element) && isPrototypeOf(element.dom);
     const isElement = isType(ELEMENT);
     const isText = isType(TEXT);
@@ -249,7 +249,7 @@
     };
     const get$1 = (element, key) => {
       const v = element.dom.getAttribute(key);
-      return v === null ? undefined : v;
+      return v == null ? undefined : v;
     };
     const remove$3 = (element, key) => {
       element.dom.removeAttribute(key);
@@ -257,7 +257,7 @@
 
     const read = (element, attr) => {
       const value = get$1(element, attr);
-      return value === undefined || value === '' ? [] : value.split(' ');
+      return value == undefined || value == '' ? [] : value.split(' ');
     };
     const add$2 = (element, attr, id) => {
       const old = read(element, attr);
@@ -289,7 +289,7 @@
     };
     const cleanClass = element => {
       const classList = supports(element) ? element.dom.classList : get(element);
-      if (classList.length === 0) {
+      if (classList.length == 0) {
         remove$3(element, 'class');
       }
     };
@@ -325,7 +325,7 @@
       return fromDom(node);
     };
     const fromDom = node => {
-      if (node === null || node === undefined) {
+      if (node == null || node == undefined) {
         throw new Error('Node cannot be null or undefined');
       }
       return { dom: node };
@@ -369,18 +369,18 @@
 
     const wrapCharWithSpan = value => '<span data-mce-bogus="1" class="mce-' + charMap[value] + '">' + value + '</span>';
 
-    const isWrappedNbsp = node => node.nodeName.toLowerCase() === 'span' && node.classList.contains('mce-nbsp-wrap');
+    const isWrappedNbsp = node => node.nodeName.toLowerCase() == 'span' && node.classList.contains('mce-nbsp-wrap');
     const isMatch = n => {
       const value$1 = value(n);
       return isText(n) && isString(value$1) && regExp.test(value$1);
     };
-    const isContentEditableFalse = node => isHTMLElement(node) && getRaw(node) === 'false';
+    const isContentEditableFalse = node => isHTMLElement(node) && getRaw(node) == 'false';
     const isChildEditable = (node, currentState) => {
       if (isHTMLElement(node) && !isWrappedNbsp(node.dom)) {
         const value = getRaw(node);
-        if (value === 'true') {
+        if (value == 'true') {
           return true;
-        } else if (value === 'false') {
+        } else if (value == 'false') {
           return false;
         }
       }
@@ -401,7 +401,7 @@
     };
     const findParentElm = (elm, rootElm) => {
       while (elm.parentNode) {
-        if (elm.parentNode === rootElm) {
+        if (elm.parentNode == rootElm) {
           return rootElm;
         }
         elm = elm.parentNode;
@@ -452,7 +452,7 @@
     const applyVisualChars = (editor, toggleState) => {
       fireVisualChars(editor, toggleState.get());
       const body = editor.getBody();
-      if (toggleState.get() === true) {
+      if (toggleState.get() == true) {
         show(editor, body);
       } else {
         hide(editor, body);
@@ -514,8 +514,8 @@
         toggle(editor);
       }, 300);
       editor.on('keydown', e => {
-        if (toggleState.get() === true) {
-          e.keyCode === 13 ? toggle(editor) : debouncedToggle.throttle();
+        if (toggleState.get() == true) {
+          e.keyCode == 13 ? toggle(editor) : debouncedToggle.throttle();
         }
       });
       editor.on('remove', debouncedToggle.cancel);

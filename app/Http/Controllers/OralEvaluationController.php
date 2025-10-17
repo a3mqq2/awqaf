@@ -149,7 +149,7 @@ class OralEvaluationController extends Controller
             abort(403, 'غير مصرح لك بهذا التقييم');
         }
 
-        if ($evaluation->status === 'pending') {
+        if ($evaluation->status == 'pending') {
             $evaluation->status = 'in_progress';
             $evaluation->save();
         }
@@ -194,9 +194,9 @@ class OralEvaluationController extends Controller
 
         $type = $request->type;
         
-        if ($request->action === 'increment') {
+        if ($request->action == 'increment') {
             $questions[$currentQ]['deductions'][$type]++;
-        } elseif ($request->action === 'decrement' && $questions[$currentQ]['deductions'][$type] > 0) {
+        } elseif ($request->action == 'decrement' && $questions[$currentQ]['deductions'][$type] > 0) {
             $questions[$currentQ]['deductions'][$type]--;
         }
 
@@ -243,7 +243,7 @@ class OralEvaluationController extends Controller
             ->where('is_approved', true)
             ->count();
 
-        if ($approvedCount === 12) {
+        if ($approvedCount == 12) {
             $evaluation->status = 'completed';
             $evaluation->completed_at = now();
             $evaluation->calculateTotalScore();
@@ -330,7 +330,7 @@ class OralEvaluationController extends Controller
             ], 403);
         }
 
-        if ($evaluation->status === 'completed') {
+        if ($evaluation->status == 'completed') {
             return response()->json([
                 'success' => false,
                 'message' => 'تم حفظ هذا التقييم مسبقاً'

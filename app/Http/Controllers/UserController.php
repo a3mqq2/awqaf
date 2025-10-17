@@ -186,7 +186,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id()) {
+        if ($user->id == auth()->id()) {
             return redirect()->route('users.index')->with('error', 'لا يمكنك حذف حسابك الخاص');
         }
 

@@ -94,7 +94,7 @@ class NarrationPdfController extends Controller
     public function toggle(Narration $narration, NarrationPdf $pdf)
     {
         // التحقق من أن الـ PDF تابع للرواية
-        if ($pdf->narration_id !== $narration->id) {
+        if ($pdf->narration_id != $narration->id) {
             abort(404);
         }
 
@@ -119,7 +119,7 @@ class NarrationPdfController extends Controller
     public function destroy(Narration $narration, NarrationPdf $pdf)
     {
         // التحقق من أن الـ PDF تابع للرواية
-        if ($pdf->narration_id !== $narration->id) {
+        if ($pdf->narration_id != $narration->id) {
             abort(404);
         }
 

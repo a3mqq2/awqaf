@@ -12,7 +12,7 @@
        $user = Auth::user();
         $committees = $user->committees;
 @endphp
-{{-- ========== للمحكمين فقط ========== --}}
+{{-- ======= للمحكمين فقط ======= --}}
 @role('judge')
 
     {{-- اختبار المنهج العلمي --}}
@@ -89,7 +89,7 @@
 @endrole
 
 
-{{-- ========== لإدارة الممتحنين (Admin, Manager, Office) ========== --}}
+{{-- ======= لإدارة الممتحنين (Admin, Manager, Office) ======= --}}
 {{-- check if auth user has role admin or committee_supervisor or committe_control --}}
 @if(auth()->user()->hasAnyRole(['admin', 'committee_supervisor', 'committe_control']))
 <li class="pc-item pc-hasmenu">
@@ -166,7 +166,7 @@
 @endif
 
 
-{{-- ========== تسجيل الحضور ========== --}}
+{{-- ======= تسجيل الحضور ======= --}}
 @can('attendance.mark')
 <li class="pc-item">
   <a href="{{ route('attendance.index') }}" class="pc-link">
@@ -178,7 +178,7 @@
 </li>
 @endcan
 
-{{-- ========== الإعدادات الأساسية (Admin, Manager) ========== --}}
+{{-- ======= الإعدادات الأساسية (Admin, Manager) ======= --}}
 @can('clusters')
 <li class="pc-item">
   <a href="{{ route('clusters.index') }}" class="pc-link">
@@ -233,7 +233,7 @@
 </li>
 @endcan
 
-{{-- ========== إدارة المحكمين واللجان (Manager فقط) ========== --}}
+{{-- ======= إدارة المحكمين واللجان (Manager فقط) ======= --}}
 @can('committees.view')
 <li class="pc-item">
   <a href="{{ route('committees.index') }}" class="pc-link">
@@ -256,7 +256,7 @@
 </li>
 @endcan
 
-{{-- ========== إدارة المستخدمين (Admin فقط) ========== --}}
+{{-- ======= إدارة المستخدمين (Admin فقط) ======= --}}
 @can('users')
 <li class="pc-item">
   <a href="{{ route('users.index') }}" class="pc-link">
@@ -268,7 +268,7 @@
 </li>
 @endcan
 
-{{-- ========== النسخ الاحتياطي والسجلات (Admin فقط) ========== --}}
+{{-- ======= النسخ الاحتياطي والسجلات (Admin فقط) ======= --}}
 @can('backup')
 <li class="pc-item">
   <a href="{{ route('backup.download') }}" class="pc-link">
@@ -291,7 +291,7 @@
 </li>
 @endcan
 
-{{-- ========== تسجيل الخروج - للجميع ========== --}}
+{{-- ======= تسجيل الخروج - للجميع ======= --}}
 <li class="pc-item">
   <a href="{{ route('logout') }}" class="pc-link">
     <span class="pc-micon">
