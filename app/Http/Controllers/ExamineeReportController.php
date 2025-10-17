@@ -40,7 +40,15 @@ class ExamineeReportController extends Controller
         }
 
 
+
         $query->whereIn('cluster_id', $user->clusters->pluck('id'));
+
+
+        // if user is judge, show only examinees assigned to their committees
+        if ($user->hasRole('judge')) {
+            $committeeIds = $user->committees->pluck('id');
+            $query->whereIn('committee_id', $committeeIds);
+        }
 
         // فلترة حسب النتيجة
         if ($request->filled('result')) {
