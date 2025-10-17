@@ -43,10 +43,10 @@
                     @endcan
                     
                     @can('examinees.export')
-                    <a href="{{ route('examinees.export') }}?{{ http_build_query(request()->except('page')) }}" class="btn btn-outline-success">
+                    {{-- <a href="{{ route('examinees.export') }}?{{ http_build_query(request()->except('page')) }}" class="btn btn-outline-success">
                         <i class="ti ti-file-export me-1"></i>
                         تصدير Excel
-                    </a>
+                    </a> --}}
                     @endcan
                     
                     @can('examinees.import')
