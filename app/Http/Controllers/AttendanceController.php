@@ -50,7 +50,6 @@ class AttendanceController extends Controller
                 $q->where('national_id', $request->national_id)
                   ->orWhere('passport_no', $request->national_id);
             })
-            ->where('status', 'confirmed')
             ->with(['cluster', 'committee', 'narration']);
 
         // إذا كان المستخدم كنترول أو مشرف لجنة، يعرض فقط ممتحني تجمعاته
