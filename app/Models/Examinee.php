@@ -119,7 +119,7 @@ class Examinee extends Model
 
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name . ' ' .  $this->father_name  .  ''  . $this->grandfather_name . ' ' . $this->last_name;
     }
 
     /**
