@@ -470,9 +470,28 @@ class ExamineeController extends Controller
         
         $query = Examinee::with(['office', 'cluster', 'narration', 'drawing']);
     
-        // Apply cluster filter based on user
-        if (!empty($userClusterIds)) {
-            $query->whereIn('cluster_id', $userClusterIds);
+        // Apply cluster filter - from request or user's clusters
+        if ($request->filled('cluster_id')) {
+            $requestedClusterIds = (array)$request->cluster_id;
+            
+            // If user has cluster restrictions, intersect with requested clusters
+            if (!empty($userClusterIds)) {
+                $allowedClusterIds = array_intersect($requestedClusterIds, $userClusterIds);
+                if (!empty($allowedClusterIds)) {
+                    $query->whereIn('cluster_id', $allowedClusterIds);
+                } else {
+                    // Requested clusters not in user's allowed clusters - return empty
+                    $query->whereRaw('1 = 0');
+                }
+            } else {
+                // No user restrictions, use requested clusters
+                $query->whereIn('cluster_id', $requestedClusterIds);
+            }
+        } else {
+            // No cluster_id in request, use user's clusters
+            if (!empty($userClusterIds)) {
+                $query->whereIn('cluster_id', $userClusterIds);
+            }
         }
     
         // Apply same filters as index
@@ -518,16 +537,6 @@ class ExamineeController extends Controller
         // Multiple filters
         if ($request->filled('office_id')) {
             $query->whereIn('office_id', (array)$request->office_id);
-        }
-    
-        if ($request->filled('cluster_id')) {
-            $clusterIds = (array)$request->cluster_id;
-            if (!empty($userClusterIds)) {
-                $clusterIds = array_intersect($clusterIds, $userClusterIds);
-            }
-            if (!empty($clusterIds)) {
-                $query->whereIn('cluster_id', $clusterIds);
-            }
         }
     
         if ($request->filled('narration_id')) {
@@ -588,6 +597,7 @@ class ExamineeController extends Controller
     
         return view('examinees.print', compact('examinees', 'columns'));
     }
+    
     public function importForm()
     {
         return view('examinees.import');
