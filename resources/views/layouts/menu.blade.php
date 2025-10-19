@@ -45,17 +45,40 @@
 </li>
 @endcan
 
-@hasPermissionTo('exam.oral')
+@can('exam.oral')
 <li class="pc-item">
   <a href="{{ route('judge.oral.dashboard') }}" class="pc-link">
       <span class="pc-micon">
           <i class="ti ti-microphone"></i>
       </span>
       <span class="pc-mtext">الاختبار الشفهي</span>
+
+      @php
+          if ($committees->isNotEmpty()) {
+              $oralEvaluatedIds = \App\Models\OralEvaluation::where('judge_id', $user->id)
+                  ->pluck('examinee_id')
+                  ->toArray();
+
+              $oralWaitingCount = \App\Models\Examinee::where('status', 'attended')
+                  ->whereHas('evaluations', function($q) {
+                      $q->where('status', 'completed')
+                        ->where('score', '>=', 28);
+                  })
+                  ->when(!empty($oralEvaluatedIds), function($query) use ($oralEvaluatedIds) {
+                      return $query->whereNotIn('id', $oralEvaluatedIds);
+                  })
+                  ->count();
+          } else {
+              $oralWaitingCount = 0;
+          }
+      @endphp
+
+      @if($oralWaitingCount > 0)
+          <span class="badge bg-info rounded-pill ms-2">{{ $oralWaitingCount }}</span>
+      @endif
   </a>
 </li>
-@endhasPermissionTo
-
+@endcan
 
 {{-- ======= قائمة الممتحنين ======= --}}
 @can('examinees.view')
