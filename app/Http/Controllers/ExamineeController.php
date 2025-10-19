@@ -188,7 +188,6 @@ class ExamineeController extends Controller
         
         $offices = Office::all();
         
-        // إظهار فقط الـ clusters المخصصة للمستخدم
         if (!empty($userClusterIds)) {
             $clusters = Cluster::whereIn('id', $userClusterIds)->get();
         } else {
