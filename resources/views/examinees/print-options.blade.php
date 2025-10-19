@@ -315,6 +315,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const exportExcelBtn = document.getElementById('exportExcel');
     const printPdfBtn = document.getElementById('printPdf');
     
+    // Get all current URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Add hidden inputs for all URL parameters to the form
+    function addUrlParamsToForm() {
+        // Remove any existing hidden params first
+        exportForm.querySelectorAll('.url-param-hidden').forEach(el => el.remove());
+        
+        // Add all URL parameters as hidden inputs
+        for (let [key, value] of urlParams.entries()) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            input.classList.add('url-param-hidden');
+            exportForm.appendChild(input);
+        }
+    }
+    
     // Select/Deselect All
     selectAllCheckbox.addEventListener('change', function() {
         columnCheckboxes.forEach(checkbox => {
@@ -357,8 +376,10 @@ document.addEventListener('DOMContentLoaded', function() {
         this.disabled = true;
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري التصدير...';
         
-        const queryParams = new URLSearchParams(window.location.search);
-        exportForm.action = '{{ route("examinees.export.excel") }}?' + queryParams.toString();
+        // Add URL params to form
+        addUrlParamsToForm();
+        
+        exportForm.action = '{{ route("examinees.export.excel") }}';
         exportForm.target = '_self';
         exportForm.submit();
         
@@ -378,8 +399,10 @@ document.addEventListener('DOMContentLoaded', function() {
         this.disabled = true;
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري التحضير...';
         
-        const queryParams = new URLSearchParams(window.location.search);
-        exportForm.action = '{{ route("examinees.print") }}?' + queryParams.toString();
+        // Add URL params to form
+        addUrlParamsToForm();
+        
+        exportForm.action = '{{ route("examinees.print") }}';
         exportForm.target = '_blank';
         exportForm.submit();
         
