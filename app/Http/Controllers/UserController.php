@@ -143,13 +143,13 @@ class UserController extends Controller
             ],
             'password' => 'nullable|string|min:8|confirmed',
             'is_active' => 'sometimes|boolean',
-            'role' => 'required|exists:roles,name',
-            'clusters' => 'array',
-            'clusters.*' => 'exists:clusters,id',
             'permissions' => 'array',
             'permissions.*' => 'exists:permissions,name',
+            'clusters' => 'array',
+            'clusters.*' => 'exists:clusters,id',
         ]);
     
+        // تحديث البيانات الأساسية
         $userData = [
             'name' => $request->name,
             'email' => $request->email,
@@ -162,33 +162,21 @@ class UserController extends Controller
     
         $user->update($userData);
     
-        // تحديث الدور
-        $user->syncRoles([$request->role]);
-    
-        // الحصول على صلاحيات الدور الحالي
-        $role = \Spatie\Permission\Models\Role::where('name', $request->role)->first();
-        $rolePermissions = $role ? $role->permissions->pluck('name')->toArray() : [];
-    
-        // دمج صلاحيات الدور مع الصلاحيات الإضافية
-        $finalPermissions = array_unique(array_merge(
-            $rolePermissions,
-            $request->input('permissions', [])
-        ));
-    
-        // مزامنة جميع الصلاحيات النهائية
-        $user->syncPermissions($finalPermissions);
+        // تحديث الصلاحيات فقط بدون أدوار
+        $user->syncPermissions($request->input('permissions', []));
     
         // تحديث التجمعات
         $user->clusters()->sync($request->input('clusters', []));
     
-        // Log
+        // تسجيل في السجلات
         SystemLog::create([
-            'description' => "تم تعديل المستخدم: {$user->name} ({$user->email}) - الدور: {$request->role}",
+            'description' => "تم تعديل المستخدم: {$user->name} ({$user->email}) وتحديث صلاحياته مباشرة بدون أدوار.",
             'user_id' => Auth::id(),
         ]);
     
         return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');
     }
+    
     
 
     public function destroy(User $user)
