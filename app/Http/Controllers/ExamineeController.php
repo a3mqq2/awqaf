@@ -597,7 +597,7 @@ class ExamineeController extends Controller
     
         return view('examinees.print', compact('examinees', 'columns'));
     }
-    
+
     public function importForm()
     {
         return view('examinees.import');
@@ -692,20 +692,34 @@ class ExamineeController extends Controller
         return redirect()->route('examinees.index')
             ->with('success', 'تم رفض الممتحن بنجاح');
     }
-    
+
+
     public function printOptions(Request $request)
     {
         $user = auth()->user();
         $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
         
-        // Get filtered data count
         $query = Examinee::query();
         
-        if (!empty($userClusterIds)) {
-            $query->whereIn('cluster_id', $userClusterIds);
+        if ($request->filled('cluster_id')) {
+            $requestedClusterIds = (array)$request->cluster_id;
+            
+            if (!empty($userClusterIds)) {
+                $allowedClusterIds = array_intersect($requestedClusterIds, $userClusterIds);
+                if (!empty($allowedClusterIds)) {
+                    $query->whereIn('cluster_id', $allowedClusterIds);
+                } else {
+                    $query->whereRaw('1 = 0');
+                }
+            } else {
+                $query->whereIn('cluster_id', $requestedClusterIds);
+            }
+        } else {
+            if (!empty($userClusterIds)) {
+                $query->whereIn('cluster_id', $userClusterIds);
+            }
         }
         
-        // Apply all filters from request
         $this->applyFilters($query, $request);
         
         $count = $query->count();
