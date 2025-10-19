@@ -122,7 +122,7 @@ class CleanPermissionsSeeder extends Seeder
             'name' => 'admin',
             'guard_name' => 'web'
         ]);
-        $adminRole->givePermissionTo(Permission::all());
+        // $adminRole->givePermissionTo(Permission::all());
         $this->command->info('   ✅ Admin: ' . $adminRole->permissions->count() . ' صلاحية');
 
         // 2️⃣ مشرف اللجنة
@@ -157,7 +157,7 @@ class CleanPermissionsSeeder extends Seeder
             // التقارير
             'reports.examinees',
         ];
-        $supervisorRole->givePermissionTo($supervisorPermissions);
+        // $supervisorRole->givePermissionTo($supervisorPermissions);
         $this->command->info('   ✅ Committee Supervisor: ' . $supervisorRole->permissions->count() . ' صلاحية');
 
         // 3️⃣ كنترول اللجنة
@@ -171,7 +171,7 @@ class CleanPermissionsSeeder extends Seeder
             'examinees.view',
             'examinees.view-details',
         ];
-        $controlRole->givePermissionTo($controlPermissions);
+        // $controlRole->givePermissionTo($controlPermissions);
         $this->command->info('   ✅ Committee Control: ' . $controlRole->permissions->count() . ' صلاحية');
 
         // 4️⃣ المحكم
@@ -185,7 +185,7 @@ class CleanPermissionsSeeder extends Seeder
             'examinees.view',
             'examinees.view-details',
         ];
-        $judgeRole->givePermissionTo($judgePermissions);
+        // $judgeRole->givePermissionTo($judgePermissions);
         $this->command->info('   ✅ Judge: ' . $judgeRole->permissions->count() . ' صلاحية');
     }
 
