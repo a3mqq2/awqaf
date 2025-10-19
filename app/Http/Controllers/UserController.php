@@ -149,40 +149,47 @@ class UserController extends Controller
             'permissions' => 'array',
             'permissions.*' => 'exists:permissions,name',
         ]);
-
+    
         $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'is_active' => $request->boolean('is_active', false),
         ];
-
+    
         if ($request->filled('password')) {
             $userData['password'] = Hash::make($request->password);
         }
-
+    
         $user->update($userData);
-
-        // تحديث الـ Role
+    
+        // تحديث الدور
         $user->syncRoles([$request->role]);
-
-        // تحديث الصلاحيات الإضافية
-        if ($request->filled('permissions')) {
-            $user->syncPermissions($request->permissions);
-        } else {
-            $user->syncPermissions([]);
-        }
-
+    
+        // الحصول على صلاحيات الدور الحالي
+        $role = \Spatie\Permission\Models\Role::where('name', $request->role)->first();
+        $rolePermissions = $role ? $role->permissions->pluck('name')->toArray() : [];
+    
+        // دمج صلاحيات الدور مع الصلاحيات الإضافية
+        $finalPermissions = array_unique(array_merge(
+            $rolePermissions,
+            $request->input('permissions', [])
+        ));
+    
+        // مزامنة جميع الصلاحيات النهائية
+        $user->syncPermissions($finalPermissions);
+    
         // تحديث التجمعات
         $user->clusters()->sync($request->input('clusters', []));
-
+    
         // Log
         SystemLog::create([
             'description' => "تم تعديل المستخدم: {$user->name} ({$user->email}) - الدور: {$request->role}",
             'user_id' => Auth::id(),
         ]);
-
+    
         return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');
     }
+    
 
     public function destroy(User $user)
     {
