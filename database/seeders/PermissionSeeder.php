@@ -48,7 +48,7 @@ class PermissionSeeder extends Seeder
             // صلاحيات إضافية
             ['name' => 'examinees.view-details', 'name_ar' => 'عرض تفاصيل الممتحن الكاملة'],
             ['name' => 'examinees.change-status', 'name_ar' => 'تغيير حالة الممتحن'],
-            ['name' => 'examinees.view-reports', 'name_ar' => 'عرض تقارير الممتحنين'],
+            ['name' => 'examinees.view-reports', 'name_ar' => 'عرض نتائج الممتحنين'],
         ];
 
         foreach ($examineePermissions as $permission) {

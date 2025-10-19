@@ -16,10 +16,12 @@
                     <i class="ti ti-gavel me-2"></i>
                     قائمة المحكمين
                 </h5>
+                @can('judges.create')
                 <a href="{{ route('judges.create') }}" class="btn btn-primary">
                     <i class="ti ti-plus me-1"></i>
                     إضافة محكم جديد
                 </a>
+                @endcan
             </div>
 
             <!-- Filter Bar -->
@@ -157,12 +159,17 @@
                                                title="عرض">
                                                 <i class="ti ti-eye"></i>
                                             </a>
+                                            
+                                            @can('judges.edit')
                                             <a href="{{ route('judges.edit', $judge) }}" 
                                                class="btn btn-sm btn-outline-primary" 
                                                data-bs-toggle="tooltip" 
                                                title="تعديل">
                                                 <i class="ti ti-edit"></i>
                                             </a>
+                                            @endcan
+                                            
+                                            @can('judges.edit')
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-{{ $judge->is_active ? 'warning' : 'success' }}" 
                                                     data-bs-toggle="modal" 
@@ -173,6 +180,9 @@
                                                     title="{{ $judge->is_active ? 'إلغاء التفعيل' : 'تفعيل' }}">
                                                 <i class="ti {{ $judge->is_active ? 'ti-user-x' : 'ti-user-check' }}"></i>
                                             </button>
+                                            @endcan
+                                            
+                                            @can('judges.delete')
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-danger" 
                                                     data-bs-toggle="modal" 
@@ -182,6 +192,7 @@
                                                     title="حذف">
                                                 <i class="ti ti-trash"></i>
                                             </button>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
@@ -192,9 +203,11 @@
                                             <i class="ti ti-gavel-off display-1 text-muted mb-3"></i>
                                             <h5 class="text-muted">لا يوجد محكمين</h5>
                                             <p class="text-muted">لم يتم العثور على محكمين</p>
+                                            @can('judges.create')
                                             <a href="{{ route('judges.create') }}" class="btn btn-primary mt-2">
                                                 <i class="ti ti-plus me-1"></i>إضافة أول محكم
                                             </a>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
@@ -222,6 +235,7 @@
 </div>
 
 <!-- Delete Modal -->
+@can('judges.delete')
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -253,8 +267,10 @@
         </div>
     </div>
 </div>
+@endcan
 
 <!-- Toggle Status Modal -->
+@can('judges.edit')
 <div class="modal fade" id="toggleStatusModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -284,6 +300,7 @@
         </div>
     </div>
 </div>
+@endcan
 @endsection
 
 @push('scripts')

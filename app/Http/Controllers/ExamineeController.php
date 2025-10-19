@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Office;
 use App\Models\Cluster;
 use App\Models\Drawing;
 use App\Models\Examinee;
 use App\Models\Narration;
-use App\Models\ExamAttempt;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ExamineesExport;
 use App\Imports\ExamineesImport;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExamineeController extends Controller
@@ -286,7 +291,6 @@ class ExamineeController extends Controller
         
         $narrations = Narration::where('is_active', true)->get();
         $drawings = Drawing::where('is_active', true)->get();
-        $examinee->load('examAttempts');
         
         return view('examinees.edit', compact('examinee', 'offices', 'clusters', 'narrations', 'drawings'));
     }
@@ -569,6 +573,12 @@ class ExamineeController extends Controller
     
         $examinees = $query->get();
     
+        // Get selected columns (default to all if not specified)
+        $columns = $request->input('columns', [
+            'id', 'full_name', 'national_id', 'passport_no', 'phone', 
+            'nationality', 'office', 'cluster', 'narration', 'drawing', 'status'
+        ]);
+    
         if(isset($user))
         {
             \App\Models\SystemLog::create([
@@ -576,10 +586,9 @@ class ExamineeController extends Controller
                 'user_id'     => $user->id,
             ]);
         }
-
-        return view('examinees.print', compact('examinees'));
+    
+        return view('examinees.print', compact('examinees', 'columns'));
     }
-
     public function importForm()
     {
         return view('examinees.import');
@@ -673,5 +682,159 @@ class ExamineeController extends Controller
         
         return redirect()->route('examinees.index')
             ->with('success', 'تم رفض الممتحن بنجاح');
+    }
+    
+    public function printOptions(Request $request)
+    {
+        $user = auth()->user();
+        $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
+        
+        // Get filtered data count
+        $query = Examinee::query();
+        
+        if (!empty($userClusterIds)) {
+            $query->whereIn('cluster_id', $userClusterIds);
+        }
+        
+        // Apply all filters from request
+        $this->applyFilters($query, $request);
+        
+        $count = $query->count();
+        
+        return view('examinees.print-options', compact('count'));
+    }
+    
+    public function exportPdf(Request $request)
+    {
+        $user = auth()->user();
+        $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
+        
+        $query = Examinee::with(['office', 'cluster', 'narration', 'drawing']);
+        
+        if (!empty($userClusterIds)) {
+            $query->whereIn('cluster_id', $userClusterIds);
+        }
+        
+        $this->applyFilters($query, $request);
+        
+        $examinees = $query->get();
+        
+        // Get selected columns
+        $columns = $request->input('columns', [
+            'id', 'full_name', 'national_id', 'phone', 'cluster', 'office', 'narration', 'drawing', 'status'
+        ]);
+        
+        \App\Models\SystemLog::create([
+            'description' => "تم تصدير كشف ممتحنين PDF",
+            'user_id' => $user->id,
+        ]);
+        
+        $pdf = Pdf::loadView('examinees.pdf-export', compact('examinees', 'columns'));
+        $pdf->setPaper('a4', 'landscape');
+        
+        return $pdf->download('examinees-' . now()->format('Y-m-d') . '.pdf');
+    }
+    
+    public function exportExcel(Request $request)
+    {
+        $user = auth()->user();
+        $userClusterIds = $user->clusters()->pluck('clusters.id')->toArray();
+        
+        $query = Examinee::with(['office', 'cluster', 'narration', 'drawing']);
+        
+        if (!empty($userClusterIds)) {
+            $query->whereIn('cluster_id', $userClusterIds);
+        }
+        
+        $this->applyFilters($query, $request);
+        
+        $examinees = $query->get();
+        
+        // Get selected columns
+        $columns = $request->input('columns', [
+            'id', 'full_name', 'national_id', 'phone', 'cluster', 'office', 'narration', 'drawing', 'status'
+        ]);
+        
+        \App\Models\SystemLog::create([
+            'description' => "تم تصدير كشف ممتحنين Excel",
+            'user_id' => $user->id,
+        ]);
+        
+        return Excel::download(new ExamineesExport($examinees, $columns), 'examinees-' . now()->format('Y-m-d') . '.xlsx');
+    }
+    
+    private function applyFilters($query, Request $request)
+    {
+        if ($request->filled('name')) {
+            $query->where(function($q) use ($request) {
+                $searchTerm = $request->name;
+                $q->where('first_name', 'like', '%'.$searchTerm.'%')
+                  ->orWhere('father_name', 'like', '%'.$searchTerm.'%')
+                  ->orWhere('grandfather_name', 'like', '%'.$searchTerm.'%')
+                  ->orWhere('last_name', 'like', '%'.$searchTerm.'%')
+                  ->orWhere('full_name', 'like', '%'.$searchTerm.'%');
+            });
+        }
+        
+        if ($request->filled('national_id')) {
+            $query->where('national_id', 'like', '%'.$request->national_id.'%');
+        }
+        
+        if ($request->filled('passport_no')) {
+            $query->where('passport_no', 'like', '%'.$request->passport_no.'%');
+        }
+        
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%'.$request->phone.'%');
+        }
+        
+        if ($request->filled('whatsapp')) {
+            $query->where('whatsapp', 'like', '%'.$request->whatsapp.'%');
+        }
+        
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->filled('nationality')) {
+            $query->where('nationality', 'like', '%'.$request->nationality.'%');
+        }
+        
+        if ($request->filled('office_id')) {
+            $query->whereIn('office_id', (array)$request->office_id);
+        }
+        
+        if ($request->filled('cluster_id')) {
+            $query->whereIn('cluster_id', (array)$request->cluster_id);
+        }
+        
+        if ($request->filled('narration_id')) {
+            $query->whereIn('narration_id', (array)$request->narration_id);
+        }
+        
+        if ($request->filled('drawing_id')) {
+            $query->whereIn('drawing_id', (array)$request->drawing_id);
+        }
+        
+        if ($request->filled('current_residence')) {
+            $query->where('current_residence', 'like', '%'.$request->current_residence.'%');
+        }
+        
+        if ($request->filled('birth_date_from')) {
+            $query->whereDate('birth_date', '>=', $request->birth_date_from);
+        }
+        
+        if ($request->filled('birth_date_to')) {
+            $query->whereDate('birth_date', '<=', $request->birth_date_to);
+        }
+        
+        // Sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+        $query->orderBy($sortBy, $sortDirection);
     }
 }

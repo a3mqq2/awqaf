@@ -15,7 +15,7 @@
             font-family: 'Arial', sans-serif;
             direction: rtl;
             padding: 20px;
-            font-size: 12px;
+            font-size: 11px;
         }
         
         .header {
@@ -32,87 +32,9 @@
         }
         
         .header .info {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             margin-top: 10px;
-        }
-        
-        .filters {
-            background: #f5f5f5;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        
-        .filters h3 {
-            font-size: 14px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .filter-item {
-            display: inline-block;
-            margin-left: 20px;
-            margin-bottom: 5px;
-        }
-        
-        .filter-item strong {
-            color: #666;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        
-        table thead {
-            background: #333;
-            color: white;
-        }
-        
-        table th,
-        table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: right;
-        }
-        
-        table th {
-            font-weight: bold;
-            font-size: 13px;
-        }
-        
-        table tbody tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        
-        table tbody tr:hover {
-            background: #f0f0f0;
-        }
-        
-        .status-confirmed {
-            color: #28a745;
-            font-weight: bold;
-        }
-        
-        .status-pending {
-            color: #ffc107;
-            font-weight: bold;
-        }
-        
-        .status-withdrawn {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 11px;
-            color: #666;
-            border-top: 2px solid #ddd;
-            padding-top: 15px;
         }
         
         .summary {
@@ -132,16 +54,78 @@
             display: inline-block;
             margin-left: 20px;
             margin-bottom: 5px;
-            font-size: 13px;
+            font-size: 12px;
         }
         
         .summary-item strong {
             color: #333;
         }
         
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 10px;
+        }
+        
+        table thead {
+            background: #333;
+            color: white;
+        }
+        
+        table th,
+        table td {
+            padding: 8px 5px;
+            border: 1px solid #ddd;
+            text-align: right;
+        }
+        
+        table th {
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .status-confirmed {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-attended {
+            color: #17a2b8;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .status-rejected {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .status-withdrawn {
+            color: #6c757d;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+        }
+        
         @media print {
             body {
-                padding: 0;
+                padding: 10px;
             }
             
             .no-print {
@@ -155,6 +139,10 @@
             tr {
                 page-break-inside: avoid;
                 page-break-after: auto;
+            }
+            
+            thead {
+                display: table-header-group;
             }
         }
     </style>
@@ -171,92 +159,126 @@
     <div class="summary">
         <h3>ملخص الإحصائيات:</h3>
         <div class="summary-item">
-            <strong>إجمالي الممتحنين:</strong> {{ $examinees->count() }}
+            <strong>إجمالي:</strong> {{ $examinees->count() }}
         </div>
         <div class="summary-item">
             <strong>مؤكد:</strong> <span class="status-confirmed">{{ $examinees->where('status', 'confirmed')->count() }}</span>
         </div>
         <div class="summary-item">
+            <strong>حضر:</strong> <span class="status-attended">{{ $examinees->where('status', 'attended')->count() }}</span>
+        </div>
+        <div class="summary-item">
             <strong>قيد التأكيد:</strong> <span class="status-pending">{{ $examinees->where('status', 'pending')->count() }}</span>
+        </div>
+        <div class="summary-item">
+            <strong>مرفوض:</strong> <span class="status-rejected">{{ $examinees->where('status', 'rejected')->count() }}</span>
         </div>
         <div class="summary-item">
             <strong>منسحب:</strong> <span class="status-withdrawn">{{ $examinees->where('status', 'withdrawn')->count() }}</span>
         </div>
     </div>
 
-    <!-- Active Filters -->
-    @if(request()->hasAny(['name', 'national_id', 'passport_no', 'phone', 'gender', 'status', 'nationality', 'office_id', 'cluster_id', 'current_residence']))
-    <div class="filters">
-        <h3>الفلاتر المطبقة:</h3>
-        @if(request('name'))
-            <div class="filter-item"><strong>الاسم:</strong> {{ request('name') }}</div>
-        @endif
-        @if(request('national_id'))
-            <div class="filter-item"><strong>الرقم الوطني/ او الاداري:</strong> {{ request('national_id') }}</div>
-        @endif
-        @if(request('passport_no'))
-            <div class="filter-item"><strong>رقم الجواز:</strong> {{ request('passport_no') }}</div>
-        @endif
-        @if(request('phone'))
-            <div class="filter-item"><strong>الهاتف:</strong> {{ request('phone') }}</div>
-        @endif
-        @if(request('gender'))
-            <div class="filter-item"><strong>الجنس:</strong> {{ request('gender') == 'male' ? 'ذكر' : 'أنثى' }}</div>
-        @endif
-        @if(request('status'))
-            <div class="filter-item">
-                <strong>الحالة:</strong>
-                @if(request('status') == 'confirmed') مؤكد
-                @elseif(request('status') == 'pending') قيد التأكيد
-                @else منسحب
-                @endif
-            </div>
-        @endif
-        @if(request('nationality'))
-            <div class="filter-item"><strong>الجنسية:</strong> {{ request('nationality') }}</div>
-        @endif
-    </div>
-    @endif
-
     <!-- Examinees Table -->
     <table>
         <thead>
             <tr>
-                <th width="30">#</th>
-                <th>الاسم الكامل</th>
-                <th>الرقم الوطني/ او الاداري</th>
-                <th>رقم الجواز</th>
-                <th>الهاتف</th>
-                <th>الجنسية</th>
-                <th>المكتب</th>
-                <th>التجمع</th>
-                <th>الحالة</th>
+                @php
+                    $columnLabels = [
+                        'id' => '#',
+                        'full_name' => 'الاسم الكامل',
+                        'first_name' => 'الاسم الأول',
+                        'father_name' => 'اسم الأب',
+                        'grandfather_name' => 'اسم الجد',
+                        'last_name' => 'اللقب',
+                        'national_id' => 'الرقم الوطني',
+                        'passport_no' => 'رقم الجواز',
+                        'phone' => 'الهاتف',
+                        'whatsapp' => 'واتساب',
+                        'email' => 'البريد',
+                        'gender' => 'الجنس',
+                        'birth_date' => 'الميلاد',
+                        'nationality' => 'الجنسية',
+                        'current_residence' => 'الإقامة',
+                        'office' => 'المكتب',
+                        'cluster' => 'التجمع',
+                        'narration' => 'الرواية',
+                        'drawing' => 'الرسم',
+                        'status' => 'الحالة',
+                        'notes' => 'ملاحظات',
+                    ];
+                @endphp
+                
+                @foreach($columns as $column)
+                    <th>{{ $columnLabels[$column] ?? $column }}</th>
+                @endforeach
             </tr>
         </thead>
         <tbody>
             @forelse($examinees as $index => $examinee)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $examinee->full_name ?? $examinee->first_name }}</td>
-                    <td>{{ $examinee->national_id ?? '-' }}</td>
-                    <td>{{ $examinee->passport_no ?? '-' }}</td>
-                    <td>{{ $examinee->phone ?? '-' }}</td>
-                    <td>{{ $examinee->nationality ?? '-' }}</td>
-                    <td>{{ $examinee->office->name ?? '-' }}</td>
-                    <td>{{ $examinee->cluster->name ?? '-' }}</td>
-                    <td>
-                        @if($examinee->status == 'confirmed')
-                            <span class="status-confirmed">مؤكد</span>
-                        @elseif($examinee->status == 'pending')
-                            <span class="status-pending">قيد التأكيد</span>
-                        @else
-                            <span class="status-withdrawn">منسحب</span>
-                        @endif
-                    </td>
+                    @foreach($columns as $column)
+                        <td>
+                            @if($column == 'id')
+                                {{ $index + 1 }}
+                            @elseif($column == 'full_name')
+                                {{ $examinee->full_name }}
+                            @elseif($column == 'first_name')
+                                {{ $examinee->first_name }}
+                            @elseif($column == 'father_name')
+                                {{ $examinee->father_name ?? '-' }}
+                            @elseif($column == 'grandfather_name')
+                                {{ $examinee->grandfather_name ?? '-' }}
+                            @elseif($column == 'last_name')
+                                {{ $examinee->last_name ?? '-' }}
+                            @elseif($column == 'national_id')
+                                {{ $examinee->national_id ?? '-' }}
+                            @elseif($column == 'passport_no')
+                                {{ $examinee->passport_no ?? '-' }}
+                            @elseif($column == 'phone')
+                                {{ $examinee->phone ?? '-' }}
+                            @elseif($column == 'whatsapp')
+                                {{ $examinee->whatsapp ?? '-' }}
+                            @elseif($column == 'email')
+                                {{ $examinee->email ?? '-' }}
+                            @elseif($column == 'gender')
+                                {{ $examinee->gender == 'male' ? 'ذكر' : 'أنثى' }}
+                            @elseif($column == 'birth_date')
+                                {{ $examinee->birth_date ? $examinee->birth_date->format('Y-m-d') : '-' }}
+                            @elseif($column == 'nationality')
+                                {{ $examinee->nationality ?? '-' }}
+                            @elseif($column == 'current_residence')
+                                {{ $examinee->current_residence ?? '-' }}
+                            @elseif($column == 'office')
+                                {{ $examinee->office->name ?? '-' }}
+                            @elseif($column == 'cluster')
+                                {{ $examinee->cluster->name ?? '-' }}
+                            @elseif($column == 'narration')
+                                {{ $examinee->narration->name ?? '-' }}
+                            @elseif($column == 'drawing')
+                                {{ $examinee->drawing->name ?? '-' }}
+                            @elseif($column == 'status')
+                                @if($examinee->status == 'confirmed')
+                                    <span class="status-confirmed">مؤكد</span>
+                                @elseif($examinee->status == 'attended')
+                                    <span class="status-attended">حضر</span>
+                                @elseif($examinee->status == 'pending')
+                                    <span class="status-pending">قيد التأكيد</span>
+                                @elseif($examinee->status == 'rejected')
+                                    <span class="status-rejected">مرفوض</span>
+                                @elseif($examinee->status == 'withdrawn')
+                                    <span class="status-withdrawn">منسحب</span>
+                                @else
+                                    {{ $examinee->status }}
+                                @endif
+                            @elseif($column == 'notes')
+                                {{ $examinee->notes ?? '-' }}
+                            @endif
+                        </td>
+                    @endforeach
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" style="text-align: center;">لا توجد بيانات</td>
+                    <td colspan="{{ count($columns) }}" style="text-align: center;">لا توجد بيانات</td>
                 </tr>
             @endforelse
         </tbody>
@@ -264,6 +286,7 @@
 
     <div class="footer">
         <p>تم الطباعة من نظام إدارة الممتحنين | {{ now()->format('Y-m-d H:i:s') }}</p>
+        <p>إجمالي السجلات: {{ $examinees->count() }}</p>
     </div>
 
     <script>

@@ -30,17 +30,21 @@
                     </button>
                     @endcan
                     
+
+                    @can('examinees.print')
+                    <a href="{{ route('examinees.print.options') }}?{{ http_build_query(request()->except('page')) }}" class="btn btn-outline-primary">
+                        <i class="ti ti-printer me-1"></i>
+                        طباعة/تصدير
+                    </a>
+                    @endcan
+
+
                     <button type="button" class="btn btn-outline-secondary" id="toggleFilters">
                         <i class="ti ti-adjustments me-1"></i>
                         <span id="filterToggleText">إظهار الفلتر</span>
                     </button>
                     
-                    @can('examinees.print')
-                    <a href="{{ route('examinees.print') }}?{{ http_build_query(request()->except('page')) }}" target="_blank" class="btn btn-outline-primary">
-                        <i class="ti ti-printer me-1"></i>
-                        طباعة
-                    </a>
-                    @endcan
+                 
                     
                     @can('examinees.export')
                     {{-- <a href="{{ route('examinees.export') }}?{{ http_build_query(request()->except('page')) }}" class="btn btn-outline-success">

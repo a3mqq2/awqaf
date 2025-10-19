@@ -42,6 +42,7 @@ class OralEvaluationController extends Controller
             ->pluck('examinee_id')
             ->toArray();
 
+        $userClusterIds = $user->clusters->pluck('id')->toArray();
         $examinees = Examinee::where('status', 'attended')
             ->whereHas('evaluations', function($q) {
                 $q->where('status', 'completed')
@@ -51,8 +52,9 @@ class OralEvaluationController extends Controller
                 return $query->whereNotIn('id', $evaluatedExamineeIds);
             })
             ->with(['narration', 'cluster'])
-            ->where('cluster_id', $user->clusters->pluck('id'))
-            ->orderBy('attended_at', 'asc')
+            ->when(!empty($userClusterIds), function($query) use ($userClusterIds) {
+                return $query->whereIn('cluster_id', $userClusterIds);
+            })            ->orderBy('attended_at', 'asc')
             ->get();
 
         $myEvaluations = OralEvaluation::where('judge_id', $user->id)

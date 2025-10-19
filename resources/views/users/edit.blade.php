@@ -195,7 +195,6 @@
    </div>
 </div>
 @endsection
-
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
@@ -206,6 +205,59 @@ $(document).ready(function() {
         allowClear: true,
         width: '100%',
         dir: 'rtl'
+    });
+
+    // الصلاحيات الافتراضية لكل دور
+    const rolePermissions = {
+        'admin': 'all',
+        'committee_supervisor': [
+            'committees.view',
+            'committees.create',
+            'committees.edit',
+            'committees.delete',
+            'judges.view',
+            'judges.create',
+            'judges.edit',
+            'judges.delete',
+            'examinees.view',
+            'examinees.view-details',
+            'attendance.mark',
+            'attendance.view',
+        ],
+        'committee_control': [
+            'attendance.mark',
+            'attendance.view',
+            'examinees.view',
+            'examinees.view-details',
+        ],
+        'judge': [
+            'exam.oral',
+            'exam.scientific',
+        ]
+    };
+
+    // عند تغيير الدور
+    $('select[name="role"]').on('change', function() {
+        const selectedRole = $(this).val();
+        
+        if (!selectedRole) return;
+
+        // عرض تأكيد قبل تغيير الصلاحيات
+        if (!confirm('هل تريد تحديث الصلاحيات حسب الدور المختار؟ سيتم إلغاء أي صلاحيات مخصصة.')) {
+            return;
+        }
+
+        // إلغاء تحديد جميع الصلاحيات أولاً
+        $('input[name="permissions[]"]').prop('checked', false);
+
+        // تحديد الصلاحيات حسب الدور المختار
+        if (rolePermissions[selectedRole] === 'all') {
+            $('input[name="permissions[]"]').prop('checked', true);
+        } else if (rolePermissions[selectedRole]) {
+            rolePermissions[selectedRole].forEach(function(permission) {
+                $('input[name="permissions[]"][value="' + permission + '"]').prop('checked', true);
+            });
+        }
     });
 });
 </script>

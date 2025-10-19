@@ -11,18 +11,61 @@ class RoleSeeder extends Seeder
 {
     public function run()
     {
-        // ✅ إنشاء صلاحيات اللجان أولاً
-        $this->createCommitteePermissions();
+        // إنشاء جميع الصلاحيات أولاً
+        $this->createAllPermissions();
 
-        // 1️⃣ إنشاء Role الأدمن
+        // 1️⃣ مدير النظام - جميع الصلاحيات
         $adminRole = Role::firstOrCreate(
             ['name' => 'admin'],
             ['guard_name' => 'web']
         );
-
-        // إعطاء جميع الصلاحيات الموجودة لـ Admin
         $allPermissions = Permission::all();
         $adminRole->syncPermissions($allPermissions);
+
+        // 2️⃣ مشرف اللجنة
+        $supervisorRole = Role::firstOrCreate(
+            ['name' => 'committee_supervisor'],
+            ['guard_name' => 'web']
+        );
+        $supervisorPermissions = [
+            'committees.view',
+            'committees.create',
+            'committees.edit',
+            'committees.delete',
+            'judges.view',
+            'judges.create',
+            'judges.edit',
+            'judges.delete',
+            'examinees.view',
+            'examinees.view-details',
+            'attendance.mark',
+            'attendance.view',
+        ];
+        $supervisorRole->syncPermissions($supervisorPermissions);
+
+        // 3️⃣ كنترول اللجنة
+        $controlRole = Role::firstOrCreate(
+            ['name' => 'committee_control'],
+            ['guard_name' => 'web']
+        );
+        $controlPermissions = [
+            'attendance.mark',
+            'attendance.view',
+            'examinees.view',
+            'examinees.view-details',
+        ];
+        $controlRole->syncPermissions($controlPermissions);
+
+        // 4️⃣ المحكم
+        $judgeRole = Role::firstOrCreate(
+            ['name' => 'judge'],
+            ['guard_name' => 'web']
+        );
+        $judgePermissions = [
+            'exam.oral',
+            'exam.scientific',
+        ];
+        $judgeRole->syncPermissions($judgePermissions);
 
         // إعطاء Role Admin للمستخدم الأول
         $adminUser = User::first();
@@ -30,74 +73,10 @@ class RoleSeeder extends Seeder
             $adminUser->syncRoles(['admin']);
         }
 
-        // 2️⃣ إنشاء Role مشرف اللجان
-        $supervisorRole = Role::firstOrCreate(
-            ['name' => 'committee_supervisor'],
-            ['guard_name' => 'web']
-        );
-
-        // صلاحيات مشرف اللجان
-        $supervisorPermissions = [
-            // إدارة اللجان
-            'committees.view',
-            'committees.create',
-            'committees.edit',
-            'committees.delete',
-            
-            // إدارة المحكمين
-            'judges.view',
-            'judges.create',
-            'judges.edit',
-            'judges.delete',
-            
-            // عرض الممتحنين
-            'examinees.view',
-            'examinees.view-details',
-            
-            // تسجيل الحضور
-            'attendance.mark',
-            'attendance.view',
-        ];
-
-        $supervisorRole->syncPermissions($supervisorPermissions);
-
-        // 3️⃣ إنشاء Role المحكم
-        $judgeRole = Role::firstOrCreate(
-            ['name' => 'judge'],
-            ['guard_name' => 'web']
-        );
-
-        // صلاحيات المحكم
-        $judgePermissions = [
-            'examinees.view',
-            'examinees.view-details',
-        ];
-
-        $judgeRole->syncPermissions($judgePermissions);
-
-        // 4️⃣ إنشاء Role كنترول اللجنة
-        $controlRole = Role::firstOrCreate(
-            ['name' => 'committee_control'],
-            ['guard_name' => 'web']
-        );
-
-        // صلاحيات كنترول اللجنة
-        $controlPermissions = [
-            'examinees.view',
-            'examinees.view-details',
-            'attendance.mark',
-            'attendance.view',
-        ];
-
-        $controlRole->syncPermissions($controlPermissions);
-
         $this->command->info('✅ تم إنشاء الأدوار والصلاحيات بنجاح!');
     }
 
-    /**
-     * إنشاء صلاحيات اللجان
-     */
-    private function createCommitteePermissions()
+    private function createAllPermissions()
     {
         $permissions = [
             // صلاحيات اللجان
@@ -115,6 +94,31 @@ class RoleSeeder extends Seeder
             // صلاحيات الحضور
             ['name' => 'attendance.mark', 'name_ar' => 'تسجيل الحضور'],
             ['name' => 'attendance.view', 'name_ar' => 'عرض سجل الحضور'],
+            
+            // صلاحيات الممتحنين
+            ['name' => 'examinees.view', 'name_ar' => 'عرض الممتحنين'],
+            ['name' => 'examinees.view-details', 'name_ar' => 'عرض تفاصيل الممتحن'],
+            ['name' => 'examinees.create', 'name_ar' => 'إضافة ممتحن'],
+            ['name' => 'examinees.edit', 'name_ar' => 'تعديل ممتحن'],
+            ['name' => 'examinees.delete', 'name_ar' => 'حذف ممتحن'],
+            ['name' => 'examinees.approve', 'name_ar' => 'قبول الممتحنين'],
+            ['name' => 'examinees.reject', 'name_ar' => 'رفض الممتحنين'],
+            ['name' => 'examinees.print', 'name_ar' => 'طباعة قائمة الممتحنين'],
+            ['name' => 'examinees.print-cards', 'name_ar' => 'طباعة بطاقات الممتحنين'],
+            ['name' => 'examinees.import', 'name_ar' => 'استيراد الممتحنين'],
+            
+            // صلاحيات الامتحانات
+            ['name' => 'exam.oral', 'name_ar' => 'الامتحان الشفوي'],
+            ['name' => 'exam.scientific', 'name_ar' => 'الامتحان  (المنهج العلمي)'],
+            
+            // صلاحيات إدارية
+            ['name' => 'users', 'name_ar' => 'إدارة المستخدمين'],
+            ['name' => 'clusters', 'name_ar' => 'إدارة التجمعات'],
+            ['name' => 'offices', 'name_ar' => 'إدارة المكاتب'],
+            ['name' => 'narrations', 'name_ar' => 'إدارة الروايات'],
+            ['name' => 'drawings', 'name_ar' => 'إدارة رسوم المصاحف'],
+            ['name' => 'system_logs', 'name_ar' => 'سجلات النظام'],
+            ['name' => 'backup', 'name_ar' => 'النسخ الاحتياطي'],
         ];
 
         foreach ($permissions as $permission) {
@@ -123,7 +127,5 @@ class RoleSeeder extends Seeder
                 ['name_ar' => $permission['name_ar'], 'guard_name' => 'web']
             );
         }
-
-        $this->command->info('✅ تم إنشاء صلاحيات اللجان بنجاح!');
     }
 }

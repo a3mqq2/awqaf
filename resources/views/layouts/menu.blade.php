@@ -9,89 +9,79 @@
 </li>
 
 @php
-       $user = Auth::user();
-        $committees = $user->committees;
+    $user = Auth::user();
+    $committees = $user->committees;
 @endphp
+
 {{-- ======= للمحكمين فقط ======= --}}
-@role('judge')
+@can('exam.scientific')
+<li class="pc-item">
+  <a href="{{ route('judge.dashboard') }}" class="pc-link">
+      <span class="pc-micon">
+          <i class="ti ti-book"></i>
+      </span>
+      <span class="pc-mtext">المنهج العلمي</span>
 
-    {{-- اختبار المنهج العلمي --}}
-    @if(auth()->user()->permissions()->where('name','exam.scientific')->exists())
-      <li class="pc-item">
-        <a href="{{ route('judge.dashboard') }}" class="pc-link">
-            <span class="pc-micon">
-                <i class="ti ti-book"></i>
-            </span>
-            <span class="pc-mtext">المنهج العلمي</span>
+      @php
+          if ($committees->isNotEmpty()) {
+              $evaluatedExamineeIds = \App\Models\ExamineeEvaluation::where('judge_id', $user->id)
+                  ->pluck('examinee_id')
+                  ->toArray();
 
-            @php
-            
-                if ($committees->isNotEmpty()) {
-                    $evaluatedExamineeIds = \App\Models\ExamineeEvaluation::where('judge_id', $user->id)
-                        ->pluck('examinee_id')
-                        ->toArray();
+              $writtenWaitingCount = \App\Models\Examinee::where('status', 'attended')
+                  ->when(!empty($evaluatedExamineeIds), function($query) use ($evaluatedExamineeIds) {
+                      return $query->whereNotIn('id', $evaluatedExamineeIds);
+                  })
+                  ->count();
+          } else {
+              $writtenWaitingCount = 0;
+          }
+      @endphp
 
-                    $writtenWaitingCount = \App\Models\Examinee::where('status', 'attended')
-                        ->when(!empty($evaluatedExamineeIds), function($query) use ($evaluatedExamineeIds) {
-                            return $query->whereNotIn('id', $evaluatedExamineeIds);
-                        })
-                        ->count();
-                } else {
-                    $writtenWaitingCount = 0;
-                }
-            @endphp
-
-            @if($writtenWaitingCount > 0)
-                <span class="badge bg-warning rounded-pill ms-2">{{ $writtenWaitingCount }}</span>
-            @endif
-        </a>
-    </li>
-
-    @endcan
-
-    {{-- الاختبار الشفوي --}}
-
-  @if(auth()->user()->permissions()->where('name','exam.oral')->exists())
-  <li class="pc-item">
-    <a href="{{ route('judge.oral.dashboard') }}" class="pc-link">
-        <span class="pc-micon">
-            <i class="ti ti-microphone"></i>
-        </span>
-        <span class="pc-mtext">الاختبار الشفهي</span>
-
-        @php
-            if ($committees->isNotEmpty()) {
-                $oralEvaluatedIds = \App\Models\OralEvaluation::where('judge_id', $user->id)
-                    ->pluck('examinee_id')
-                    ->toArray();
-
-                $oralWaitingCount = \App\Models\Examinee::where('status', 'attended')
-                    ->whereHas('evaluations', function($q) {
-                        $q->where('status', 'completed')
-                          ->where('score', '>=', 28);
-                    })
-                    ->when(!empty($oralEvaluatedIds), function($query) use ($oralEvaluatedIds) {
-                        return $query->whereNotIn('id', $oralEvaluatedIds);
-                    })
-                    ->count();
-            } else {
-                $oralWaitingCount = 0;
-            }
-        @endphp
-
-        @if($oralWaitingCount > 0)
-            <span class="badge bg-info rounded-pill ms-2">{{ $oralWaitingCount }}</span>
-        @endif
-    </a>
+      @if($writtenWaitingCount > 0)
+          <span class="badge bg-warning rounded-pill ms-2">{{ $writtenWaitingCount }}</span>
+      @endif
+  </a>
 </li>
+@endcan
 
-  @endif
-@endrole
+@can('exam.oral')
+<li class="pc-item">
+  <a href="{{ route('judge.oral.dashboard') }}" class="pc-link">
+      <span class="pc-micon">
+          <i class="ti ti-microphone"></i>
+      </span>
+      <span class="pc-mtext">الاختبار الشفهي</span>
 
+      @php
+          if ($committees->isNotEmpty()) {
+              $oralEvaluatedIds = \App\Models\OralEvaluation::where('judge_id', $user->id)
+                  ->pluck('examinee_id')
+                  ->toArray();
 
-{{-- ======= لإدارة الممتحنين (Admin, Manager, Office) ======= --}}
-{{-- check if auth user has role admin or committee_supervisor or committe_control --}}
-@if(auth()->user()->hasAnyRole(['admin', 'committee_supervisor', 'committe_control']))
+              $oralWaitingCount = \App\Models\Examinee::where('status', 'attended')
+                  ->whereHas('evaluations', function($q) {
+                      $q->where('status', 'completed')
+                        ->where('score', '>=', 28);
+                  })
+                  ->when(!empty($oralEvaluatedIds), function($query) use ($oralEvaluatedIds) {
+                      return $query->whereNotIn('id', $oralEvaluatedIds);
+                  })
+                  ->count();
+          } else {
+              $oralWaitingCount = 0;
+          }
+      @endphp
+
+      @if($oralWaitingCount > 0)
+          <span class="badge bg-info rounded-pill ms-2">{{ $oralWaitingCount }}</span>
+      @endif
+  </a>
+</li>
+@endcan
+
+{{-- ======= قائمة الممتحنين ======= --}}
+@can('examinees.view')
 <li class="pc-item pc-hasmenu">
   <a href="#!" class="pc-link">
     <span class="pc-micon">
@@ -121,6 +111,7 @@
       </a>
     </li>
 
+    @can('attendance.view')
     <li class="pc-item">
       <a class="pc-link" href="{{ route('examinees.index', ['status' => 'attended']) }}">
         <i class="ti ti-user-check me-2"></i>
@@ -133,6 +124,7 @@
         @endif
       </a>
     </li>
+    @endcan
     
     <li class="pc-item">
       <a class="pc-link" href="{{ route('examinees.index', ['status' => 'pending']) }}">
@@ -163,8 +155,7 @@
     </li>
   </ul>
 </li>
-@endif
-
+@endcan
 
 {{-- ======= تسجيل الحضور ======= --}}
 @can('attendance.mark')
@@ -178,7 +169,42 @@
 </li>
 @endcan
 
-{{-- ======= الإعدادات الأساسية (Admin, Manager) ======= --}}
+{{-- ======= التقارير ======= --}}
+@can('reports.examinees')
+<li class="pc-item">
+  <a href="{{ route('reports.examinees') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-report"></i>
+    </span>
+    <span class="pc-mtext">تقرير الممتحنين</span>
+  </a>
+</li>
+@endcan
+
+{{-- ======= إدارة المحكمين واللجان ======= --}}
+@can('committees.view')
+<li class="pc-item">
+  <a href="{{ route('committees.index') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-flag"></i>
+    </span>
+    <span class="pc-mtext">اللجان</span>
+  </a>
+</li>
+@endcan
+
+@can('judges.view')
+<li class="pc-item">
+  <a href="{{ route('judges.index') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ti ti-user"></i>
+    </span>
+    <span class="pc-mtext">المحكمين</span>
+  </a>
+</li>
+@endcan
+
+{{-- ======= الإعدادات الأساسية ======= --}}
 @can('clusters')
 <li class="pc-item">
   <a href="{{ route('clusters.index') }}" class="pc-link">
@@ -212,16 +238,6 @@
 </li>
 @endcan
 
-<li class="pc-item">
-  <a href="{{ route('reports.examinees') }}" class="pc-link">
-    <span class="pc-micon">
-      <i class="ti ti-report"></i>
-    </span>
-    <span class="pc-mtext">تقرير الممتحنين</span>
-  </a>
-</li>
-
-
 @can('drawings')
 <li class="pc-item">
   <a href="{{ route('drawings.index') }}" class="pc-link">
@@ -233,30 +249,7 @@
 </li>
 @endcan
 
-{{-- ======= إدارة المحكمين واللجان (Manager فقط) ======= --}}
-@can('committees.view')
-<li class="pc-item">
-  <a href="{{ route('committees.index') }}" class="pc-link">
-    <span class="pc-micon">
-      <i class="ti ti-flag"></i>
-    </span>
-    <span class="pc-mtext">اللجان</span>
-  </a>
-</li>
-@endcan
-
-@can('judges.view')
-<li class="pc-item">
-  <a href="{{ route('judges.index') }}" class="pc-link">
-    <span class="pc-micon">
-      <i class="ti ti-user"></i>
-    </span>
-    <span class="pc-mtext">المحكمين</span>
-  </a>
-</li>
-@endcan
-
-{{-- ======= إدارة المستخدمين (Admin فقط) ======= --}}
+{{-- ======= إدارة المستخدمين ======= --}}
 @can('users')
 <li class="pc-item">
   <a href="{{ route('users.index') }}" class="pc-link">
@@ -268,7 +261,7 @@
 </li>
 @endcan
 
-{{-- ======= النسخ الاحتياطي والسجلات (Admin فقط) ======= --}}
+{{-- ======= النسخ الاحتياطي والسجلات ======= --}}
 @can('backup')
 <li class="pc-item">
   <a href="{{ route('backup.download') }}" class="pc-link">

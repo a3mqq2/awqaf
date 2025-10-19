@@ -82,6 +82,15 @@ Route::middleware(['auth', 'role:judge'])->prefix('judge')->name('judge.')->grou
     Route::get('/completed', [JudgeDashboardController::class, 'completedEvaluations'])->name('completed');
 });
 
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('examinees/print-options', [ExamineeController::class, 'printOptions'])->name('examinees.print.options');
+    Route::get('examinees/export-pdf', [ExamineeController::class, 'exportPdf'])->name('examinees.export.pdf');
+    Route::get('examinees/export-excel', [ExamineeController::class, 'exportExcel'])->name('examinees.export.excel');
+});
+
+
 // ======= Oral Evaluation Routes (الاختبار الشفهي) =======
 Route::middleware(['auth', 'role:judge'])->prefix('judge/oral')->name('judge.oral.')->group(function () {
     // Dashboard
