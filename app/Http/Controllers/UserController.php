@@ -143,6 +143,7 @@ class UserController extends Controller
             ],
             'password' => 'nullable|string|min:8|confirmed',
             'is_active' => 'sometimes|boolean',
+            'role' => 'required|exists:roles,name', // ✅ إضافة التحقق من الدور
             'permissions' => 'array',
             'permissions.*' => 'exists:permissions,name',
             'clusters' => 'array',
@@ -162,7 +163,12 @@ class UserController extends Controller
     
         $user->update($userData);
     
-        // تحديث الصلاحيات فقط بدون أدوار
+        // ✅ تحديث الدور
+        if ($request->filled('role')) {
+            $user->syncRoles([$request->role]);
+        }
+    
+        // تحديث الصلاحيات الإضافية
         $user->syncPermissions($request->input('permissions', []));
     
         // تحديث التجمعات
@@ -170,13 +176,12 @@ class UserController extends Controller
     
         // تسجيل في السجلات
         SystemLog::create([
-            'description' => "تم تعديل المستخدم: {$user->name} ({$user->email}) وتحديث صلاحياته مباشرة بدون أدوار.",
+            'description' => "تم تعديل المستخدم: {$user->name} - الدور: {$request->role}",
             'user_id' => Auth::id(),
         ]);
     
         return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');
     }
-    
     
 
     public function destroy(User $user)
