@@ -28,12 +28,11 @@ class NarrationPdfController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'pdf_file' => 'required|file|mimes:pdf|max:51200', // 50MB max
+            'pdf_file' => 'required|file|mimes:pdf', // 50MB max
             'order' => 'nullable|integer|min:0',
         ], [
             'pdf_file.required' => 'يجب اختيار ملف PDF',
             'pdf_file.mimes' => 'يجب أن يكون الملف بصيغة PDF',
-            'pdf_file.max' => 'حجم الملف يجب ألا يتجاوز 50 ميجابايت',
         ]);
 
         // رفع الملف
