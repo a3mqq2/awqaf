@@ -1407,38 +1407,26 @@
             </div>
 
             <div class="pdfs-viewer-container">
-                <!-- PDF List -->
-                <div class="pdf-list">
-                    @if($evaluation->examinee->narration && $evaluation->examinee->narration->pdfs->count() > 0)
-                        @foreach($evaluation->examinee->narration->pdfs as $index => $pdf)
-                            <div class="pdf-item {{ $index == 0 ? 'active' : '' }}" 
-                                 onclick="loadPdf('{{ $pdf->file_url }}', this)">
-                                <i class="ti ti-file-text"></i>
-                                <span>{{ $pdf->title }}</span>
-                            </div>
-                        @endforeach
-                    @else
-                        <div class="text-center text-muted py-3">
-                            <i class="ti ti-file-off mb-2" style="font-size: 32px;"></i>
-                            <div>لا توجد ملفات</div>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Viewer -->
-                <div class="pdf-viewer-main">
-                    @if($evaluation->examinee->narration && $evaluation->examinee->narration->pdfs->count() > 0)
-                        <iframe id="pdfViewer" 
-                                class="pdf-viewer" 
-                                src="{{ $evaluation->examinee->narration->pdfs->first()->file_url }}#toolbar=1&navpanes=0&scrollbar=1">
-                        </iframe>
-                    @else
-                        <div class="pdf-placeholder">
-                            <i class="ti ti-file-off"></i>
-                            <div>لا توجد ملفات PDF للرواية</div>
-                        </div>
-                    @endif
-                </div>
+                @php
+                $pdfs = [
+                    ['title' => 'مصحف الجماهيرية قالون أبوعمرو الداني', 'url' => Cache::get('q_pdf_url')],
+                    ['title' => 'مصحف قراءات العشر', 'url' => Cache::get('msqam_pdf_url')],
+                ];
+            @endphp
+            
+            <div class="pdf-list">
+                @foreach($pdfs as $index => $pdf)
+                    <div class="pdf-item {{ $index == 0 ? 'active' : '' }}" onclick="loadPdf('{{ $pdf['url'] }}', this)">
+                        <i class="ti ti-file-text"></i>
+                        <span>{{ $pdf['title'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+            
+            <div class="pdf-viewer-main">
+                <iframe id="pdfViewer" class="pdf-viewer" src="{{ $pdfs[0]['url'] }}#toolbar=1&navpanes=0&scrollbar=1"></iframe>
+            </div>
+            
             </div>
         </div>
     </div>
