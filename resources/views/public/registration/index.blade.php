@@ -525,7 +525,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="contact-form" method="POST">
+                    <form class="contact-form" action="{{route('contact.send')}}" method="POST">
                         <div class="mb-3">
                             <label for="contact_name" class="form-label">
                                 <i class="ti ti-user me-1"></i>
