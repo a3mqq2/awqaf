@@ -609,6 +609,37 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: '<span style="font-family: Cairo; color: #dc3545;">تنبيه</span>',
+                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('error') }}</p>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#dc3545',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+            
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '<span style="font-family: Cairo; color: #28a745;">تمت  بنجاح</span>',
+                    html: '<p style="font-family: Cairo; font-size: 16px; direction: rtl;">{{ session('success') }}</p>',
+                    confirmButtonText: '<span style="font-family: Cairo;">حسناً</span>',
+                    confirmButtonColor: '#28a745',
+                    customClass: {
+                        popup: 'cairo-font',
+                        confirmButton: 'cairo-font'
+                    }
+                });
+            @endif
+        });
+        </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
