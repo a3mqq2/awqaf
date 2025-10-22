@@ -526,6 +526,8 @@
                 </div>
                 <div class="modal-body">
                     <form class="contact-form" action="{{route('contact.send')}}" method="POST">
+                        @csrf
+                        @method('POST')
                         <div class="mb-3">
                             <label for="contact_name" class="form-label">
                                 <i class="ti ti-user me-1"></i>
