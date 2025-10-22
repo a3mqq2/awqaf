@@ -516,7 +516,7 @@
     <!-- Contact Modal -->
     <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 16px;">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="contactModalLabel">
                         <i class="ti ti-message-dots me-2"></i>
@@ -525,9 +525,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="contact-form" action="{{route('contact.send')}}" method="POST">
+                    <form method="POST" action="{{ route('contact.send') }}" class="contact-form">
                         @csrf
-                        @method('POST')
+                        
                         <div class="mb-3">
                             <label for="contact_name" class="form-label">
                                 <i class="ti ti-user me-1"></i>
@@ -567,6 +567,7 @@
                                    required>
                         </div>
 
+
                         <div class="mb-3">
                             <label for="national_id" class="form-label">
                              الرقم الوطني او جواز سفر
@@ -578,6 +579,8 @@
                                    placeholder="أدخل الرقم الوطني"
                                    required>
                         </div>
+
+
 
                         <div class="mb-3">
                             <label for="contact_message" class="form-label">
@@ -591,6 +594,8 @@
                                       placeholder="اكتب رسالتك هنا..."
                                       required></textarea>
                         </div>
+
+                        <input type="hidden" name="email_to" value="support@waqsa.ly">
 
                         <div class="d-grid">
                             <button type="submit" class="btn btn-submit-contact">
