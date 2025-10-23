@@ -17,6 +17,10 @@ class Examinee extends Model
     const STATUS_REJECTED = 'rejected';
 
     protected $fillable = [
+        'first_name',
+        'father_name',
+        'grandfather_name',
+        'last_name',
         'full_name',
         'national_id',
         'passport_no',
