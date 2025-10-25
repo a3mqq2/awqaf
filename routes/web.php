@@ -231,8 +231,7 @@ Route::middleware(['auth'])->group(function () {
 Route::post('contact/send', [DashboardController::class, 'send'])->name('contact.send');
 
 Route::get('/cache-pdfs', function () {
-    \Cache::put('q_pdf_url', env('APP_URL').'/q.pdf', now()->addDays(7));
-    \Cache::put('msqam_pdf_url', env('APP_URL').'/msqam.pdf', now()->addDays(7));
-    dd(env('APP_URL').'/q.pdf');
+    \Cache::put('q_pdf_url', 'https://waqsa.ly/storage/q.pdf');
+    \Cache::put('msqam_pdf_url', 'https://waqsa.ly/storage/msqam.pdf');
     return response()->json(['status' => 'cached']);
 });
