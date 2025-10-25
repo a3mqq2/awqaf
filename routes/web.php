@@ -231,23 +231,30 @@ Route::middleware(['auth'])->group(function () {
 Route::post('contact/send', [DashboardController::class, 'send'])->name('contact.send');
 
 
+
 Route::get('/cache-pdfs', function () {
-    $cacheDir = storage_path('app/public/cache');
-    if (!file_exists($cacheDir)) mkdir($cacheDir, 0777, true);
+    $files = [
+        'q' => 'https://testing.waqsa.ly/storage/q.pdf',
+        'msqam' => 'https://testing.waqsa.ly/storage/msqam.pdf',
+    ];
 
-    $quranPath = "{$cacheDir}/q.pdf";
-    $msqamPath = "{$cacheDir}/msqam.pdf";
+    foreach ($files as $key => $url) {
+        $path = storage_path("app/public/{$key}.pdf");
 
-    $quranUrl = env('APP_URL') . '/storage/q.pdf';
-    $msqamUrl = env('APP_URL') . '/storage/msqam.pdf';
+        if (!file_exists($path)) {
+            $readStream = fopen($url, 'rb');
+            if (!$readStream) {
+                throw new \Exception("Failed to open remote file: $url");
+            }
 
-    Http::timeout(300)->sink($quranPath)->get($quranUrl);
-    Http::timeout(300)->sink($msqamPath)->get($msqamUrl);
+            $writeStream = fopen($path, 'wb');
+            stream_copy_to_stream($readStream, $writeStream);
+            fclose($readStream);
+            fclose($writeStream);
+        }
+    }
 
-    Cache::put('q_pdf_file', $quranPath);
-    Cache::put('msqam_pdf_file', $msqamPath);
-
-    return response()->json(['status' => 'cached']);
+    return 'PDFs cached safely without overload';
 });
 
 Route::get('/pdf/{key}', function ($key) {
