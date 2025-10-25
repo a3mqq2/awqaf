@@ -232,30 +232,46 @@ Route::post('contact/send', [DashboardController::class, 'send'])->name('contact
 
 
 
+
 Route::get('/cache-pdfs', function () {
     $files = [
         'q' => 'https://testing.waqsa.ly/storage/q.pdf',
         'msqam' => 'https://testing.waqsa.ly/storage/msqam.pdf',
     ];
 
+    $results = [];
+
     foreach ($files as $key => $url) {
         $path = storage_path("app/public/{$key}.pdf");
 
-        if (!file_exists($path)) {
-            $readStream = fopen($url, 'rb');
-            if (!$readStream) {
-                throw new \Exception("Failed to open remote file: $url");
-            }
-
-            $writeStream = fopen($path, 'wb');
-            stream_copy_to_stream($readStream, $writeStream);
-            fclose($readStream);
-            fclose($writeStream);
+        if (file_exists($path) && filesize($path) > 0) {
+            $results[$key] = 'already exists ✅';
+            continue;
         }
+
+        $readStream = @fopen($url, 'rb');
+        if (!$readStream) {
+            $results[$key] = 'failed to open remote file ❌';
+            continue;
+        }
+
+        $writeStream = @fopen($path, 'wb');
+        if (!$writeStream) {
+            fclose($readStream);
+            $results[$key] = 'failed to write local file ❌';
+            continue;
+        }
+
+        stream_copy_to_stream($readStream, $writeStream);
+        fclose($readStream);
+        fclose($writeStream);
+
+        $results[$key] = file_exists($path) ? 'downloaded ✅' : 'failed ❌';
     }
 
-    return 'PDFs cached safely without overload';
+    return response()->json($results);
 });
+
 
 Route::get('/pdf/{key}', function ($key) {
     $filePath = Cache::get($key);
