@@ -243,3 +243,12 @@ Route::get('/cache-pdfs', function () {
 
     return response()->json(['status' => 'cached']);
 });
+
+
+Route::get('/pdf/{key}', function ($key) {
+    $pdf = \Cache::get($key);
+    if (!$pdf) {
+        return response('File not found in cache', 404);
+    }
+    return response($pdf)->header('Content-Type', 'application/pdf');
+});

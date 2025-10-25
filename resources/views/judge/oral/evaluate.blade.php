@@ -72,8 +72,8 @@
                 <div class="pdfs-viewer-container">
                     @php
                     $pdfs = [
-                        ['title' => 'مصحف الجماهيرية قالون أبوعمرو الداني', 'url' => Cache::get('q_pdf_url')],
-                        ['title' => 'مصحف قراءات العشر', 'url' => Cache::get('msqam_pdf_url')],
+                        ['title' => 'مصحف الجماهيرية قالون أبوعمرو الداني', 'url' => url('/pdf/q_pdf_file')],
+                        ['title' => 'مصحف قراءات العشر', 'url' => url('/pdf/msqam_pdf_file')],
                     ];
                     @endphp
                 
