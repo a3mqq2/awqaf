@@ -230,28 +230,21 @@ Route::middleware(['auth'])->group(function () {
 // Contact Form (Public)
 Route::post('contact/send', [DashboardController::class, 'send'])->name('contact.send');
 
+
 Route::get('/cache-pdfs', function () {
-    $baseUrl = env('APP_URL');
-    $quranUrl = "{$baseUrl}/storage/q.pdf";
-    $msqamUrl = "{$baseUrl}/storage/msqam.pdf";
+    $quranPath = storage_path('app/public/q.pdf');
+    $msqamPath = storage_path('app/public/msqam.pdf');
 
-    $quranResponse = Http::timeout(200)->get($quranUrl);
-    if ($quranResponse->successful()) {
-        Cache::put('q_pdf_file', $quranResponse->body());
-    }
-
-    $msqamResponse = Http::timeout(200)->get($msqamUrl);
-    if ($msqamResponse->successful()) {
-        Cache::put('msqam_pdf_file', $msqamResponse->body());
-    }
+    \Cache::put('q_pdf_file', $quranPath);
+    \Cache::put('msqam_pdf_file', $msqamPath);
 
     return response()->json(['status' => 'cached']);
 });
 
 Route::get('/pdf/{key}', function ($key) {
-    $pdf = Cache::get($key);
-    if (!$pdf) {
-        return response('File not found in cache', 404);
+    $filePath = \Cache::get($key);
+    if (!$filePath || !file_exists($filePath)) {
+        return response('File not found', 404);
     }
-    return response($pdf)->header('Content-Type', 'application/pdf');
+    return response()->file($filePath);
 });
