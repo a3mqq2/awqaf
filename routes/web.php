@@ -235,12 +235,12 @@ Route::get('/cache-pdfs', function () {
     $quranUrl = "{$baseUrl}/storage/q.pdf";
     $msqamUrl = "{$baseUrl}/storage/msqam.pdf";
 
-    $quranResponse = Http::get($quranUrl);
+    $quranResponse = Http::timeout(200)->get($quranUrl);
     if ($quranResponse->successful()) {
         Cache::put('q_pdf_file', $quranResponse->body());
     }
 
-    $msqamResponse = Http::get($msqamUrl);
+    $msqamResponse = Http::timeout(200)->get($msqamUrl);
     if ($msqamResponse->successful()) {
         Cache::put('msqam_pdf_file', $msqamResponse->body());
     }
