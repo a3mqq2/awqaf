@@ -232,17 +232,26 @@ Route::post('contact/send', [DashboardController::class, 'send'])->name('contact
 
 
 Route::get('/cache-pdfs', function () {
-    $quranPath = storage_path('app/public/q.pdf');
-    $msqamPath = storage_path('app/public/msqam.pdf');
+    $cacheDir = storage_path('app/public/cache');
+    if (!file_exists($cacheDir)) mkdir($cacheDir, 0777, true);
 
-    \Cache::put('q_pdf_file', $quranPath);
-    \Cache::put('msqam_pdf_file', $msqamPath);
+    $quranPath = "{$cacheDir}/q.pdf";
+    $msqamPath = "{$cacheDir}/msqam.pdf";
+
+    $quranUrl = env('APP_URL') . '/storage/q.pdf';
+    $msqamUrl = env('APP_URL') . '/storage/msqam.pdf';
+
+    Http::timeout(300)->sink($quranPath)->get($quranUrl);
+    Http::timeout(300)->sink($msqamPath)->get($msqamUrl);
+
+    Cache::put('q_pdf_file', $quranPath);
+    Cache::put('msqam_pdf_file', $msqamPath);
 
     return response()->json(['status' => 'cached']);
 });
 
 Route::get('/pdf/{key}', function ($key) {
-    $filePath = \Cache::get($key);
+    $filePath = Cache::get($key);
     if (!$filePath || !file_exists($filePath)) {
         return response('File not found', 404);
     }

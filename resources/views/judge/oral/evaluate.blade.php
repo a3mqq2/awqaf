@@ -71,11 +71,11 @@
 
                 <div class="pdfs-viewer-container">
                     @php
-                    $pdfs = [
-                        ['title' => 'مصحف الجماهيرية قالون أبوعمرو الداني', 'url' => url('/pdf/q_pdf_file')],
-                        ['title' => 'مصحف قراءات العشر', 'url' => url('/pdf/msqam_pdf_file')],
-                    ];
-                    @endphp
+            $pdfs = [
+                ['title' => 'مصحف الجماهيرية قالون أبوعمرو الداني', 'url' => Storage::url('q.pdf')],
+                ['title' => 'مصحف قراءات العشر', 'url' =>  Storage::url('msqam.pdf')],
+            ];
+            @endphp
                 
                     <div class="pdf-list">
                         @foreach($pdfs as $index => $pdf)
