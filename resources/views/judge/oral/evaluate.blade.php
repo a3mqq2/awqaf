@@ -1358,6 +1358,357 @@
         }
     }
 </style>
+<style>
+/* أضيفي هذا الكود في نهاية الـ <style> في @push('styles') */
+
+/* ===== Tablet Optimizations ===== */
+
+/* Tablets - Portrait & Landscape */
+@media screen and (max-width: 1024px) {
+    
+    /* تصغير حجم الـ containers */
+    .evaluation-container {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    /* Header أصغر */
+    .header-section {
+        padding: 10px 15px;
+    }
+    
+    .header-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .header-label {
+        font-size: 9px;
+    }
+    
+    .header-value {
+        font-size: 12px;
+    }
+    
+    /* Question Progress أصغر */
+    .question-progress {
+        padding: 8px 12px;
+        gap: 10px;
+    }
+    
+    .question-progress h2 {
+        font-size: 12px;
+    }
+    
+    .question-number {
+        font-size: 24px;
+    }
+    
+    .question-score-display {
+        padding: 6px 12px;
+    }
+    
+    .question-score-display .value {
+        font-size: 20px;
+    }
+    
+    /* PDF Panel أصغر */
+    .pdfs-panel {
+        width: 320px;
+        height: calc(100vh - 220px);
+    }
+    
+    /* Scoring Panel */
+    .scoring-panel {
+        height: calc(100vh - 200px);
+        padding: 0 5px;
+        gap: 6px;
+    }
+    
+    /* Scoring Grid - 4 columns on tablets */
+    .scoring-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+    }
+    
+    /* Memory section - 4 columns */
+    .memory-section {
+        grid-column: span 4;
+    }
+    
+    .memory-items {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+    }
+    
+    /* Rules section - 2 columns */
+    .rules-section {
+        grid-column: span 2;
+    }
+    
+    .rules-items {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+    }
+    
+    /* Score Card - أصغر */
+    .score-card {
+        padding: 8px;
+        gap: 6px;
+        min-height: 70px;
+    }
+    
+    .score-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    
+    .score-content {
+        gap: 2px;
+    }
+    
+    .score-label {
+        font-size: 10px;
+    }
+    
+    .score-value {
+        font-size: 20px;
+    }
+    
+    .score-actions {
+        gap: 4px;
+    }
+    
+    .score-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .score-deduction {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+    
+    /* Section Headers */
+    .section-header {
+        padding: 8px 12px;
+    }
+    
+    .section-header h4 {
+        font-size: 12px;
+    }
+    
+    .section-header .badge {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+    
+    /* Summary Section */
+    .summary-section {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .summary-card {
+        padding: 10px;
+    }
+    
+    .summary-card h5 {
+        font-size: 11px;
+    }
+    
+    .summary-card .value {
+        font-size: 18px;
+    }
+    
+    /* Footer Actions */
+    .footer-actions {
+        padding: 10px;
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+    
+    .btn i {
+        font-size: 16px;
+    }
+}
+
+/* Small Tablets - Portrait */
+@media screen and (max-width: 768px) {
+    
+    /* Scoring Grid - 3 columns for small tablets */
+    .scoring-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+    }
+    
+    .memory-section {
+        grid-column: span 3;
+    }
+    
+    .memory-items {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3px;
+    }
+    
+    .rules-section {
+        grid-column: span 3;
+    }
+    
+    .rules-items {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3px;
+    }
+    
+    /* Score Card أصغر */
+    .score-card {
+        padding: 6px;
+        gap: 5px;
+        min-height: 65px;
+    }
+    
+    .score-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .score-label {
+        font-size: 9px;
+    }
+    
+    .score-value {
+        font-size: 18px;
+    }
+    
+    .score-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
+    }
+    
+    .score-deduction {
+        font-size: 8px;
+        padding: 2px 5px;
+    }
+    
+    /* PDF Panel أصغر أو مخفي */
+    .pdfs-panel {
+        width: 280px;
+    }
+    
+    .pdfs-panel.collapsed {
+        width: 40px;
+    }
+    
+    /* Hide PDF panel by default on small tablets */
+    .evaluation-container {
+        grid-template-columns: 40px 1fr;
+    }
+    
+    .pdfs-panel {
+        width: 40px;
+    }
+    
+    .pdfs-panel .pdfs-content {
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .pdfs-panel.expanded {
+        width: 280px;
+    }
+    
+    .pdfs-panel.expanded .pdfs-content {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* Landscape Tablets - استغلال المساحة */
+@media screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+    
+    /* في وضع Landscape نستغل المساحة أكثر */
+    .scoring-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .memory-section {
+        grid-column: span 5;
+    }
+    
+    .memory-items {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .rules-section {
+        grid-column: span 5;
+    }
+    
+    .rules-items {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    /* PDF Panel أكبر شوي */
+    .pdfs-panel {
+        width: 350px;
+    }
+}
+
+/* Extra: إذا PDF مطوي على Tablets */
+.pdf-collapsed .scoring-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+}
+
+.pdf-collapsed .memory-section {
+    grid-column: span 5 !important;
+}
+
+.pdf-collapsed .memory-items {
+    grid-template-columns: repeat(5, 1fr) !important;
+}
+
+.pdf-collapsed .rules-section {
+    grid-column: span 5 !important;
+}
+
+.pdf-collapsed .rules-items {
+    grid-template-columns: repeat(5, 1fr) !important;
+}
+
+@media screen and (max-width: 768px) {
+    .pdf-collapsed .scoring-grid,
+    .evaluation-container .scoring-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .pdf-collapsed .memory-section,
+    .evaluation-container .memory-section {
+        grid-column: span 4 !important;
+    }
+    
+    .pdf-collapsed .memory-items,
+    .evaluation-container .memory-items {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .pdf-collapsed .rules-section,
+    .evaluation-container .rules-section {
+        grid-column: span 4 !important;
+    }
+    
+    .pdf-collapsed .rules-items,
+    .evaluation-container .rules-items {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+</style>
 @endpush
 
 @section('content')
@@ -1657,15 +2008,21 @@
     </div>
 </div>
 @endsection
-
 @push('scripts')
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- PDF.js -->
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
 <script>
-const evaluationId = {{ $evaluation->id }};
-let currentQuestion = {{ $evaluation->current_question }};
-let questionsData = @json($evaluation->questions_data ?? []);
+// تهيئة PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+let evaluationId = {{ $evaluation->id }};
+let currentQuestion = {{ $currentQuestion }};
+let pdfCache = {}; // لتخزين الـ PDFs المحملة
 
 // Toggle PDF Panel
 function togglePdfPanel() {
@@ -1676,14 +2033,115 @@ function togglePdfPanel() {
     container.classList.toggle('pdf-collapsed');
 }
 
-// Load PDF
+// Load PDF with Caching
 function loadPdf(url, element) {
     document.querySelectorAll('.pdf-item').forEach(item => {
         item.classList.remove('active');
     });
     element.classList.add('active');
     
-    document.getElementById('pdfViewer').src = url + '#toolbar=1&navpanes=0&scrollbar=1';
+    const viewerContainer = document.getElementById('pdfViewer');
+    
+    // تحقق إذا الـ PDF موجود في الكاش
+    if (pdfCache[url]) {
+        console.log('Loading from cache...');
+        renderCachedPdf(pdfCache[url], viewerContainer);
+        return;
+    }
+    
+    // عرض loader
+    viewerContainer.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 10px; background: #525659;">
+            <div class="spinner-border text-light" role="status"></div>
+            <p style="color: #fff; margin: 0;">جاري تحميل الملف...</p>
+        </div>
+    `;
+    
+    // تحميل الـ PDF
+    const loadingTask = pdfjsLib.getDocument({
+        url: url,
+        cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+        cMapPacked: true
+    });
+    
+    loadingTask.promise.then(pdf => {
+        // حفظ في الكاش
+        pdfCache[url] = pdf;
+        console.log('PDF loaded and cached - Pages: ' + pdf.numPages);
+        
+        renderCachedPdf(pdf, viewerContainer);
+    }).catch(error => {
+        console.error('Error loading PDF:', error);
+        viewerContainer.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 15px; background: #525659; padding: 20px;">
+                <i class="ti ti-alert-circle" style="font-size: 48px; color: #dc3545;"></i>
+                <p style="color: #fff; margin: 0; text-align: center;">خطأ في تحميل الملف</p>
+                <button onclick="retryLoadPdf('${url}', document.querySelector('.pdf-item.active'))" class="btn btn-sm btn-light">
+                    <i class="ti ti-refresh"></i> إعادة المحاولة
+                </button>
+            </div>
+        `;
+    });
+}
+
+// Retry loading PDF
+function retryLoadPdf(url, element) {
+    // حذف من الكاش للتحميل من جديد
+    delete pdfCache[url];
+    loadPdf(url, element);
+}
+
+// Render Cached PDF
+function renderCachedPdf(pdf, container) {
+    // مسح المحتوى السابق
+    container.innerHTML = '';
+    
+    // إنشاء wrapper للصفحات
+    const pagesWrapper = document.createElement('div');
+    pagesWrapper.style.cssText = 'overflow-y: auto; height: 100%; padding: 15px; background: #525659;';
+    container.appendChild(pagesWrapper);
+    
+    // رندر كل صفحة
+    const renderPage = (pageNum) => {
+        pdf.getPage(pageNum).then(page => {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            // حساب المقاس المناسب
+            const containerWidth = container.clientWidth - 40; // مع padding
+            const viewport = page.getViewport({ scale: 1 });
+            const scale = containerWidth / viewport.width;
+            const scaledViewport = page.getViewport({ scale: scale });
+            
+            canvas.height = scaledViewport.height;
+            canvas.width = scaledViewport.width;
+            canvas.style.cssText = 'display: block; margin: 0 auto 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: white;';
+            
+            // رندر الصفحة
+            const renderContext = {
+                canvasContext: context,
+                viewport: scaledViewport
+            };
+            
+            page.render(renderContext).promise.then(() => {
+                pagesWrapper.appendChild(canvas);
+                
+                // رندر الصفحة التالية
+                if (pageNum < pdf.numPages) {
+                    renderPage(pageNum + 1);
+                } else {
+                    console.log('All pages rendered successfully');
+                }
+            }).catch(error => {
+                console.error('Error rendering page ' + pageNum, error);
+            });
+        }).catch(error => {
+            console.error('Error getting page ' + pageNum, error);
+        });
+    };
+    
+    // بدء الرندر من الصفحة الأولى
+    renderPage(1);
 }
 
 // Update Deduction
