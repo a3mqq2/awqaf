@@ -229,9 +229,17 @@ Route::middleware(['auth'])->group(function () {
 
 // Contact Form (Public)
 Route::post('contact/send', [DashboardController::class, 'send'])->name('contact.send');
-
 Route::get('/cache-pdfs', function () {
-    \Cache::put('q_pdf_url', 'https://waqsa.ly/storage/q.pdf');
-    \Cache::put('msqam_pdf_url', 'https://waqsa.ly/storage/msqam.pdf');
+    $quranPath = "https://waqsa.ly/storage/q.pdf";
+    $msqamPath = "https://waqsa.ly/storage/msqam.pdf";
+
+    if (file_exists($quranPath)) {
+        \Cache::put('q_pdf_file', file_get_contents($quranPath));
+    }
+
+    if (file_exists($msqamPath)) {
+        \Cache::put('msqam_pdf_file', file_get_contents($msqamPath));
+    }
+
     return response()->json(['status' => 'cached']);
 });
